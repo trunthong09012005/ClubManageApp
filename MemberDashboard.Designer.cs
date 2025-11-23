@@ -38,8 +38,6 @@
             this.slidebar = new System.Windows.Forms.FlowLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnMemberDashBoard = new Guna.UI2.WinForms.Guna2Button();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.btnHoso = new Guna.UI2.WinForms.Guna2Button();
             this.panel6 = new System.Windows.Forms.Panel();
             this.btnLichhop = new Guna.UI2.WinForms.Guna2Button();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -73,7 +71,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.btnham)).BeginInit();
             this.slidebar.SuspendLayout();
             this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
             this.panel6.SuspendLayout();
             this.panel3.SuspendLayout();
             this.pnlStatsContainer.SuspendLayout();
@@ -103,7 +100,7 @@
             this.guna2Panel1.Name = "guna2Panel1";
             this.guna2Panel1.ShadowDecoration.Depth = 10;
             this.guna2Panel1.ShadowDecoration.Enabled = true;
-            this.guna2Panel1.Size = new System.Drawing.Size(1400, 70);
+            this.guna2Panel1.Size = new System.Drawing.Size(1920, 70);
             this.guna2Panel1.TabIndex = 0;
             // 
             // lblRole
@@ -113,7 +110,7 @@
             this.lblRole.BackColor = System.Drawing.Color.Transparent;
             this.lblRole.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblRole.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
-            this.lblRole.Location = new System.Drawing.Point(1201, 37);
+            this.lblRole.Location = new System.Drawing.Point(1721, 37);
             this.lblRole.Name = "lblRole";
             this.lblRole.Size = new System.Drawing.Size(52, 20);
             this.lblRole.TabIndex = 3;
@@ -126,9 +123,9 @@
             this.lblUsername.BackColor = System.Drawing.Color.Transparent;
             this.lblUsername.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblUsername.ForeColor = System.Drawing.Color.White;
-            this.lblUsername.Location = new System.Drawing.Point(1200, 12);
+            this.lblUsername.Location = new System.Drawing.Point(1720, 12);
             this.lblUsername.Name = "lblUsername";
-            this.lblUsername.Size = new System.Drawing.Size(78, 25);
+            this.lblUsername.Size = new System.Drawing.Size(79, 25);
             this.lblUsername.TabIndex = 2;
             this.lblUsername.Text = "👋 User";
             // 
@@ -161,14 +158,13 @@
             // 
             this.slidebar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(199)))), ((int)(((byte)(217)))), ((int)(((byte)(255)))));
             this.slidebar.Controls.Add(this.panel1);
-            this.slidebar.Controls.Add(this.panel2);
             this.slidebar.Controls.Add(this.panel6);
             this.slidebar.Controls.Add(this.panel3);
             this.slidebar.Dock = System.Windows.Forms.DockStyle.Left;
             this.slidebar.Location = new System.Drawing.Point(0, 70);
             this.slidebar.Name = "slidebar";
             this.slidebar.Padding = new System.Windows.Forms.Padding(10);
-            this.slidebar.Size = new System.Drawing.Size(280, 780);
+            this.slidebar.Size = new System.Drawing.Size(280, 916);
             this.slidebar.TabIndex = 1;
             // 
             // panel1
@@ -206,44 +202,10 @@
             this.btnMemberDashBoard.Text = "Dashboard";
             this.btnMemberDashBoard.TextOffset = new System.Drawing.Point(10, 0);
             // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.btnHoso);
-            this.panel2.Location = new System.Drawing.Point(13, 79);
-            this.panel2.Name = "panel2";
-            this.panel2.Padding = new System.Windows.Forms.Padding(5);
-            this.panel2.Size = new System.Drawing.Size(260, 60);
-            this.panel2.TabIndex = 1;
-            // 
-            // btnHoso
-            // 
-            this.btnHoso.Animated = true;
-            this.btnHoso.BorderRadius = 12;
-            this.btnHoso.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(99)))), ((int)(((byte)(102)))), ((int)(((byte)(241)))));
-            this.btnHoso.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnHoso.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnHoso.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btnHoso.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btnHoso.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btnHoso.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnHoso.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(199)))), ((int)(((byte)(217)))), ((int)(((byte)(255)))));
-            this.btnHoso.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnHoso.ForeColor = System.Drawing.Color.Black;
-            this.btnHoso.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(99)))), ((int)(((byte)(102)))), ((int)(((byte)(241)))));
-            this.btnHoso.Image = global::ClubManageApp.Properties.Resources.icons8_account_24;
-            this.btnHoso.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.btnHoso.ImageOffset = new System.Drawing.Point(10, 0);
-            this.btnHoso.Location = new System.Drawing.Point(5, 5);
-            this.btnHoso.Name = "btnHoso";
-            this.btnHoso.Size = new System.Drawing.Size(250, 50);
-            this.btnHoso.TabIndex = 0;
-            this.btnHoso.Text = "Hồ sơ";
-            this.btnHoso.TextOffset = new System.Drawing.Point(10, 0);
-            // 
             // panel6
             // 
             this.panel6.Controls.Add(this.btnLichhop);
-            this.panel6.Location = new System.Drawing.Point(13, 145);
+            this.panel6.Location = new System.Drawing.Point(13, 79);
             this.panel6.Name = "panel6";
             this.panel6.Padding = new System.Windows.Forms.Padding(5);
             this.panel6.Size = new System.Drawing.Size(260, 60);
@@ -277,7 +239,7 @@
             // panel3
             // 
             this.panel3.Controls.Add(this.btnDangXuat);
-            this.panel3.Location = new System.Drawing.Point(13, 211);
+            this.panel3.Location = new System.Drawing.Point(13, 145);
             this.panel3.Name = "panel3";
             this.panel3.Padding = new System.Windows.Forms.Padding(5);
             this.panel3.Size = new System.Drawing.Size(260, 60);
@@ -306,7 +268,6 @@
             this.btnDangXuat.TabIndex = 0;
             this.btnDangXuat.Text = "Đăng xuất";
             this.btnDangXuat.TextOffset = new System.Drawing.Point(10, 0);
-            this.btnDangXuat.Click += new System.EventHandler(this.BtnDangXuat_Click);
             // 
             // pnlStatsContainer
             // 
@@ -522,6 +483,7 @@
             this.btnEditProfile.Size = new System.Drawing.Size(200, 45);
             this.btnEditProfile.TabIndex = 7;
             this.btnEditProfile.Text = "✏️ Chỉnh sửa hồ sơ";
+            this.btnEditProfile.Click += new System.EventHandler(this.btnEditProfile_Click);
             // 
             // lblJoinDate
             // 
@@ -648,7 +610,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
-            this.ClientSize = new System.Drawing.Size(1400, 850);
+            this.ClientSize = new System.Drawing.Size(1920, 986);
             this.Controls.Add(this.pnlTimelineSection);
             this.Controls.Add(this.pnlProfileSection);
             this.Controls.Add(this.pnlStatsContainer);
@@ -658,12 +620,12 @@
             this.Name = "MemberDashboard";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MemberDashboard";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.guna2Panel1.ResumeLayout(false);
             this.guna2Panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.btnham)).EndInit();
             this.slidebar.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.pnlStatsContainer.ResumeLayout(false);
@@ -689,8 +651,6 @@
         private System.Windows.Forms.FlowLayoutPanel slidebar;
         private System.Windows.Forms.Panel panel1;
         private Guna.UI2.WinForms.Guna2Button btnMemberDashBoard;
-        private System.Windows.Forms.Panel panel2;
-        private Guna.UI2.WinForms.Guna2Button btnHoso;
         private System.Windows.Forms.Panel panel6;
         private Guna.UI2.WinForms.Guna2Button btnLichhop;
         private System.Windows.Forms.Panel panel3;

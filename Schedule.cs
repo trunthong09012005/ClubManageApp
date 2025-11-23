@@ -54,8 +54,7 @@ namespace ClubManageApp
             // INSERT INTO KyLuat (MaTV, LyDo, HinhThuc, ThoiGianKyLuat, NgayKL, NguoiLap) VALUES
             // (10, N'Vắng mặt không phép 3 buổi họp liên tiếp', N'Cảnh cáo', NULL, '2025-10-05', 2),
             // (11, N'Không hoàn thành nhiệm vụ đúng thời hạn', N'Khiển trách', NULL, '2025-08-25', 2);
-            kyLuats.Add(new KyLuat { Id = 1, MaTV = 10, LyDo = "Vắng mặt không phép 3 buổi họp liên tiếp", HinhThuc = "Cảnh cáo", ThoiGianKyLuat = null, NgayKL = DateTime.Parse("2025-10-05"), NguoiLap = 2 });
-            kyLuats.Add(new KyLuat { Id = 2, MaTV = 11, LyDo = "Không hoàn thành nhiệm vụ đúng thời hạn", HinhThuc = "Khiển trách", ThoiGianKyLuat = null, NgayKL = DateTime.Parse("2025-08-25"), NguoiLap = 2 });
+            // (Removed per request: do not add kyLuats sample records here)
         }
 
         private void WireGrids()
@@ -100,54 +99,21 @@ namespace ClubManageApp
                 }
             }
 
-            // Configure dgvMinutes to show kỷ luật records (KyLuat)
-            dgvMinutes.AutoGenerateColumns = false;
-            dgvMinutes.Columns.Clear();
+            // Note: minutes / kyLuats UI removed per request; keep minutes collection available for future use
 
-            var colLyDo = new DataGridViewTextBoxColumn()
-            {
-                DataPropertyName = nameof(KyLuat.LyDo),
-                Name = nameof(KyLuat.LyDo),
-                HeaderText = "Lý do",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
-            };
-            var colHinhThuc = new DataGridViewTextBoxColumn()
-            {
-                DataPropertyName = nameof(KyLuat.HinhThuc),
-                Name = nameof(KyLuat.HinhThuc),
-                HeaderText = "Hình thức",
-                Width = 120
-            };
-            var colNgayKL = new DataGridViewTextBoxColumn()
-            {
-                DataPropertyName = nameof(KyLuat.NgayKL),
-                Name = nameof(KyLuat.NgayKL),
-                HeaderText = "Ngày KL",
-                Width = 120
-            };
-            var colNguoiLap = new DataGridViewTextBoxColumn()
-            {
-                DataPropertyName = nameof(KyLuat.NguoiLap),
-                Name = nameof(KyLuat.NguoiLap),
-                HeaderText = "Người lập",
-                Width = 80
-            };
+            dgvParticipants.AllowUserToAddRows = false;
+            dgvParticipants.ReadOnly = true;
+            dgvParticipants.RowHeadersVisible = false;
+            dgvParticipants.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvParticipants.AutoResizeColumns();
+            dgvParticipants.Refresh();
 
-            dgvMinutes.Columns.Add(colLyDo);
-            dgvMinutes.Columns.Add(colHinhThuc);
-            dgvMinutes.Columns.Add(colNgayKL);
-            dgvMinutes.Columns.Add(colNguoiLap);
-
-            dgvMinutes.DataSource = null;
-            dgvMinutes.DataSource = kyLuats;
-            dgvMinutes.AllowUserToAddRows = false;
-            dgvMinutes.ReadOnly = true;
-            dgvMinutes.RowHeadersVisible = false;
-            dgvMinutes.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-            dgvMinutes.DefaultCellStyle.ForeColor = Color.Black;
-            dgvMinutes.DefaultCellStyle.BackColor = Color.White;
-            dgvMinutes.AutoResizeColumns();
-            dgvMinutes.Refresh();
+            dgvMeetings.AllowUserToAddRows = false;
+            dgvMeetings.ReadOnly = true;
+            dgvMeetings.RowHeadersVisible = false;
+            dgvMeetings.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvMeetings.AutoResizeColumns();
+            dgvMeetings.Refresh();
         }
 
         // Meeting actions
@@ -234,15 +200,19 @@ namespace ClubManageApp
         // Minutes actions
         private void btnViewMinute_Click(object sender, EventArgs e)
         {
-            if (dgvMinutes.CurrentRow == null) return;
-            var item = dgvMinutes.CurrentRow.DataBoundItem;
-            if (item is KyLuat k)
+            // This handler removed because minutes UI was removed in Designer
+        }
+
+        // Calendar date selected - open MeetingEditForm with selected date to create a new meeting
+        private void monthCalendar1_DateSelected(object sender, DateRangeEventArgs e)
+        {
+            // open the MeetingEditForm with the selected date prefilled
+            var form = new MeetingEditForm(e.Start);
+            if (form.ShowDialog() == DialogResult.OK)
             {
-                MessageBox.Show($"Mã TV: {k.MaTV}\nLý do: {k.LyDo}\nHình thức: {k.HinhThuc}\nNgày KL: {k.NgayKL:d}\nNgười lập: {k.NguoiLap}", "Chi tiết kỷ luật");
-            }
-            else if (item is Minute m)
-            {
-                MessageBox.Show($"{m.Title}\n\n{m.Content}", "Chi tiết");
+                var nextId = (meetings.Count == 0) ? 1 : meetings.Max(m => m.Id) + 1;
+                form.Meeting.Id = nextId;
+                meetings.Add(form.Meeting);
             }
         }
     }
@@ -325,6 +295,17 @@ namespace ClubManageApp
             Meeting = new Meeting();
         }
 
+        // New constructor to accept initial date for creating meeting from calendar
+        public MeetingEditForm(DateTime initialDate) : this()
+        {
+            // ensure dtpDate exists and set to provided date (keep time at noon as default)
+            try
+            {
+                dtpDate.Value = initialDate.Date.AddHours(9); // default time 9:00 AM
+            }
+            catch { }
+        }
+
         public MeetingEditForm(Meeting m) : this()
         {
             Meeting = new Meeting { Id = m.Id, TieuDe = m.TieuDe, NgayHop = m.NgayHop, DiaDiem = m.DiaDiem, NoiDung = m.NoiDung, NguoiChuTri = m.NguoiChuTri, TrangThai = m.TrangThai };
@@ -339,18 +320,97 @@ namespace ClubManageApp
         private void InitializeForm()
         {
             this.Text = "Chỉnh sửa";
-            this.Size = new Size(480, 320);
-            txtTitle = new TextBox() { Left = 20, Top = 20, Width = 420 };
-            dtpDate = new DateTimePicker() { Left = 20, Top = 60, Width = 250, Format = DateTimePickerFormat.Custom, CustomFormat = "yyyy-MM-dd HH:mm" };
-            txtLocation = new TextBox() { Left = 20, Top = 100, Width = 420 };
-            txtNoiDung = new TextBox() { Left = 20, Top = 140, Width = 420, Height = 40, Multiline = true };
-            txtTrangThai = new TextBox() { Left = 20, Top = 190, Width = 200 };
-            nudNguoiChuTri = new NumericUpDown() { Left = 240, Top = 190, Width = 80, Minimum = 0, Maximum = 9999 };
-            btnOk = new Button() { Left = 260, Top = 230, Width = 80, Text = "OK" };
-            btnCancel = new Button() { Left = 350, Top = 230, Width = 80, Text = "Cancel" };
+            this.ClientSize = new Size(620, 420);
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.StartPosition = FormStartPosition.CenterParent;
+
+            // create controls
+            txtTitle = new TextBox();
+            dtpDate = new DateTimePicker() { Format = DateTimePickerFormat.Custom, CustomFormat = "yyyy-MM-dd HH:mm" };
+            txtLocation = new TextBox();
+            txtNoiDung = new TextBox() { Multiline = true, ScrollBars = ScrollBars.Vertical };
+            txtTrangThai = new TextBox();
+            nudNguoiChuTri = new NumericUpDown() { Minimum = 0, Maximum = 9999 };
+            btnOk = new Button() { Text = "OK" };
+            btnCancel = new Button() { Text = "Cancel" };
+
             btnOk.Click += BtnOk_Click;
             btnCancel.Click += (s, e) => this.DialogResult = DialogResult.Cancel;
-            this.Controls.AddRange(new Control[] { txtTitle, dtpDate, txtLocation, txtNoiDung, txtTrangThai, nudNguoiChuTri, btnOk, btnCancel });
+
+            // main layout
+            var tl = new TableLayoutPanel();
+            tl.Dock = DockStyle.Fill;
+            tl.Padding = new Padding(14);
+            tl.ColumnCount = 2;
+            tl.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 140F));
+            tl.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tl.RowCount = 6;
+            tl.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F)); // title
+            tl.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F)); // date
+            tl.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F)); // location
+            tl.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // content
+            tl.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F)); // status + owner
+            tl.RowStyles.Add(new RowStyle(SizeType.Absolute, 54F)); // buttons
+
+            // Title
+            tl.Controls.Add(new Label() { Text = "Tiêu đề:", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 0);
+            txtTitle.Dock = DockStyle.Fill;
+            tl.Controls.Add(txtTitle, 1, 0);
+
+            // Date
+            tl.Controls.Add(new Label() { Text = "Ngày giờ:", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 1);
+            dtpDate.Anchor = AnchorStyles.Left;
+            dtpDate.Width = 260;
+            tl.Controls.Add(dtpDate, 1, 1);
+
+            // Location
+            tl.Controls.Add(new Label() { Text = "Địa điểm:", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 2);
+            txtLocation.Dock = DockStyle.Fill;
+            tl.Controls.Add(txtLocation, 1, 2);
+
+            // Content
+            tl.Controls.Add(new Label() { Text = "Nội dung:", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 3);
+            txtNoiDung.Dock = DockStyle.Fill;
+            txtNoiDung.Height = 200;
+            tl.Controls.Add(txtNoiDung, 1, 3);
+
+            // Status and Owner inner layout
+            var inner = new TableLayoutPanel() { Dock = DockStyle.Fill, ColumnCount = 3 };
+            inner.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            inner.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            inner.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            inner.RowCount = 1;
+            inner.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+
+            inner.Controls.Add(new Label() { Text = "Trạng thái:", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 0);
+            txtTrangThai.Dock = DockStyle.Fill;
+            inner.Controls.Add(txtTrangThai, 1, 0);
+
+            var ownerPanel = new FlowLayoutPanel() { FlowDirection = FlowDirection.LeftToRight, AutoSize = true, Anchor = AnchorStyles.Right };
+            ownerPanel.Controls.Add(new Label() { Text = "Người chủ trì (ID):", AutoSize = true, TextAlign = ContentAlignment.MiddleLeft });
+            nudNguoiChuTri.Width = 80;
+            nudNguoiChuTri.Margin = new Padding(6, 0, 0, 0);
+            ownerPanel.Controls.Add(nudNguoiChuTri);
+            inner.Controls.Add(ownerPanel, 2, 0);
+
+            tl.Controls.Add(new Label() { Text = "", AutoSize = true }, 0, 4);
+            tl.Controls.Add(inner, 1, 4);
+
+            // Buttons
+            var btnPanel = new FlowLayoutPanel() { FlowDirection = FlowDirection.RightToLeft, Dock = DockStyle.Fill };
+            btnOk.Width = 90; btnCancel.Width = 90;
+            btnOk.Margin = new Padding(0, 12, 8, 0);
+            btnCancel.Margin = new Padding(0, 12, 0, 0);
+            btnPanel.Controls.Add(btnCancel);
+            btnPanel.Controls.Add(btnOk);
+            tl.Controls.Add(new Label() { Text = "", AutoSize = true }, 0, 5);
+            tl.Controls.Add(btnPanel, 1, 5);
+
+            this.Controls.Add(tl);
+            this.AcceptButton = btnOk;
+            this.CancelButton = btnCancel;
         }
 
         private void BtnOk_Click(object sender, EventArgs e)

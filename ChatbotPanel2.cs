@@ -23,6 +23,9 @@ namespace ClubManageApp
         private bool pulseGrowing = true;
         private ToolTip tooltip;
 
+        // THÊM VÀO CLASS ChatbotPanel2 HIỆN TẠI CỦA BẠN
+
+        // ===== THÊM METHOD NÀY VÀO CONSTRUCTOR =====
         public ChatbotPanel2(string connString, int memberID, string user)
         {
             connectionString = connString;
@@ -31,34 +34,84 @@ namespace ClubManageApp
             InitializeComponents();
             SetupBadgeTimer();
             SetupPulseAnimation();
+
+            // ===== THÊM DÒNG NÀY ĐỂ BO TRÒN TOÀN BỘ =====
+            MakeRounded();
         }
 
+        // ===== THÊM METHOD MỚI NÀY VÀO CLASS =====
+        private void MakeRounded()
+        {
+            // Bo tròn toàn bộ ChatbotPanel2
+            GraphicsPath path = new GraphicsPath();
+            path.AddEllipse(0, 0, this.Width, this.Height);
+            this.Region = new Region(path);
+        }
+
+        // ===== THÊM OVERRIDE NÀY ĐỂ VẼ NỀN GRADIENT CHO PANEL =====
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
+            Rectangle rect = new Rectangle(2, 2, this.Width - 4, this.Height - 4);
+
+            // Gradient đẹp như cũ
+            using (var brush = new LinearGradientBrush(rect,
+                Color.FromArgb(99, 102, 241),   // Indigo
+                Color.FromArgb(168, 85, 247),   // Purple
+                45F))
+            {
+                e.Graphics.FillEllipse(brush, rect);
+            }
+
+            // Inner glow (ánh sáng bên trong)
+            using (var glowPath = new GraphicsPath())
+            {
+                glowPath.AddEllipse(8, 8, this.Width - 16, this.Height - 16);
+                using (var glowBrush = new PathGradientBrush(glowPath))
+                {
+                    glowBrush.CenterColor = Color.FromArgb(40, 255, 255, 255);
+                    glowBrush.SurroundColors = new Color[] { Color.Transparent };
+                    e.Graphics.FillPath(glowBrush, glowPath);
+                }
+            }
+
+            // Shadow nhẹ
+            using (var shadowBrush = new SolidBrush(Color.FromArgb(30, 0, 0, 0)))
+            {
+                e.Graphics.FillEllipse(shadowBrush, 4, this.Height - 8, this.Width - 8, 6);
+            }
+        }
+
+        // ===== SỬA LẠI InitializeComponents() =====
         private void InitializeComponents()
         {
             this.Size = new Size(70, 70);
-            this.BackColor = Color.Transparent;
+            this.BackColor = Color.Transparent; // QUAN TRỌNG
             this.DoubleBuffered = true;
 
             // Tooltip
             tooltip = new ToolTip();
             tooltip.SetToolTip(this, "Nhắn tin");
 
-            // Main toggle button with gradient
+            // Main toggle button - ĐẶT NHỎ HƠN ĐỂ NẰM TRONG PANEL TRÒ  N
             btnToggle = new Button()
             {
                 Size = new Size(60, 60),
-                Location = new Point(5, 5),
+                Location = new Point(5, 5), // Canh giữa trong panel 70x70
                 Text = "💬",
                 Font = new Font("Segoe UI Emoji", 20),
                 FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand,
-                TabStop = false
+                TabStop = false,
+                BackColor = Color.Transparent // QUAN TRỌNG
             };
             btnToggle.FlatAppearance.BorderSize = 0;
             btnToggle.FlatAppearance.MouseOverBackColor = Color.Transparent;
             btnToggle.FlatAppearance.MouseDownBackColor = Color.Transparent;
 
-            // Circular shape
+            // Circular shape cho button
             var path = new GraphicsPath();
             path.AddEllipse(0, 0, btnToggle.Width, btnToggle.Height);
             btnToggle.Region = new Region(path);
@@ -70,15 +123,15 @@ namespace ClubManageApp
 
             this.Controls.Add(btnToggle);
 
-            // Badge with modern style
+            // Badge - ĐẶT Ở GÓC PHẢI TRÊN
             lblBadge = new Label()
             {
                 Size = new Size(24, 24),
-                Location = new Point(45, 0),
+                Location = new Point(46, 0), // Góc phải trên của panel 70x70
                 Text = "0",
                 Font = new Font("Segoe UI", 9, FontStyle.Bold),
                 ForeColor = Color.White,
-                BackColor = Color.FromArgb(239, 68, 68),
+                BackColor = Color.Transparent,
                 TextAlign = ContentAlignment.MiddleCenter,
                 Visible = false
             };
@@ -92,47 +145,20 @@ namespace ClubManageApp
             lblBadge.BringToFront();
         }
 
+        // ===== SỬA LẠI BtnToggle_Paint ĐỂ CHỈ VẼ ICON =====
         private void BtnToggle_Paint(object sender, PaintEventArgs e)
         {
             var btn = sender as Button;
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            e.Graphics.Clear(Color.Transparent);
+            e.Graphics.Clear(Color.Transparent); // Trong suốt, dùng nền của panel
 
-            Rectangle rect = new Rectangle(2, 2, btn.Width - 4, btn.Height - 4);
-
-            // Gradient background
-            using (var brush = new LinearGradientBrush(rect,
-                Color.FromArgb(99, 102, 241),   // Indigo
-                Color.FromArgb(168, 85, 247),   // Purple
-                45F))
-            {
-                e.Graphics.FillEllipse(brush, rect);
-            }
-
-            // Subtle inner glow
-            using (var glowPath = new GraphicsPath())
-            {
-                glowPath.AddEllipse(8, 8, btn.Width - 16, btn.Height - 16);
-                using (var glowBrush = new PathGradientBrush(glowPath))
-                {
-                    glowBrush.CenterColor = Color.FromArgb(40, 255, 255, 255);
-                    glowBrush.SurroundColors = new Color[] { Color.Transparent };
-                    e.Graphics.FillPath(glowBrush, glowPath);
-                }
-            }
-
-            // Shadow effect
-            using (var shadowBrush = new SolidBrush(Color.FromArgb(30, 0, 0, 0)))
-            {
-                e.Graphics.FillEllipse(shadowBrush, 4, btn.Height - 8, btn.Width - 8, 6);
-            }
-
-            // Icon
+            // CHỈ VẼ ICON, KHÔNG VẼ BACKGROUND
             TextRenderer.DrawText(e.Graphics, btn.Text, btn.Font,
                 new Rectangle(0, 0, btn.Width, btn.Height),
                 Color.White, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
         }
 
+        // LblBadge_Paint giữ nguyên như cũ
         private void LblBadge_Paint(object sender, PaintEventArgs e)
         {
             var lbl = sender as Label;
