@@ -7,6 +7,7 @@
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+
         /// <summary>
         /// Clean up any resources being used.
         /// </summary>
@@ -74,6 +75,7 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.lblTimeline = new System.Windows.Forms.Label();
             this.flowTimeline = new System.Windows.Forms.FlowLayoutPanel();
+            this.contentPanel = new System.Windows.Forms.Panel();
             this.guna2Elipse1 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
             this.guna2DragControl1 = new Guna.UI2.WinForms.Guna2DragControl(this.components);
             this.guna2ShadowForm1 = new Guna.UI2.WinForms.Guna2ShadowForm(this.components);
@@ -98,6 +100,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.panelProject.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            this.contentPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // guna2Panel1
@@ -227,6 +230,7 @@
             this.btnDashBoard.TabIndex = 1;
             this.btnDashBoard.Text = "Dashboard";
             this.btnDashBoard.TextOffset = new System.Drawing.Point(8, 0);
+            this.btnDashBoard.Click += new System.EventHandler(this.btnDashBoard_Click);
             // 
             // panel2
             // 
@@ -261,6 +265,7 @@
             this.btnTaiKhoan.TabIndex = 1;
             this.btnTaiKhoan.Text = "Tài khoản";
             this.btnTaiKhoan.TextOffset = new System.Drawing.Point(8, 0);
+            this.btnTaiKhoan.Click += new System.EventHandler(this.btnTaiKhoan_Click);
             // 
             // panel7
             // 
@@ -295,6 +300,7 @@
             this.btnHoatDong.TabIndex = 1;
             this.btnHoatDong.Text = "Hoạt động";
             this.btnHoatDong.TextOffset = new System.Drawing.Point(8, 0);
+            this.btnHoatDong.Click += new System.EventHandler(this.btnHoatDong_Click);
             // 
             // panel8
             // 
@@ -329,6 +335,7 @@
             this.btnThongbao.TabIndex = 1;
             this.btnThongbao.Text = "Thông báo";
             this.btnThongbao.TextOffset = new System.Drawing.Point(8, 0);
+            this.btnThongbao.Click += new System.EventHandler(this.btnThongbao_Click);
             // 
             // panel5
             // 
@@ -363,6 +370,7 @@
             this.btnTaiChinh.TabIndex = 1;
             this.btnTaiChinh.Text = "Tài Chính";
             this.btnTaiChinh.TextOffset = new System.Drawing.Point(8, 0);
+            this.btnTaiChinh.Click += new System.EventHandler(this.btnTaiChinh_Click);
             // 
             // panel4
             // 
@@ -397,6 +405,7 @@
             this.btnDuAn.TabIndex = 1;
             this.btnDuAn.Text = "Dự án";
             this.btnDuAn.TextOffset = new System.Drawing.Point(8, 0);
+            this.btnDuAn.Click += new System.EventHandler(this.btnDuAn_Click);
             // 
             // panel6
             // 
@@ -431,6 +440,7 @@
             this.btnLichHop.TabIndex = 1;
             this.btnLichHop.Text = "Lịch họp";
             this.btnLichHop.TextOffset = new System.Drawing.Point(8, 0);
+            this.btnLichHop.Click += new System.EventHandler(this.btnLichHop_Click);
             // 
             // pndangxuat
             // 
@@ -465,6 +475,7 @@
             this.btnThanhVien.TabIndex = 2;
             this.btnThanhVien.Text = "Thành viên";
             this.btnThanhVien.TextOffset = new System.Drawing.Point(8, 0);
+            this.btnThanhVien.Click += new System.EventHandler(this.btnThanhVien_Click);
             // 
             // panel3
             // 
@@ -730,7 +741,7 @@
             this.lblTimeline.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblTimeline.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
             this.lblTimeline.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.lblTimeline.Location = new System.Drawing.Point(220, 210);
+            this.lblTimeline.Location = new System.Drawing.Point(0, 0);
             this.lblTimeline.Name = "lblTimeline";
             this.lblTimeline.Padding = new System.Windows.Forms.Padding(30, 15, 0, 10);
             this.lblTimeline.Size = new System.Drawing.Size(369, 62);
@@ -742,11 +753,22 @@
             this.flowTimeline.AutoScroll = true;
             this.flowTimeline.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(247)))));
             this.flowTimeline.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowTimeline.Location = new System.Drawing.Point(220, 272);
+            this.flowTimeline.Location = new System.Drawing.Point(0, 62);
             this.flowTimeline.Name = "flowTimeline";
             this.flowTimeline.Padding = new System.Windows.Forms.Padding(20);
             this.flowTimeline.Size = new System.Drawing.Size(1180, 528);
             this.flowTimeline.TabIndex = 4;
+            // 
+            // contentPanel
+            // 
+            this.contentPanel.BackColor = System.Drawing.Color.Transparent;
+            this.contentPanel.Controls.Add(this.flowTimeline);
+            this.contentPanel.Controls.Add(this.lblTimeline);
+            this.contentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.contentPanel.Location = new System.Drawing.Point(220, 210);
+            this.contentPanel.Name = "contentPanel";
+            this.contentPanel.Size = new System.Drawing.Size(1180, 590);
+            this.contentPanel.TabIndex = 5;
             // 
             // guna2Elipse1
             // 
@@ -771,8 +793,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1400, 800);
-            this.Controls.Add(this.flowTimeline);
-            this.Controls.Add(this.lblTimeline);
+            this.Controls.Add(this.contentPanel);
             this.Controls.Add(this.panelStats);
             this.Controls.Add(this.slidebar);
             this.Controls.Add(this.guna2Panel1);
@@ -806,8 +827,9 @@
             this.panelProject.ResumeLayout(false);
             this.panelProject.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            this.contentPanel.ResumeLayout(false);
+            this.contentPanel.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -822,42 +844,64 @@
         private Guna.UI2.WinForms.Guna2Button btnDashBoard;
         private System.Windows.Forms.Panel panel2;
         private Guna.UI2.WinForms.Guna2Button btnTaiKhoan;
-        private System.Windows.Forms.Panel panel7;
+        // ************************************************************
+        // Các Panel cho Menu (Đã chuyển từ Button sang Guna2Button)
+        // Danh sách 1 có các Panel: panel4, panel5, panel6, panel7, panel8
+        // Danh sách 2 đã có các Panel tương ứng: panel7, panel8, panel5, panel4, panel6 (với chức năng đã được đổi thứ tự)
+        // Giữ nguyên các khai báo panel có trong danh sách 2
+        private System.Windows.Forms.Panel panel7; // Chứa btnHoatDong
         private Guna.UI2.WinForms.Guna2Button btnHoatDong;
-        private System.Windows.Forms.Panel panel8;
+        private System.Windows.Forms.Panel panel8; // Chứa btnThongbao
         private Guna.UI2.WinForms.Guna2Button btnThongbao;
-        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Panel panel5; // Chứa btnTaiChinh
         private Guna.UI2.WinForms.Guna2Button btnTaiChinh;
-        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Panel panel4; // Chứa btnDuAn
         private Guna.UI2.WinForms.Guna2Button btnDuAn;
-        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.Panel panel6; // Chứa btnLichHop
         private Guna.UI2.WinForms.Guna2Button btnLichHop;
-        private System.Windows.Forms.Panel pndangxuat;
+        private System.Windows.Forms.Panel pndangxuat; // Chứa btnDangxuat
         private Guna.UI2.WinForms.Guna2Button btnThanhVien;
-        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel panel3; // Chứa btnThanhVien
         private Guna.UI2.WinForms.Guna2Button btnDangxuat;
+        // ************************************************************
+
         private System.Windows.Forms.Timer slidebarTransition;
         private Guna.UI2.WinForms.Guna2Panel panelStats;
+
+        // Panel thống kê đã đổi từ Guna2Panel sang Guna2ShadowPanel trong danh sách 2.
         private Guna.UI2.WinForms.Guna2ShadowPanel panelMember;
         private System.Windows.Forms.Label lblMemberCount;
         private System.Windows.Forms.Label lblMemberTitle;
         private System.Windows.Forms.PictureBox pictureBox1;
+
         private Guna.UI2.WinForms.Guna2ShadowPanel panelProject;
         private System.Windows.Forms.Label lblProjectTitle;
         private System.Windows.Forms.Label lblProjectCount;
         private System.Windows.Forms.PictureBox pictureBox2;
+
         private Guna.UI2.WinForms.Guna2ShadowPanel panelPost;
         private System.Windows.Forms.Label lblPostTitle;
         private System.Windows.Forms.Label lblPostCount;
         private System.Windows.Forms.PictureBox pictureBox3;
+
         private Guna.UI2.WinForms.Guna2ShadowPanel panelEvent;
         private System.Windows.Forms.Label lblEventTitle;
         private System.Windows.Forms.Label lblEventCount;
         private System.Windows.Forms.PictureBox pictureBox4;
+
         private System.Windows.Forms.Label lblTimeline;
         private System.Windows.Forms.FlowLayoutPanel flowTimeline;
         private System.Windows.Forms.Label lblUsername;
         private System.Windows.Forms.Label lblRole;
+
+        // ************************************************************
+        // Control Bị Thiếu (Chỉ có trong danh sách 1)
+        // ************************************************************
+        private System.Windows.Forms.Panel contentPanel;
+
+        // ************************************************************
+        // Control Thêm vào (Chỉ có trong danh sách 2)
+        // ************************************************************
         private Guna.UI2.WinForms.Guna2Elipse guna2Elipse1;
         private Guna.UI2.WinForms.Guna2DragControl guna2DragControl1;
         private Guna.UI2.WinForms.Guna2ShadowForm guna2ShadowForm1;

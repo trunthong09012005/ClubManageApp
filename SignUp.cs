@@ -329,7 +329,7 @@ namespace ClubManageApp
         private Label lbnhaplaimatkhau;
 
         private string connectionString =
-            @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;User ID=sa;Password=912005;TrustServerCertificate=True";
+            @"Data Source=DESKTOP-EJIGPN3;Initial Catalog=QL_APP_LSC;User ID=sa;Password=1234;TrustServerCertificate=True";
 
         // 🔐 Hàm băm SHA256
         private string HashPassword(string password)

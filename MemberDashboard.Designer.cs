@@ -128,7 +128,7 @@
             this.lblUsername.ForeColor = System.Drawing.Color.White;
             this.lblUsername.Location = new System.Drawing.Point(1200, 12);
             this.lblUsername.Name = "lblUsername";
-            this.lblUsername.Size = new System.Drawing.Size(79, 25);
+            this.lblUsername.Size = new System.Drawing.Size(78, 25);
             this.lblUsername.TabIndex = 2;
             this.lblUsername.Text = "👋 User";
             // 
