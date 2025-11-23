@@ -312,7 +312,7 @@ namespace ClubManageApp
             this.FormBorderStyle = FormBorderStyle.None;
             this.Size = new Size(390, 560);
             this.StartPosition = FormStartPosition.Manual;
-       
+
             this.TopMost = true;
             this.DoubleBuffered = true;
 

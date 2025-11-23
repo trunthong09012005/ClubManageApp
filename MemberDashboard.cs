@@ -15,7 +15,7 @@ namespace ClubManageApp
 
         // 🔗 Chuỗi kết nối SQL Server
         private string connectionString =
-            @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;User ID=sa;Password=912005;TrustServerCertificate=True";
+            @"Data Source=DESKTOP-EJIGPN3;Initial Catalog=QL_APP_LSC;User ID=sa;Password=1234;TrustServerCertificate=True";
 
         // Biến cho animation sidebar
         bool sidebarExpand = true;
@@ -495,10 +495,10 @@ namespace ClubManageApp
 
         private void HighlightButton(object selectedButton)
         {
-            Color defaultColor = Color.FromArgb(37, 42, 64);
-            Color selectedColor = Color.FromArgb(99, 102, 241);
-            Color defaultTextColor = Color.FromArgb(200, 200, 200);
-            Color selectedTextColor = Color.White;
+            Color menuDefaultFill = Color.Transparent;
+            Color menuDefaultFore = Color.Black;
+            Color menuSelectedFill = Color.FromArgb(94, 148, 255);
+            Color menuSelectedFore = Color.White;
 
             // Danh sách các button (dùng object thay vì Button)
             object[] buttons = { btnMemberDashBoard, btnHoso, btnLichhop };
@@ -508,31 +508,71 @@ namespace ClubManageApp
                 // Kiểm tra nếu là Guna2Button
                 if (btn is Guna.UI2.WinForms.Guna2Button gunaBtn)
                 {
-                    gunaBtn.FillColor = defaultColor;
-                    gunaBtn.ForeColor = defaultTextColor;
-                    gunaBtn.Font = new Font("Segoe UI", 10, FontStyle.Regular);
+                    try
+                    {
+                        gunaBtn.FillColor = menuDefaultFill;
+                        gunaBtn.ForeColor = menuDefaultFore;
+                        gunaBtn.Font = new Font(gunaBtn.Font.FontFamily, gunaBtn.Font.Size, FontStyle.Regular);
+
+                        // Reset border / shadow
+                        try { gunaBtn.BorderColor = Color.Transparent; } catch { }
+                        try { gunaBtn.CustomBorderColor = Color.Transparent; } catch { }
+                        try { gunaBtn.BorderThickness = 0; } catch { }
+                        try { if (gunaBtn.ShadowDecoration != null) gunaBtn.ShadowDecoration.Enabled = false; } catch { }
+
+                        // Reset hover/checked states
+                        try { gunaBtn.HoverState.FillColor = menuDefaultFill; } catch { }
+                        try { gunaBtn.HoverState.ForeColor = menuDefaultFore; } catch { }
+                        try { gunaBtn.CheckedState.FillColor = menuDefaultFill; } catch { }
+                        try { gunaBtn.CheckedState.ForeColor = menuDefaultFore; } catch { }
+                    }
+                    catch { }
                 }
                 // Kiểm tra nếu là Button thường
                 else if (btn is Button normalBtn)
                 {
-                    normalBtn.BackColor = defaultColor;
-                    normalBtn.ForeColor = defaultTextColor;
-                    normalBtn.Font = new Font("Segoe UI", 10, FontStyle.Regular);
+                    try
+                    {
+                        normalBtn.BackColor = menuDefaultFill;
+                        normalBtn.ForeColor = menuDefaultFore;
+                        normalBtn.Font = new Font(normalBtn.Font.FontFamily, normalBtn.Font.Size, FontStyle.Regular);
+                        try { normalBtn.FlatAppearance.BorderSize = 0; } catch { }
+                    }
+                    catch { }
                 }
             }
 
             // Highlight button được chọn
             if (selectedButton is Guna.UI2.WinForms.Guna2Button selectedGunaBtn)
             {
-                selectedGunaBtn.FillColor = selectedColor;
-                selectedGunaBtn.ForeColor = selectedTextColor;
-                selectedGunaBtn.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+                try
+                {
+                    selectedGunaBtn.FillColor = menuSelectedFill;
+                    selectedGunaBtn.ForeColor = menuSelectedFore;
+                    selectedGunaBtn.Font = new Font(selectedGunaBtn.Font.FontFamily, selectedGunaBtn.Font.Size, FontStyle.Bold);
+
+                    try { selectedGunaBtn.BorderColor = Color.FromArgb(60, 100, 200); } catch { }
+                    try { selectedGunaBtn.CustomBorderColor = Color.FromArgb(60, 100, 200); } catch { }
+                    try { selectedGunaBtn.BorderThickness = 1; } catch { }
+                    try { if (selectedGunaBtn.ShadowDecoration != null) selectedGunaBtn.ShadowDecoration.Enabled = true; } catch { }
+
+                    try { selectedGunaBtn.HoverState.FillColor = menuSelectedFill; } catch { }
+                    try { selectedGunaBtn.HoverState.ForeColor = menuSelectedFore; } catch { }
+                    try { selectedGunaBtn.CheckedState.FillColor = menuSelectedFill; } catch { }
+                    try { selectedGunaBtn.CheckedState.ForeColor = menuSelectedFore; } catch { }
+                }
+                catch { }
             }
             else if (selectedButton is Button selectedNormalBtn)
             {
-                selectedNormalBtn.BackColor = selectedColor;
-                selectedNormalBtn.ForeColor = selectedTextColor;
-                selectedNormalBtn.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+                try
+                {
+                    selectedNormalBtn.BackColor = menuSelectedFill;
+                    selectedNormalBtn.ForeColor = menuSelectedFore;
+                    selectedNormalBtn.Font = new Font(selectedNormalBtn.Font.FontFamily, selectedNormalBtn.Font.Size, FontStyle.Bold);
+                    try { selectedNormalBtn.FlatAppearance.BorderSize = 0; } catch { }
+                }
+                catch { }
             }
         }
 

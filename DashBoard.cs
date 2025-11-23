@@ -2,13 +2,92 @@
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Windows.Forms;
+using Guna.UI2.WinForms;
 
 namespace ClubManageApp
 {
     public partial class DashBoard : Form
     {
+        // currently selected sidebar button
+        private Guna2Button selectedMenuButton;
+
+        private readonly Color menuDefaultFill = Color.Transparent;
+        private readonly Color menuDefaultFore = Color.Black;
+        private readonly Color menuSelectedFill = Color.FromArgb(94, 148, 255);
+        private readonly Color menuSelectedFore = Color.White;
+
+        // mark given button as selected and reset others
+        private void SelectMenuButton(Guna2Button btn)
+        {
+            // list of menu buttons to manage
+            var buttons = new Guna2Button[] {
+                btnDashBoard, btnTaiKhoan, btnHoatDong, btnThongbao,
+                btnTaiChinh, btnDuAn, btnLichHop, btnThanhVien
+            };
+
+            foreach (var b in buttons)
+            {
+                if (b == null) continue;
+                try
+                {
+                    // Restore base appearance for all buttons
+                    b.FillColor = menuDefaultFill;
+                    b.ForeColor = menuDefaultFore;
+                    b.Font = new Font(b.Font.FontFamily, b.Font.Size, FontStyle.Bold);
+
+                    // Reset border / shadow to neutral
+                    try { b.BorderColor = Color.Transparent; } catch { }
+                    try { b.CustomBorderColor = Color.Transparent; } catch { }
+                    try { b.BorderThickness = 0; } catch { }
+                    try { if (b.ShadowDecoration != null) b.ShadowDecoration.Enabled = false; } catch { }
+
+                    // Reset hover and checked states
+                    try { b.HoverState.FillColor = menuDefaultFill; } catch { }
+                    try { b.HoverState.ForeColor = menuDefaultFore; } catch { }
+                    try { b.CheckedState.FillColor = menuDefaultFill; } catch { }
+                    try { b.CheckedState.ForeColor = menuDefaultFore; } catch { }
+                }
+                catch
+                {
+                    // ignore issues restoring a specific button
+                }
+            }
+
+            if (btn != null)
+            {
+                try
+                {
+                    // Make selected button visually prominent (full fill + white text + subtle border + shadow)
+                    btn.FillColor = menuSelectedFill;
+                    btn.ForeColor = menuSelectedFore;
+                    btn.Font = new Font(btn.Font.FontFamily, btn.Font.Size, FontStyle.Bold);
+
+                    try { btn.BorderColor = Color.FromArgb(60, 100, 200); } catch { }
+                    try { btn.CustomBorderColor = Color.FromArgb(60, 100, 200); } catch { }
+                    try { btn.BorderThickness = 1; } catch { }
+                    try { if (btn.ShadowDecoration != null) { btn.ShadowDecoration.Enabled = true; } } catch { }
+
+                    // Make hover/checked states consistent with selected
+                    try { btn.HoverState.FillColor = menuSelectedFill; } catch { }
+                    try { btn.HoverState.ForeColor = menuSelectedFore; } catch { }
+                    try { btn.CheckedState.FillColor = menuSelectedFill; } catch { }
+                    try { btn.CheckedState.ForeColor = menuSelectedFore; } catch { }
+
+                    selectedMenuButton = btn;
+                }
+                catch
+                {
+                    // ignore selection errors
+                }
+            }
+            else
+            {
+                selectedMenuButton = null;
+            }
+        }
+
         // 🔗 Chuỗi kết nối SQL Server
-        private readonly string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;User ID=sa;Password=912005;TrustServerCertificate=True";
+        private readonly string connectionString = @"Data Source=DESKTOP-EJIGPN3;Initial Catalog=QL_APP_LSC;User ID=sa;Password=1234;TrustServerCertificate=True";
         private readonly string role;
         private readonly string username;
         private readonly int maTV;
@@ -382,6 +461,161 @@ namespace ClubManageApp
                 slidebarTransition.Start();
         }
 
+
+        // Helper: show placeholder content in contentPanel for modules that are not implemented yet
+        private void ShowModulePlaceholder(string moduleName)
+        {
+            if (this.contentPanel == null) return;
+            try
+            {
+                // Hide top dashboard panels/labels when showing a module placeholder
+                if (this.panelStats != null) this.panelStats.Visible = false;
+                if (this.lblTimeline != null) this.lblTimeline.Visible = false;
+                if (this.flowTimeline != null) this.flowTimeline.Visible = false;
+
+                this.contentPanel.Controls.Clear();
+
+                var lbl = new Label()
+                {
+                    Text = moduleName + " (coming soon)",
+                    Font = new Font("Segoe UI", 14F, FontStyle.Bold),
+                    Dock = DockStyle.Top,
+                    Height = 48,
+                    TextAlign = ContentAlignment.MiddleCenter
+                };
+
+                var info = new Label()
+                {
+                    Text = "Module '" + moduleName + "' will be implemented here.\nYou can replace this placeholder with the corresponding UserControl or Form.",
+                    Font = new Font("Segoe UI", 10F),
+                    Dock = DockStyle.Fill,
+                    TextAlign = ContentAlignment.MiddleCenter
+                };
+
+                this.contentPanel.Controls.Add(info);
+                this.contentPanel.Controls.Add(lbl);
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+
+        // ================================
+        // Khôi làm sidebar từ đây
+        // ================================
+        private void btnDashBoard_Click(object sender, EventArgs e)
+        {
+            SelectMenuButton(btnDashBoard);
+             // Restore dashboard main content
+             try
+             {
+                // Make sure the top stats and timeline label are visible
+                if (this.panelStats != null) this.panelStats.Visible = true;
+                if (this.lblTimeline != null) this.lblTimeline.Visible = true;
+
+                // Clear contentPanel and ensure the flowTimeline control is present and visible
+                contentPanel.Controls.Clear();
+
+                if (this.flowTimeline != null)
+                {
+                    flowTimeline.Dock = DockStyle.Fill;
+                    flowTimeline.Visible = true;
+                    contentPanel.Controls.Add(flowTimeline);
+                }
+
+                LoadStats();
+                LoadTimeline();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi mở Dashboard: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnTaiKhoan_Click(object sender, EventArgs e)
+        {
+            SelectMenuButton(btnTaiKhoan);
+             try
+             {
+                if (this.contentPanel == null) return;
+
+                // Hide dashboard top stats/timeline when switching to account
+                if (this.panelStats != null) this.panelStats.Visible = false;
+                if (this.lblTimeline != null) this.lblTimeline.Visible = false;
+                if (this.flowTimeline != null) this.flowTimeline.Visible = false;
+
+                var acct = new ucAccount();
+                acct.Dock = DockStyle.Fill;
+
+                this.contentPanel.Controls.Clear();
+                this.contentPanel.Controls.Add(acct);
+                acct.BringToFront();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi mở Tài khoản: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
+        private void btnHoatDong_Click(object sender, EventArgs e)
+        {
+            SelectMenuButton(btnHoatDong);
+             ShowModulePlaceholder("Hoạt động");
+         }
+ 
+         private void btnThongbao_Click(object sender, EventArgs e)
+         {
+            SelectMenuButton(btnThongbao);
+             ShowModulePlaceholder("Thông báo");
+         }
+ 
+         private void btnTaiChinh_Click(object sender, EventArgs e)
+         {
+            SelectMenuButton(btnTaiChinh);
+             ShowModulePlaceholder("Tài Chính");
+         }
+ 
+         private void btnDuAn_Click(object sender, EventArgs e)
+         {
+            SelectMenuButton(btnDuAn);
+             ShowModulePlaceholder("Dự án");
+         }
+ 
+         private void btnLichHop_Click(object sender, EventArgs e)
+         {
+            SelectMenuButton(btnLichHop);
+            try
+            {
+                if (this.contentPanel == null) return;
+
+                // Hide dashboard top stats/timeline when switching to schedule
+                if (this.panelStats != null) this.panelStats.Visible = false;
+                if (this.lblTimeline != null) this.lblTimeline.Visible = false;
+                if (this.flowTimeline != null) this.flowTimeline.Visible = false;
+
+                var schedule = new ucSchedule();
+                schedule.Dock = DockStyle.Fill;
+
+                this.contentPanel.Controls.Clear();
+                this.contentPanel.Controls.Add(schedule);
+                schedule.BringToFront();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi mở Lịch họp: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+         private void btnThanhVien_Click(object sender, EventArgs e)
+         {
+            SelectMenuButton(btnThanhVien);
+             ShowModulePlaceholder("Thành  viên");
+         }
+
+
         // ================================
         // 🚪 ĐĂNG XUẤT
         // ================================
@@ -395,6 +629,8 @@ namespace ClubManageApp
 
             if (result == DialogResult.Yes)
             {
+                // reset selection on logout
+                SelectMenuButton(null);
                 this.Hide();
 
                 Login loginForm = new Login();
