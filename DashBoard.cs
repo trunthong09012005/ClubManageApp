@@ -87,7 +87,7 @@ namespace ClubManageApp
         }
 
         // 🔗 Chuỗi kết nối SQL Server
-        private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;User ID=sa;Password=912005;TrustServerCertificate=True";
+        private string connectionString = @"Data Source=DESKTOP-EJIGPN3;Initial Catalog=QL_APP_LSC;User ID=sa;Password=1234;TrustServerCertificate=True";
         private readonly string role;
         private readonly string username;
         private readonly int maTV;
@@ -612,7 +612,26 @@ namespace ClubManageApp
          private void btnThanhVien_Click(object sender, EventArgs e)
          {
             SelectMenuButton(btnThanhVien);
-             ShowModulePlaceholder("Thành  viên");
+            try
+            {
+                if (this.contentPanel == null) return;
+
+                // Hide dashboard top stats/timeline when switching to members
+                if (this.panelStats != null) this.panelStats.Visible = false;
+                if (this.lblTimeline != null) this.lblTimeline.Visible = false;
+                if (this.flowTimeline != null) this.flowTimeline.Visible = false;
+
+                var userCtrl = new ucUser();
+                userCtrl.Dock = DockStyle.Fill;
+
+                this.contentPanel.Controls.Clear();
+                this.contentPanel.Controls.Add(userCtrl);
+                userCtrl.BringToFront();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi mở Thành viên: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
          }
 
 
