@@ -8,7 +8,8 @@ namespace ClubManageApp
     public partial class DashBoard : Form
     {
         // 🔗 Chuỗi kết nối SQL Server
-        private readonly string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;User ID=sa;Password=912005;TrustServerCertificate=True";
+        private readonly string connectionString = @"Data Source=DESKTOP-HE7MI7F\SQLEXPRESS;Initial Catalog=QL_CLB_LSC;Integrated Security=True;TrustServerCertificate=True";
+
         private readonly string role;
         private readonly string username;
         private readonly int maTV;

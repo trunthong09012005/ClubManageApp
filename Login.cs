@@ -10,9 +10,10 @@
         public partial class Login : Form
         {
             private string connectionString =
-                @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;User ID=sa;Password=912005;TrustServerCertificate=True";
+                @"Data Source=DESKTOP-HE7MI7F\SQLEXPRESS;Initial Catalog=QL_CLB_LSC;Integrated Security=True;TrustServerCertificate=True";
 
-            public Login()
+
+        public Login()
             {
                 InitializeComponent();
 
