@@ -328,8 +328,7 @@ namespace ClubManageApp
         private Guna.UI2.WinForms.Guna2TextBox txtNhapLai;
         private Label lbnhaplaimatkhau;
 
-        private string connectionString =
-            @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;User ID=sa;Password=912005;TrustServerCertificate=True";
+        private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;User ID=sa;Password=912005;TrustServerCertificate=True";
 
         // 🔐 Hàm băm SHA256
         private string HashPassword(string password)

@@ -11,8 +11,6 @@
         {
             private string connectionString =
                 @"Data Source=DESKTOP-HE7MI7F\SQLEXPRESS;Initial Catalog=QL_CLB_LSC;Integrated Security=True;TrustServerCertificate=True";
-
-
         public Login()
             {
                 InitializeComponent();
