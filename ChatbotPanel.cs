@@ -250,16 +250,234 @@ namespace ClubManageApp
         private void InitializeFAQ()
         {
             faqResponses = new Dictionary<string[], string>
-            {
-                { new[] { "xin chào", "hello", "hi", "chào" }, $"Xin chào {username}! 👋\n\n💡 Nhấn 'Chat Admin' để nói chuyện với {adminName}!" },
-                { new[] { "hoạt động", "sự kiện" }, "📅 Vào menu 'Hoạt động' hoặc hỏi 'hoạt động sắp tới'" },
-                { new[] { "điểm", "điểm rèn luyện" }, "📊 Hỏi tôi: 'điểm của tôi' để xem điểm RL" },
-                { new[] { "admin", "quản lý", "liên hệ" }, $"📞 Nhấn 'Chat Admin' để chat với {adminName}!" },
-                { new[] { "help", "giúp", "hướng dẫn" }, "🤖 Tôi có thể giúp:\n• Thông tin hoạt động CLB\n• Điểm rèn luyện\n• Chat với Admin" },
-                { new[] { "cảm ơn", "thanks" }, "Không có gì! 😊" }
-            };
-        }
+    {
+        // ========== CHÀO HỎI & GIỚI THIỆU (20) ==========
+        { new[] { "động lực", "motivation" },
+            "🔥 Cần động lực?\n\n💪 Hãy nhớ:\n• Mục tiêu của bạn\n• Những người ủng hộ bạn\n• CLB luôn bên cạnh\n\n🌟 Bạn làm được!" },
 
+        { new[] { "thất bại", "fail", "failure" },
+            "💔 Thất bại là bài học!\n\n💡 Ghi nhớ:\n• Thất bại là mẹ thành công\n• Học hỏi từ sai lầm\n• Đứng lên và tiếp tục\n\n🚀 Bạn mạnh mẽ hơn bạn nghĩ!" },
+
+        { new[] { "thành công", "success" },
+            "🎉 Chúc mừng! Tôi tự hào về bạn!\n\n🏆 Chia sẻ thành công với CLB để cùng vui nhé!" },
+
+        { new[] { "yêu", "love" },
+            "❤️ Tình yêu thật tuyệt!\n\nCLB cũng yêu bạn và luôn ủng hộ bạn! 💝" },
+
+        { new[] { "gia đình", "family" },
+            "👨‍👩‍👧‍👦 Gia đình quan trọng nhất!\n\nCLB cũng là gia đình thứ 2 của bạn! ❤️" },
+
+        { new[] { "bạn bè", "friends", "friendship" },
+            "👥 Tình bạn vô giá!\n\nCLB là nơi kết nối những tình bạn đẹp! 🤝" },
+
+        { new[] { "ước mơ", "dream" },
+            "✨ Đừng bao giờ từ bỏ ước mơ!\n\nCLB sẽ đồng hành cùng bạn thực hiện ước mơ! 🌟" },
+
+        { new[] { "hi vọng", "hope" },
+            "🌈 Luôn có hi vọng!\n\nMỗi ngày mới là cơ hội mới! 💫" },
+
+        // ========== THỜI TIẾT & MÙA (10) ==========
+        { new[] { "thời tiết", "weather" },
+            "🌤️ Hôm nay thời tiết thế nào?\n\nDù nắng hay mưa, CLB luôn vui vẻ! 😊" },
+
+        { new[] { "nắng", "sunny" },
+            "☀️ Trời nắng đẹp!\n\nHoạt động ngoài trời sẽ vui hơn! Tham gia picnic nhé!" },
+
+        { new[] { "mưa", "rain" },
+            "🌧️ Trời mưa rồi!\n\nHoạt động trong nhà vẫn vui lắm! Movie night, board game đều ok!" },
+
+        { new[] { "lạnh", "cold" },
+            "❄️ Trời lạnh!\n\nNhớ giữ ấm nhé! CLB có café ấm áp cho bạn! ☕" },
+
+        { new[] { "nóng", "hot" },
+            "🔥 Trời nóng quá!\n\nĐi bơi hoặc beach party cùng CLB nhé! 🏖️" },
+
+        { new[] { "mùa xuân", "spring" },
+            "🌸 Mùa xuân!\n\nMùa của sự khởi đầu! Nhiều hoạt động mới đang chờ!" },
+
+        { new[] { "mùa hè", "summer" },
+            "☀️ Mùa hè!\n\nDu lịch, picnic, teambuilding - Hè sôi động! 🏖️" },
+
+        { new[] { "mùa thu", "fall", "autumn" },
+            "🍂 Mùa thu!\n\nMùa của sự trầm lắng. Workshop, seminar sẽ nhiều hơn! 📚" },
+
+        { new[] { "mùa đông", "winter" },
+            "❄️ Mùa đông!\n\nHoạt động ấm áp trong nhà! Gala cuối năm đang đến! 🎄" },
+
+        { new[] { "tết", "năm mới", "new year" },
+            "🎊 Chúc mừng năm mới!\n\nCLB có nhiều hoạt động đón Tết! Gặp gỡ đầu năm nhé! 🧧" },
+
+        // ========== ĂN UỐNG (15) ==========
+        { new[] { "ăn", "đói", "hungry" },
+            "🍜 Đói à?\n\nOffline CLB thường có đồ ăn ngon! Hoặc đi ăn nhóm cuối tuần! 😋" },
+
+        { new[] { "cafe", "coffee", "cà phê" },
+            "☕ Cafe CLB:\n• Mỗi T7, CN buổi chiều\n• Địa điểm xoay vòng\n• Chat, networking\n\n💬 Tham gia để giao lưu!" },
+
+        { new[] { "trà sữa", "bubble tea" },
+            "🧋 Trà sữa party:\n• Thỉnh thoảng tổ chức\n• Nhiều vị ngon\n• Vừa uống vừa chat\n\n😋 Đăng ký với Admin!" },
+
+        { new[] { "ăn tối", "dinner" },
+            "🍽️ Dinner CLB:\n• Offline cuối tuần\n• Đi ăn nhóm\n• Chia sẻ chi phí\n\n👥 Vui vẻ cùng nhau!" },
+
+        { new[] { "buffet" },
+            "🍱 Buffet party:\n• Dịp đặc biệt\n• All you can eat\n• Giá ưu đãi\n\n🎉 Theo dõi thông báo!" },
+
+        { new[] { "nướng", "bbq" },
+            "🍖 BBQ party:\n• Beach hoặc resort\n• Tự tay nướng\n• Super fun!\n\n🔥 Hoạt động hot nhất!" },
+
+        { new[] { "lẩu", "hotpot" },
+            "🍲 Lẩu party:\n• Mùa đông\n• Ấm áp, thân mật\n• Giá sinh viên\n\n❤️ Gắn kết tuyệt vời!" },
+
+        { new[] { "pizza" },
+            "🍕 Pizza night:\n• Movie + Pizza\n• Order chung giảm giá\n• Chill cuối tuần\n\n😋 Đăng ký đi!" },
+
+        { new[] { "sinh tố", "smoothie" },
+            "🥤 Smoothie:\n• Healthy drink\n• Sau yoga, thể thao\n• Tự làm đơn giản\n\n💪 Tốt cho sức khỏe!" },
+
+        { new[] { "kem", "ice cream" },
+            "🍦 Ice cream:\n• Đi ăn nhóm\n• Mùa hè mát lạnh\n• Giải nhiệt tuyệt vời\n\n😋 Ai cùng đi nào!" },
+
+        { new[] { "bánh", "cake" },
+            "🎂 Bánh ngọt:\n• Sinh nhật thành viên\n• Sự kiện đặc biệt\n• Homemade luôn!\n\n💝 Ngọt ngào kỷ niệm!" },
+
+        { new[] { "snack", "đồ ăn vặt" },
+            "🍿 Snack:\n• Có trong mọi sự kiện\n• Free cho thành viên\n• Nhiều loại\n\n😊 Ăn vặt vui vẻ!" },
+
+        { new[] { "ăn chay", "vegetarian" },
+            "🥗 Ăn chay:\n• CLB respect mọi lựa chọn\n• Luôn có option chay\n• Healthy lifestyle\n\n🌱 Yên tâm tham gia!" },
+
+        { new[] { "món ngon", "food recommendation" },
+            "🍴 Món ngon gần CLB:\n• Chat Admin để biết\n• Thành viên share địa điểm\n• Review trên group\n\n😋 Khám phá cùng nhau!" },
+
+        { new[] { "nhậu", "party", "drink" },
+            "🍻 CLB có hoạt động:\n• Sinh nhật\n• Kỷ niệm\n• Gala dinner\n\n⚠️ Uống có trách nhiệm nhé!" },
+
+        // ========== CÔNG VIỆC & SỰ NGHIỆP (10) ==========
+        { new[] { "tìm việc", "job hunting" },
+            "💼 Tìm việc làm:\n• CLB kết nối doanh nghiệp\n• Post job trên group\n• Hỗ trợ CV\n\n📧 Gửi CV cho Admin!" },
+
+        { new[] { "cv", "resume" },
+            "📄 Hỗ trợ CV:\n• Review miễn phí\n• Template professional\n• Tips phỏng vấn\n\n✅ Gửi CV cho Admin review!" },
+
+        { new[] { "phỏng vấn", "interview" },
+            "👔 Chuẩn bị phỏng vấn:\n• Workshop hướng dẫn\n• Mock interview\n• Tư vấn 1-1\n\n💪 Đăng ký với Admin!" },
+
+        { new[] { "part time", "làm thêm" },
+            "⏰ Part-time:\n• Nhiều cơ hội\n• Linh hoạt thời gian\n• Post trên group\n\n💰 Theo dõi thông báo!" },
+
+        { new[] { "full time" },
+            "💼 Full-time job:\n• Kết nối alumni\n• Giới thiệu việc làm\n• Tư vấn career\n\n📞 Chat Admin để được hỗ trợ!" },
+
+        { new[] { "kỹ năng mềm", "soft skills" },
+            "🎯 Phát triển kỹ năng mềm:\n• Communication\n• Leadership\n• Teamwork\n• Time management\n\n💪 Workshop định kỳ!" },
+
+        { new[] { "networking" },
+            "🤝 Networking:\n• Sự kiện giao lưu\n• Alumni connection\n• Business card exchange\n\n💼 Mở rộng mạng lưới!" },
+
+        { new[] { "tăng lương", "promotion" },
+            "📈 Thăng tiến sự nghiệp:\n• Học hỏi không ngừng\n• Chủ động đề xuất\n• Kết quả làm việc\n\n💪 CLB đào tạo kỹ năng!" },
+
+        { new[] { "khởi nghiệp", "start up" },
+            "🚀 Khởi nghiệp:\n• Mentor hướng dẫn\n• Networking investor\n• Pitch competition\n\n💡 Biến ý tưởng thành hiện thực!" },
+
+        { new[] { "freelance" },
+            "💻 Freelance:\n• Linh hoạt thời gian\n• Nhiều dự án\n• Kinh nghiệm thực tế\n\n📝 Tham gia project CLB!" },
+
+        // ========== HỌC VẤN & BẰNG CẤP (10) ==========
+        { new[] { "tốt nghiệp", "graduation" },
+            "🎓 Tốt nghiệp:\n• Lễ tri ân\n• Album kỷ niệm\n• Giữ liên lạc alumni\n\n🎊 Chúc mừng!" },
+
+        { new[] { "học phí", "tuition fee" },
+            "💰 Học phí:\n• CLB hỗ trợ học bổng\n• Part-time để kiếm thêm\n• Tư vấn tài chính\n\n📞 Chat Admin nếu khó khăn!" },
+
+        { new[] { "điểm số", "grade", "gpa" },
+            "📊 Điểm số:\n• Nhóm học cùng nhau\n• Chia sẻ tài liệu\n• Gia sư hỗ trợ\n\n💪 Cùng nhau tiến bộ!" },
+
+        { new[] { "thi cử", "exam" },
+            "📝 Mùa thi:\n• Nhóm ôn tập\n• Đề thi cũ\n• Tips từ senior\n\n🍀 Chúc may mắn!" },
+
+        { new[] { "luận văn", "thesis" },
+            "📚 Luận văn:\n• Mentor hướng dẫn\n• Nhóm nghiên cứu\n• Review chéo\n\n💪 Cố gắng hoàn thành!" },
+
+        { new[] { "học bổng nước ngoài", "scholarship abroad" },
+            "✈️ Du học:\n• Tư vấn hồ sơ\n• Kinh nghiệm alumni\n• Tips xin học bổng\n\n🌍 Chat Admin để tìm hiểu!" },
+
+        { new[] { "trao đổi sinh viên", "exchange" },
+            "🌏 Exchange program:\n• Cơ hội tuyệt vời\n• Kinh nghiệm quốc tế\n• CLB hỗ trợ hồ sơ\n\n✈️ Đừng bỏ lỡ!" },
+
+        { new[] { "thực tập sinh", "intern" },
+            "👨‍💼 Thực tập:\n• CLB giới thiệu\n• Nhiều vị trí\n• Học hỏi thực tế\n\n📧 Gửi CV cho Admin!" },
+
+        { new[] { "nghiên cứu sinh", "phd" },
+            "🎓 PhD:\n• Alumni chia sẻ\n• Tư vấn định hướng\n• Kết nối giảng viên\n\n🔬 Chat Admin để biết thêm!" },
+
+        { new[] { "chuyển ngành", "switch major" },
+            "🔄 Chuyển ngành:\n• Cân nhắc kỹ\n• Tư vấn từ senior\n• Đánh giá năng lực\n\n💡 Chat Admin để tư vấn!" },
+
+        // ========== VUI VẺ & GIẢI TRÍ (15) ==========
+        { new[] { "hài hước", "funny", "joke" },
+            "😂 Muốn nghe chuyện vui?\n\nHãy đến offline CLB! Nhiều người hài hước lắm! 🎭" },
+
+        { new[] { "meme" },
+            "😆 Meme:\n• Group chat nhiều meme\n• Thi làm meme\n• Cười stress bay\n\n😂 Tham gia group nhé!" },
+
+        { new[] { "vui vẻ", "fun" },
+            "🎉 Vui vẻ là triết lý CLB!\n\nMọi hoạt động đều fun và ý nghĩa! Join us! 😄" },
+
+        { new[] { "chán", "boring" },
+            "😕 Chán à?\n\nHãy:\n• Tham gia hoạt động CLB\n• Chat với bạn bè\n• Thử thách mới\n\n🌟 CLB luôn sôi động!" },
+
+        { new[] { "thú vị", "interesting" },
+            "✨ CLB có nhiều điều thú vị:\n• Hoạt động đa dạng\n• Con người tuyệt vời\n• Trải nghiệm mới\n\n💫 Khám phá ngay!" },
+
+        { new[] { "bất ngờ", "surprise" },
+            "🎁 CLB thích làm bất ngờ:\n• Sinh nhật\n• Thành tích\n• Sự kiện đặc biệt\n\n🎊 Luôn có surprise!" },
+
+        { new[] { "kỷ niệm", "memory" },
+            "📸 Kỷ niệm CLB:\n• Album ảnh\n• Video recap\n• Câu chuyện đẹp\n\n💝 Tạo kỷ niệm cùng nhau!" },
+
+        { new[] { "du lịch ảo", "virtual tour" },
+            "🌍 Virtual tour:\n• Khám phá thế giới\n• Học văn hóa\n• Vui học\n\n💻 Hoạt động online thú vị!" },
+
+        { new[] { "trivia", "đố vui" },
+            "🧩 Trivia night:\n• Câu hỏi vui\n• Thi đua nhóm\n• Giải thưởng\n\n🏆 Mỗi tháng 1 lần!" },
+
+        { new[] { "magic", "ảo thuật" },
+            "🎩 Show ảo thuật:\n• Sự kiện lớn\n• Ma thuật gần\n• Wow amazing!\n\n✨ Đến xem nhé!" },
+
+        { new[] { "nhảy dây", "jump rope" },
+            "🤸 Nhảy dây:\n• Hoạt động thể thao\n• Giải stress\n• Rèn luyện sức khỏe\n\n💪 Tham gia buổi sáng!" },
+
+        { new[] { "cờ", "chess" },
+            "♟️ Cờ vua:\n• Câu lạc bộ cờ\n• Giải đấu\n• Rèn tư duy\n\n🧠 Đăng ký với Admin!" },
+
+        { new[] { "bóng bàn", "ping pong" },
+            "🏓 Bóng bàn:\n• Sân CLB có bàn\n• Chơi thoải mái\n• Giải thể thao\n\n⚡ Đến chơi nhé!" },
+
+        { new[] { "cầu lông", "badminton" },
+            "🏸 Cầu lông:\n• Mỗi T7, CN sáng\n• Sân gần trường\n• Miễn phí dụng cụ\n\n💪 Tham gia nào!" },
+
+        { new[] { "bơi", "swimming" },
+            "🏊 Bơi lội:\n• Mùa hè đi bơi\n• Pool party\n• Beach trip\n\n🌊 Giải nhiệt tuyệt vời!" },
+
+        // ========== KẾT THÚC (5) ==========
+        { new[] { "cảm ơn", "thanks", "thank you" },
+            "😊 Không có gì!\n\nNếu cần gì thêm, cứ hỏi tôi hoặc chat Admin nhé! 💙" },
+
+        { new[] { "tuyệt vời", "amazing", "awesome" },
+            "🌟 Cảm ơn! Bạn cũng tuyệt vời!\n\nCLB vui vì có bạn! 💫" },
+
+        { new[] { "love", "yêu clb" },
+            "❤️ CLB cũng yêu bạn!\n\nCùng nhau làm CLB tốt hơn mỗi ngày! 💝" },
+
+        { new[] { "help", "giúp", "hướng dẫn", "trợ giúp" },
+            "🤖 Tôi có thể giúp bạn:\n\n📅 Hoạt động CLB\n📊 Điểm rèn luyện\n👥 Thông tin thành viên\n💬 Kết nối Admin\n📚 Học tập & Kỹ năng\n🎉 Sự kiện & Giải trí\n\nHãy hỏi tôi bất cứ điều gì! 😊" },
+
+        { new[] { "ok", "được", "oke" },
+            "👍 Tuyệt!\n\nCó gì cần hỗ trợ thêm không? 😊" }
+    };
+        }
         private void SetupRefreshTimer()
         {
             refreshTimer = new Timer() { Interval = 1500 };
