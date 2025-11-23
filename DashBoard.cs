@@ -575,13 +575,51 @@ namespace ClubManageApp
          private void btnTaiChinh_Click(object sender, EventArgs e)
          {
             SelectMenuButton(btnTaiChinh);
-             ShowModulePlaceholder("Tài Chính");
+             try
+             {
+                if (this.contentPanel == null) return;
+
+                // Hide dashboard top stats/timeline when switching to finance
+                if (this.panelStats != null) this.panelStats.Visible = false;
+                if (this.lblTimeline != null) this.lblTimeline.Visible = false;
+                if (this.flowTimeline != null) this.flowTimeline.Visible = false;
+
+                var finance = new ucFinance();
+                finance.Dock = DockStyle.Fill;
+
+                this.contentPanel.Controls.Clear();
+                this.contentPanel.Controls.Add(finance);
+                finance.BringToFront();
+             }
+             catch (Exception ex)
+             {
+                 MessageBox.Show("Lỗi khi mở Tài Chính: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+             }
          }
  
          private void btnDuAn_Click(object sender, EventArgs e)
          {
             SelectMenuButton(btnDuAn);
-             ShowModulePlaceholder("Dự án");
+             try
+             {
+                if (this.contentPanel == null) return;
+
+                // Hide dashboard top stats/timeline when switching to projects
+                if (this.panelStats != null) this.panelStats.Visible = false;
+                if (this.lblTimeline != null) this.lblTimeline.Visible = false;
+                if (this.flowTimeline != null) this.flowTimeline.Visible = false;
+
+                var proj = new ucProject();
+                proj.Dock = DockStyle.Fill;
+
+                this.contentPanel.Controls.Clear();
+                this.contentPanel.Controls.Add(proj);
+                proj.BringToFront();
+             }
+             catch (Exception ex)
+             {
+                 MessageBox.Show("Lỗi khi mở Dự án: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+             }
          }
  
          private void btnLichHop_Click(object sender, EventArgs e)
