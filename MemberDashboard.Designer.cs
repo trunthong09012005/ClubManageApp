@@ -140,9 +140,9 @@
             this.label1.ForeColor = System.Drawing.Color.White;
             this.label1.Location = new System.Drawing.Point(80, 20);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(214, 32);
+            this.label1.Size = new System.Drawing.Size(403, 32);
             this.label1.TabIndex = 1;
-            this.label1.Text = "🎓 CLB KỸ NĂNG";
+            this.label1.Text = "🎓 CLB KỸ NĂNG X LSC                 ";
             // 
             // btnham
             // 
