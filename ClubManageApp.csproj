@@ -199,9 +199,12 @@
     <EmbeddedResource Include="MemberDashboard.resx">
       <DependentUpon>MemberDashboard.cs</DependentUpon>
     </EmbeddedResource>
+<<<<<<< HEAD
+=======
     <EmbeddedResource Include="Notification.resx">
       <DependentUpon>Notification.cs</DependentUpon>
 	</EmbeddedResource>
+>>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
     <EmbeddedResource Include="Project.resx">
       <DependentUpon>Project.cs</DependentUpon>
     </EmbeddedResource>

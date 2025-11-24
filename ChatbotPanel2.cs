@@ -152,10 +152,41 @@ namespace ClubManageApp
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             e.Graphics.Clear(Color.Transparent); // Trong suốt, dùng nền của panel
 
+<<<<<<< HEAD
+            // VẼ NỀN TRÒN MÀU TÍM (gradient)
+            Rectangle rect = new Rectangle(0, 0, btn.Width, btn.Height);
+            using (var brush = new LinearGradientBrush(rect,
+                Color.FromArgb(99, 102, 241),
+                Color.FromArgb(168, 85, 247),
+                45F))
+            {
+                e.Graphics.FillEllipse(brush, rect);
+            }
+
+            // Ánh sáng bên trong nhẹ - tạo path rồi dùng PathGradientBrush
+            using (var gp = new GraphicsPath())
+            {
+                gp.AddEllipse(6, 6, btn.Width - 12, btn.Height - 12);
+                using (var inner = new PathGradientBrush(gp))
+                {
+                    inner.CenterColor = Color.FromArgb(40, 255, 255, 255);
+                    inner.SurroundColors = new Color[] { Color.Transparent };
+                    e.Graphics.FillPath(inner, gp);
+                }
+            }
+
+            // VẼ viền mỏng trắng
+            using (var pen = new Pen(Color.FromArgb(200, Color.White), 2))
+            {
+                e.Graphics.DrawEllipse(pen, 1, 1, btn.Width - 3, btn.Height - 3);
+            }
+
+            // VẼ chữ (icon) ở giữa
+=======
             // CHỈ VẼ ICON, KHÔNG VẼ BACKGROUND
+>>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
             TextRenderer.DrawText(e.Graphics, btn.Text, btn.Font,
-                new Rectangle(0, 0, btn.Width, btn.Height),
-                Color.White, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+                rect, Color.White, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
         }
 
         // LblBadge_Paint giữ nguyên như cũ
@@ -266,6 +297,15 @@ namespace ClubManageApp
             if (chatForm == null || chatForm.IsDisposed)
             {
                 chatForm = new ChatForm2(connectionString, maTV, username);
+                // ensure toggle resets when form gets hidden or closed
+                chatForm.VisibleChanged += (s, args) =>
+                {
+                    if (!chatForm.Visible)
+                    {
+                        btnToggle.Text = "💬";
+                        btnToggle.Invalidate();
+                    }
+                };
                 chatForm.FormClosed += (s, args) =>
                 {
                     btnToggle.Text = "💬";
