@@ -152,7 +152,6 @@ namespace ClubManageApp
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             e.Graphics.Clear(Color.Transparent); // Trong suốt, dùng nền của panel
 
-<<<<<<< HEAD
             // VẼ NỀN TRÒN MÀU TÍM (gradient)
             Rectangle rect = new Rectangle(0, 0, btn.Width, btn.Height);
             using (var brush = new LinearGradientBrush(rect,
@@ -182,9 +181,6 @@ namespace ClubManageApp
             }
 
             // VẼ chữ (icon) ở giữa
-=======
-            // CHỈ VẼ ICON, KHÔNG VẼ BACKGROUND
->>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
             TextRenderer.DrawText(e.Graphics, btn.Text, btn.Font,
                 rect, Color.White, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
         }

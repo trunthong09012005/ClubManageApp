@@ -31,6 +31,7 @@ namespace ClubManageApp
             thuChiView = new DataView(thuChiTable);
             dgvThuChi.DataSource = thuChiView;
 
+            // configure grid   
             dgvThuChi.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvThuChi.MultiSelect = false;
             dgvThuChi.ReadOnly = true;
