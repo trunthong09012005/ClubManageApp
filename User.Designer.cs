@@ -54,9 +54,9 @@
             this.panelLeft.Controls.Add(this.btnDelete);
             this.panelLeft.Controls.Add(this.btnView);
             this.panelLeft.Controls.Add(this.dgvUsers);
-            this.panelLeft.Location = new System.Drawing.Point(8, 8);
+            this.panelLeft.Location = new System.Drawing.Point(27, 33);
             this.panelLeft.Name = "panelLeft";
-            this.panelLeft.Size = new System.Drawing.Size(720, 696);
+            this.panelLeft.Size = new System.Drawing.Size(1360, 896);
             this.panelLeft.TabIndex = 0;
             // 
             // txtSearch
@@ -128,9 +128,10 @@
             this.dgvUsers.Name = "dgvUsers";
             this.dgvUsers.ReadOnly = true;
             this.dgvUsers.RowHeadersVisible = false;
+            this.dgvUsers.RowHeadersWidth = 51;
             this.dgvUsers.RowTemplate.Height = 24;
             this.dgvUsers.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvUsers.Size = new System.Drawing.Size(692, 604);
+            this.dgvUsers.Size = new System.Drawing.Size(1332, 804);
             this.dgvUsers.TabIndex = 6;
             // 
             // panelRight
@@ -138,26 +139,26 @@
             this.panelRight.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelRight.Controls.Add(this.chartByClass);
             this.panelRight.Controls.Add(this.chartGender);
-            this.panelRight.Location = new System.Drawing.Point(736, 8);
+            this.panelRight.Location = new System.Drawing.Point(1440, 33);
             this.panelRight.Name = "panelRight";
-            this.panelRight.Size = new System.Drawing.Size(348, 696);
+            this.panelRight.Size = new System.Drawing.Size(346, 674);
             this.panelRight.TabIndex = 1;
-            // 
-            // chartGender
-            // 
-            this.chartGender.Location = new System.Drawing.Point(12, 12);
-            this.chartGender.Name = "chartGender";
-            this.chartGender.Size = new System.Drawing.Size(320, 320);
-            this.chartGender.TabIndex = 0;
-            this.chartGender.BackColor = System.Drawing.Color.WhiteSmoke;
             // 
             // chartByClass
             // 
+            this.chartByClass.BackColor = System.Drawing.Color.WhiteSmoke;
             this.chartByClass.Location = new System.Drawing.Point(12, 340);
             this.chartByClass.Name = "chartByClass";
             this.chartByClass.Size = new System.Drawing.Size(320, 320);
             this.chartByClass.TabIndex = 1;
-            this.chartByClass.BackColor = System.Drawing.Color.WhiteSmoke;
+            // 
+            // chartGender
+            // 
+            this.chartGender.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.chartGender.Location = new System.Drawing.Point(12, 12);
+            this.chartGender.Name = "chartGender";
+            this.chartGender.Size = new System.Drawing.Size(320, 320);
+            this.chartGender.TabIndex = 0;
             // 
             // ucUser
             // 
@@ -166,7 +167,7 @@
             this.Controls.Add(this.panelRight);
             this.Controls.Add(this.panelLeft);
             this.Name = "ucUser";
-            this.Size = new System.Drawing.Size(1092, 712);
+            this.Size = new System.Drawing.Size(1900, 1100);
             this.panelLeft.ResumeLayout(false);
             this.panelLeft.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUsers)).EndInit();

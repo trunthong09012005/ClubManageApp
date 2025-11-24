@@ -135,10 +135,30 @@ namespace ClubManageApp
             if (chatForm == null || chatForm.IsDisposed)
             {
                 chatForm = new ChatbotForm(connectionString, maTV, username);
+                // Ensure toggle button returns to original icon/color when the chat form is closed or hidden
                 chatForm.FormClosed += (s, args) => {
                     btnToggle.Text = "💬";
                     btnToggle.BackColor = Color.FromArgb(79, 172, 254);
                 };
+
+                // Handle the case where the ChatbotForm is hidden (ChatbotForm uses Hide() on close button)
+                chatForm.VisibleChanged += (s, args) => {
+                    try
+                    {
+                        if (!chatForm.Visible)
+                        {
+                            btnToggle.Text = "💬";
+                            btnToggle.BackColor = Color.FromArgb(79, 172, 254);
+                        }
+                        else
+                        {
+                            btnToggle.Text = "✕";
+                            btnToggle.BackColor = Color.FromArgb(220, 53, 69);
+                        }
+                    }
+                    catch { }
+                };
+
                 chatForm.OnMessagesRead += () => {
                     unreadCount = 0;
                     UpdateBadge();
@@ -187,6 +207,9 @@ namespace ClubManageApp
         private Timer refreshTimer;
         private int lastMessageID = 0;
         private Dictionary<string[], string> faqResponses;
+
+        // Track displayed messages to avoid duplicates caused by multiple DB rows
+        private HashSet<string> displayedMessageKeys = new HashSet<string>(StringComparer.Ordinal);
 
         public event Action OnMessagesRead;
 
@@ -664,6 +687,9 @@ namespace ClubManageApp
 
             if (isAdminChatMode)
             {
+                // Clear displayed keys when entering admin chat so history loads once
+                displayedMessageKeys.Clear();
+
                 lblTitle.Text = $"👤 {adminName}";
                 lblStatus.Text = "● Trực tuyến";
                 lblStatus.ForeColor = Color.FromArgb(52, 211, 153);
@@ -747,8 +773,17 @@ namespace ClubManageApp
                         // Đảo ngược để hiển thị theo thứ tự thời gian
                         messages.Reverse();
 
+                        // Dedupe by (MaNguoiGui|NoiDung|NgayGui) to avoid broadcast duplicates
+                        HashSet<string> seen = new HashSet<string>(StringComparer.Ordinal);
                         foreach (var msg in messages)
                         {
+                            string key = $"{msg.MaNguoiGui}|{msg.NoiDung?.Trim()}|{msg.NgayGui.ToString("s")}";
+                            if (seen.Contains(key)) continue;
+                            seen.Add(key);
+
+                            if (displayedMessageKeys.Contains(key)) continue;
+                            displayedMessageKeys.Add(key);
+
                             bool isMe = (msg.MaNguoiGui == maTV);
                             AddChatBubble(msg.NoiDung, isMe, msg.NgayGui, isMe ? msg.TrangThai : null);
                         }
@@ -828,16 +863,27 @@ namespace ClubManageApp
                         SqlDataReader reader = cmd.ExecuteReader();
 
                         int count = 0;
+                        HashSet<string> seen = new HashSet<string>(StringComparer.Ordinal);
                         while (reader.Read())
                         {
                             count++;
                             int msgID = Convert.ToInt32(reader["MaTN"]);
                             bool isMe = Convert.ToInt32(reader["MaNguoiGui"]) == maTV;
+                            string content = reader["NoiDung"].ToString();
+                            DateTime time = Convert.ToDateTime(reader["NgayGui"]);
+
+                            string key = $"{reader["MaNguoiGui"]}|{content?.Trim()}|{time.ToString("s")}";
+                            if (seen.Contains(key)) continue;
+                            seen.Add(key);
+
+                            if (displayedMessageKeys.Contains(key)) continue;
+                            displayedMessageKeys.Add(key);
+
                             string status = reader["TrangThai"].ToString();
                             AddChatBubble(
-                                reader["NoiDung"].ToString(),
+                                content,
                                 isMe,
-                                Convert.ToDateTime(reader["NgayGui"]),
+                                time,
                                 isMe ? status : null
                             );
                             if (msgID > lastMessageID) lastMessageID = msgID;
@@ -887,7 +933,7 @@ namespace ClubManageApp
 
                     // Chỉ lấy tin nhắn mới từ BẤT KỲ Admin nào (sau khi bắt đầu chat)
                     string query = lastMessageID == 0
-                        ? @"SELECT TN.MaTN, TN.NoiDung, TN.NgayGui 
+                        ? @"SELECT TN.MaTN, TN.NoiDung, TN.NgayGui, TN.MaNguoiGui 
                             FROM TinNhan TN
                             INNER JOIN ThanhVien TV ON TN.MaNguoiGui = TV.MaTV
                             LEFT JOIN TaiKhoan TK ON TN.MaNguoiGui = TK.MaTV
@@ -895,7 +941,7 @@ namespace ClubManageApp
                               AND (TV.MaCV = 1 OR TK.QuyenHan IN (N'Admin', N'Quản trị viên'))
                               AND TN.NgayGui >= DATEADD(SECOND, -5, GETDATE())
                             ORDER BY TN.NgayGui ASC"
-                        : @"SELECT TN.MaTN, TN.NoiDung, TN.NgayGui 
+                        : @"SELECT TN.MaTN, TN.NoiDung, TN.NgayGui, TN.MaNguoiGui 
                             FROM TinNhan TN
                             INNER JOIN ThanhVien TV ON TN.MaNguoiGui = TV.MaTV
                             LEFT JOIN TaiKhoan TK ON TN.MaNguoiGui = TK.MaTV
@@ -917,8 +963,17 @@ namespace ClubManageApp
                         while (reader.Read())
                         {
                             hasNew = true;
+                            int maNguoiGui = Convert.ToInt32(reader["MaNguoiGui"]);
+                            DateTime ngay = Convert.ToDateTime(reader["NgayGui"]);
+                            string content = reader["NoiDung"].ToString();
+
+                            string key = $"{maNguoiGui}|{content?.Trim()}|{ngay.ToString("s")}";
+                            if (displayedMessageKeys.Contains(key))
+                                continue;
+
                             lastMessageID = Convert.ToInt32(reader["MaTN"]);
-                            AddChatBubble(reader["NoiDung"].ToString(), false, Convert.ToDateTime(reader["NgayGui"]), null);
+                            displayedMessageKeys.Add(key);
+                            AddChatBubble(content, false, ngay, null);
                             SystemSounds.Asterisk.Play();
                         }
                         reader.Close();
@@ -1011,7 +1066,10 @@ namespace ClubManageApp
                         {
                             lastMessageID = Convert.ToInt32(result);
                         }
+                        // Add local bubble once and register key to prevent duplicates when loading from DB
                         AddChatBubble(message, true, DateTime.Now, "Đã gửi");
+                        string key = $"{maTV}|{message?.Trim()}|{DateTime.Now.ToString("s")}";
+                        displayedMessageKeys.Add(key);
                     }
                 }
             }

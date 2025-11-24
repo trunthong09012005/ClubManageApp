@@ -11,7 +11,7 @@ namespace ClubManageApp
     {
         private DataTable thuChiTable;
         private DataView thuChiView;
-        private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;Persist Security Info=True;User ID=sa;Password=912005;Encrypt=True;TrustServerCertificate=True";
+        private string connectionString = @"Data Source=DESKTOP-EJIGPN3;Initial Catalog=QL_APP_LSC;User ID=sa;Password=1234;Encrypt=True;TrustServerCertificate=True";
 
         public ucFinance()
         {
