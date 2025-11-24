@@ -14,10 +14,7 @@ namespace ClubManageApp
     public partial class ucProject : UserControl
     {
         // Database connection (use same default as DashBoard)
-
-        private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;Persist Security Info=True;User ID=sa;Password=912005;Encrypt=True;TrustServerCertificate=True";
-
-
+        private string connectionString = @"Data Source=DESKTOP-B7F3HIU;Initial Catalog=QL_APP_LSC;Integrated Security=True;Encrypt=True;TrustServerCertificate=True";
         // in-memory view of projects loaded from DB
         private List<ProjectItem> allProjects = new List<ProjectItem>();
         private BindingList<ProjectItem> viewProjects = new BindingList<ProjectItem>();
@@ -44,65 +41,65 @@ namespace ClubManageApp
             {
                 DataPropertyName = "Id",
                 HeaderText = "Mã",
-                Width =60,
-                FillWeight =20
+                Width = 60,
+                FillWeight = 20
             });
             dgvProjects.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 DataPropertyName = "Name",
                 HeaderText = "Tên dự án",
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                FillWeight =300
+                FillWeight = 300
             });
             dgvProjects.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 DataPropertyName = "StartDateText",
                 HeaderText = "Bắt đầu",
-                Width =120,
-                FillWeight =60
+                Width = 120,
+                FillWeight = 60
             });
             dgvProjects.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 DataPropertyName = "EndDateText",
                 HeaderText = "Kết thúc",
-                Width =120,
-                FillWeight =60
+                Width = 120,
+                FillWeight = 60
             });
             dgvProjects.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 DataPropertyName = "Priority",
                 HeaderText = "Mức độ",
-                Width =120,
-                FillWeight =60
+                Width = 120,
+                FillWeight = 60
             });
             dgvProjects.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 DataPropertyName = "Progress",
                 HeaderText = "Tiến độ (%)",
-                Width =100,
-                FillWeight =40
+                Width = 100,
+                FillWeight = 40
             });
             dgvProjects.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 DataPropertyName = "Status",
                 HeaderText = "Trạng thái",
-                Width =120,
-                FillWeight =80
+                Width = 120,
+                FillWeight = 80
             });
             dgvProjects.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 DataPropertyName = "CreatedText",
                 HeaderText = "Ngày tạo",
-                Width =140,
-                FillWeight =80
+                Width = 140,
+                FillWeight = 80
             });
             // assigned members column
             dgvProjects.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 DataPropertyName = "AssignedMembers",
                 HeaderText = "Phân công",
-                Width =200,
-                FillWeight =120
+                Width = 200,
+                FillWeight = 120
             });
 
             bsProjects.DataSource = viewProjects;
@@ -145,7 +142,7 @@ namespace ClubManageApp
             }
             catch { }
 
-            dgvProjects.CellDoubleClick += (s, e) => { if (e.RowIndex >=0) BtnEdit_Click(s, e); };
+            dgvProjects.CellDoubleClick += (s, e) => { if (e.RowIndex >= 0) BtnEdit_Click(s, e); };
             dgvProjects.MouseDown += DgvProjects_MouseDown;
             dgvProjects.SelectionChanged += DgvProjects_SelectionChanged;
 
@@ -168,7 +165,7 @@ namespace ClubManageApp
             if (e.Button == MouseButtons.Right)
             {
                 var hit = dgvProjects.HitTest(e.X, e.Y);
-                if (hit.RowIndex >=0)
+                if (hit.RowIndex >= 0)
                 {
                     dgvProjects.ClearSelection();
                     dgvProjects.Rows[hit.RowIndex].Selected = true;
@@ -212,9 +209,9 @@ namespace ClubManageApp
                                 StartDate = reader["NgayBatDau"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["NgayBatDau"]),
                                 EndDate = reader["NgayKetThuc"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["NgayKetThuc"]),
                                 Priority = reader["MucDoUuTien"] as string ?? string.Empty,
-                                Progress = reader["TienDo"] == DBNull.Value ?0 : Convert.ToInt32(reader["TienDo"]),
+                                Progress = reader["TienDo"] == DBNull.Value ? 0 : Convert.ToInt32(reader["TienDo"]),
                                 Status = reader["TrangThai"] as string ?? string.Empty,
-                                Created = reader["NgayTao"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["NgayTao"]) 
+                                Created = reader["NgayTao"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["NgayTao"])
                             };
                             allProjects.Add(p);
                         }
@@ -231,17 +228,17 @@ namespace ClubManageApp
             try
             {
                 var ids = allProjects.Select(p => p.Id).ToList();
-                if (ids.Count >0)
+                if (ids.Count > 0)
                 {
                     // build parameterized IN clause
                     var parameters = new List<string>();
-                    for (int i =0; i < ids.Count; i++) parameters.Add("@id" + i);
+                    for (int i = 0; i < ids.Count; i++) parameters.Add("@id" + i);
                     string inClause = string.Join(",", parameters);
                     string sqlAssign = $"SELECT PC.MaDA, TV.HoTen FROM PhanCong PC INNER JOIN ThanhVien TV ON PC.MaTV = TV.MaTV WHERE PC.MaDA IN ({inClause})";
                     using (SqlConnection conn = new SqlConnection(connectionString))
                     using (SqlCommand cmd = new SqlCommand(sqlAssign, conn))
                     {
-                        for (int i =0; i < ids.Count; i++) cmd.Parameters.AddWithValue(parameters[i], ids[i]);
+                        for (int i = 0; i < ids.Count; i++) cmd.Parameters.AddWithValue(parameters[i], ids[i]);
                         conn.Open();
                         using (var rdr = cmd.ExecuteReader())
                         {
@@ -288,26 +285,26 @@ namespace ClubManageApp
         {
             var g = e.Graphics;
             g.Clear(chartProjects.BackColor);
-            if (viewProjects.Count ==0) return;
+            if (viewProjects.Count == 0) return;
 
             int w = chartProjects.ClientSize.Width;
             int h = chartProjects.ClientSize.Height;
-            int margin =20;
-            int availableW = Math.Max(1, w - margin *2);
-            int availableH = Math.Max(1, h - margin *2);
+            int margin = 20;
+            int availableW = Math.Max(1, w - margin * 2);
+            int availableH = Math.Max(1, h - margin * 2);
             int cols = viewProjects.Count;
-            int colW = Math.Max(1, availableW / cols -10);
+            int colW = Math.Max(1, availableW / cols - 10);
             int x = margin;
             int maxVal = viewProjects.Max(p => p.Progress);
-            if (maxVal ==0) maxVal =100; // show relative to100
+            if (maxVal == 0) maxVal = 100; // show relative to100
 
-            using (var font = new Font("Segoe UI",8))
+            using (var font = new Font("Segoe UI", 8))
             using (var pen = new Pen(Color.DimGray))
             {
-                for (int i =0; i < viewProjects.Count; i++)
+                for (int i = 0; i < viewProjects.Count; i++)
                 {
                     var p = viewProjects[i];
-                    int colH = (int)Math.Round((p.Progress / (double)maxVal) * (availableH -30));
+                    int colH = (int)Math.Round((p.Progress / (double)maxVal) * (availableH - 30));
                     var rect = new Rectangle(x, margin + (availableH - colH), colW, colH);
 
                     Color barColor = Color.SeaGreen;
@@ -324,15 +321,15 @@ namespace ClubManageApp
                     // label
                     var label = p.Name;
                     var size = g.MeasureString(label, font);
-                    var lx = x + (colW - (int)size.Width) /2;
-                    g.DrawString(label, font, Brushes.Black, Math.Max(margin, lx), margin + availableH +2);
+                    var lx = x + (colW - (int)size.Width) / 2;
+                    g.DrawString(label, font, Brushes.Black, Math.Max(margin, lx), margin + availableH + 2);
                     // value
                     var vs = p.Progress.ToString();
                     var vsz = g.MeasureString(vs, font);
-                    var vx = x + (colW - (int)vsz.Width) /2;
-                    g.DrawString(vs, font, Brushes.Black, vx, rect.Top - (int)vsz.Height -2);
+                    var vx = x + (colW - (int)vsz.Width) / 2;
+                    g.DrawString(vs, font, Brushes.Black, vx, rect.Top - (int)vsz.Height - 2);
 
-                    x += colW +10;
+                    x += colW + 10;
                 }
             }
         }
@@ -405,8 +402,8 @@ namespace ClubManageApp
                             int progressToSave = dlg.Progress;
                             if (!string.IsNullOrEmpty(statusToSave))
                             {
-                                if (string.Equals(statusToSave, "Hoàn thành", StringComparison.OrdinalIgnoreCase)) progressToSave =100;
-                                else if (string.Equals(statusToSave, "Hủy bỏ", StringComparison.OrdinalIgnoreCase)) progressToSave =0;
+                                if (string.Equals(statusToSave, "Hoàn thành", StringComparison.OrdinalIgnoreCase)) progressToSave = 100;
+                                else if (string.Equals(statusToSave, "Hủy bỏ", StringComparison.OrdinalIgnoreCase)) progressToSave = 0;
                             }
                             cmd.Parameters.AddWithValue("@TienDo", progressToSave);
                             cmd.Parameters.AddWithValue("@TrangThai", (object)statusToSave ?? DBNull.Value);
@@ -537,35 +534,35 @@ namespace ClubManageApp
                 this.Text = "Dự án";
                 this.FormBorderStyle = FormBorderStyle.FixedDialog;
                 this.StartPosition = FormStartPosition.CenterParent;
-                this.ClientSize = new Size(500,360);
+                this.ClientSize = new Size(500, 360);
                 this.MaximizeBox = false;
                 this.MinimizeBox = false;
 
-                var lblName = new Label { Text = "Tên dự án:", Location = new Point(10,15), AutoSize = true };
-                txtName = new TextBox { Location = new Point(120,12), Width =350 };
+                var lblName = new Label { Text = "Tên dự án:", Location = new Point(10, 15), AutoSize = true };
+                txtName = new TextBox { Location = new Point(120, 12), Width = 350 };
 
-                var lblDesc = new Label { Text = "Mô tả:", Location = new Point(10,50), AutoSize = true };
-                txtDescription = new TextBox { Location = new Point(120,46), Width =350, Height =80, Multiline = true, ScrollBars = ScrollBars.Vertical };
+                var lblDesc = new Label { Text = "Mô tả:", Location = new Point(10, 50), AutoSize = true };
+                txtDescription = new TextBox { Location = new Point(120, 46), Width = 350, Height = 80, Multiline = true, ScrollBars = ScrollBars.Vertical };
 
-                var lblStart = new Label { Text = "Bắt đầu:", Location = new Point(10,140), AutoSize = true };
-                dtpStart = new DateTimePicker { Location = new Point(120,136), Width =200, Format = DateTimePickerFormat.Short, ShowCheckBox = true };
+                var lblStart = new Label { Text = "Bắt đầu:", Location = new Point(10, 140), AutoSize = true };
+                dtpStart = new DateTimePicker { Location = new Point(120, 136), Width = 200, Format = DateTimePickerFormat.Short, ShowCheckBox = true };
 
-                var lblEnd = new Label { Text = "Kết thúc:", Location = new Point(10,175), AutoSize = true };
-                dtpEnd = new DateTimePicker { Location = new Point(120,171), Width =200, Format = DateTimePickerFormat.Short, ShowCheckBox = true };
+                var lblEnd = new Label { Text = "Kết thúc:", Location = new Point(10, 175), AutoSize = true };
+                dtpEnd = new DateTimePicker { Location = new Point(120, 171), Width = 200, Format = DateTimePickerFormat.Short, ShowCheckBox = true };
 
-                var lblPriority = new Label { Text = "Mức độ ưu tiên:", Location = new Point(10,210), AutoSize = true };
-                cmbPriority = new ComboBox { Location = new Point(120,206), Width =200, DropDownStyle = ComboBoxStyle.DropDownList };
+                var lblPriority = new Label { Text = "Mức độ ưu tiên:", Location = new Point(10, 210), AutoSize = true };
+                cmbPriority = new ComboBox { Location = new Point(120, 206), Width = 200, DropDownStyle = ComboBoxStyle.DropDownList };
                 cmbPriority.Items.AddRange(new object[] { "Thấp", "Trung bình", "Cao", "Khẩn cấp" });
 
-                var lblProgress = new Label { Text = "Tiến độ (%):", Location = new Point(10,245), AutoSize = true };
-                nudProgress = new NumericUpDown { Location = new Point(120,241), Width =100, Minimum =0, Maximum =100 };
+                var lblProgress = new Label { Text = "Tiến độ (%):", Location = new Point(10, 245), AutoSize = true };
+                nudProgress = new NumericUpDown { Location = new Point(120, 241), Width = 100, Minimum = 0, Maximum = 100 };
 
-                var lblStatus = new Label { Text = "Trạng thái:", Location = new Point(10,280), AutoSize = true };
-                cmbStatus = new ComboBox { Location = new Point(120,276), Width =200, DropDownStyle = ComboBoxStyle.DropDownList };
+                var lblStatus = new Label { Text = "Trạng thái:", Location = new Point(10, 280), AutoSize = true };
+                cmbStatus = new ComboBox { Location = new Point(120, 276), Width = 200, DropDownStyle = ComboBoxStyle.DropDownList };
                 cmbStatus.Items.AddRange(new object[] { "Mới tạo", "Đang thực hiện", "Tạm dừng", "Hoàn thành", "Hủy bỏ" });
 
-                btnOk = new Button { Text = "Lưu", Location = new Point(310,310), DialogResult = DialogResult.OK };
-                btnCancel = new Button { Text = "Hủy", Location = new Point(395,310), DialogResult = DialogResult.Cancel };
+                btnOk = new Button { Text = "Lưu", Location = new Point(310, 310), DialogResult = DialogResult.OK };
+                btnCancel = new Button { Text = "Hủy", Location = new Point(395, 310), DialogResult = DialogResult.Cancel };
 
                 this.Controls.AddRange(new Control[] { lblName, txtName, lblDesc, txtDescription, lblStart, dtpStart, lblEnd, dtpEnd, lblPriority, cmbPriority, lblProgress, nudProgress, lblStatus, cmbStatus, btnOk, btnCancel });
 
@@ -592,8 +589,8 @@ namespace ClubManageApp
                 }
 
                 // ensure selections for comboboxes
-                if (cmbPriority.SelectedItem == null) cmbPriority.SelectedIndex =0;
-                if (cmbStatus.SelectedItem == null) cmbStatus.SelectedIndex =1; // mặc định 'Đang thực hiện'
+                if (cmbPriority.SelectedItem == null) cmbPriority.SelectedIndex = 0;
+                if (cmbStatus.SelectedItem == null) cmbStatus.SelectedIndex = 1; // mặc định 'Đang thực hiện'
             }
         }
 
@@ -623,23 +620,23 @@ namespace ClubManageApp
             private void Initialize()
             {
                 this.Text = "Chi tiết dự án";
-                this.ClientSize = new Size(600,320);
+                this.ClientSize = new Size(600, 320);
                 this.FormBorderStyle = FormBorderStyle.FixedDialog;
                 this.StartPosition = FormStartPosition.CenterParent;
 
-                lblTitle = new Label { Text = project.Name, Font = new Font("Segoe UI",12, FontStyle.Bold), Location = new Point(10,10), AutoSize = true };
-                txtDescription = new TextBox { Location = new Point(10,40), Width =560, Height =110, Multiline = true, ReadOnly = true, Text = project.Description, ScrollBars = ScrollBars.Vertical };
+                lblTitle = new Label { Text = project.Name, Font = new Font("Segoe UI", 12, FontStyle.Bold), Location = new Point(10, 10), AutoSize = true };
+                txtDescription = new TextBox { Location = new Point(10, 40), Width = 560, Height = 110, Multiline = true, ReadOnly = true, Text = project.Description, ScrollBars = ScrollBars.Vertical };
 
                 // Assigned list
-                var lblAssigned = new Label { Text = "Đã phân công:", Location = new Point(10,160), AutoSize = true };
-                lstAssigned = new ListBox { Location = new Point(10,185), Width =350, Height =80 };
+                var lblAssigned = new Label { Text = "Đã phân công:", Location = new Point(10, 160), AutoSize = true };
+                lstAssigned = new ListBox { Location = new Point(10, 185), Width = 350, Height = 80 };
 
-                var lblMember = new Label { Text = "Chọn thành viên:", Location = new Point(380,160), AutoSize = true };
-                cmbMembers = new ComboBox { Location = new Point(380,185), Width =190, DropDownStyle = ComboBoxStyle.DropDownList };
+                var lblMember = new Label { Text = "Chọn thành viên:", Location = new Point(380, 160), AutoSize = true };
+                cmbMembers = new ComboBox { Location = new Point(380, 185), Width = 190, DropDownStyle = ComboBoxStyle.DropDownList };
 
-                btnAssign = new Button { Text = "Phân công", Location = new Point(380,220), Width =90 };
-                var btnRemove = new Button { Text = "Loại bỏ", Location = new Point(240,272), Width =90 };
-                btnClose = new Button { Text = "Đóng", Location = new Point(480,272), Width =90, DialogResult = DialogResult.Cancel };
+                btnAssign = new Button { Text = "Phân công", Location = new Point(380, 220), Width = 90 };
+                var btnRemove = new Button { Text = "Loại bỏ", Location = new Point(240, 272), Width = 90 };
+                btnClose = new Button { Text = "Đóng", Location = new Point(480, 272), Width = 90, DialogResult = DialogResult.Cancel };
 
                 this.Controls.AddRange(new Control[] { lblTitle, txtDescription, lblAssigned, lstAssigned, lblMember, cmbMembers, btnAssign, btnRemove, btnClose });
 
@@ -670,7 +667,7 @@ namespace ClubManageApp
                     // load current assignments
                     LoadAssignments();
 
-                    if (cmbMembers.Items.Count >0) cmbMembers.SelectedIndex =0;
+                    if (cmbMembers.Items.Count > 0) cmbMembers.SelectedIndex = 0;
                     // display member names
                     cmbMembers.DrawMode = DrawMode.Normal;
                     cmbMembers.Format += (s, e) =>
@@ -757,7 +754,7 @@ VALUES (@MaTV, @MaDA, @NhiemVu, @TrangThai, @NgayHetHan)";
 
             private void BtnRemove_Click(object sender, EventArgs e)
             {
-                if (lstAssigned.SelectedIndex <0) return;
+                if (lstAssigned.SelectedIndex < 0) return;
                 int idx = lstAssigned.SelectedIndex;
                 int maTV = assignedIds[idx];
 
@@ -782,7 +779,7 @@ VALUES (@MaTV, @MaDA, @NhiemVu, @TrangThai, @NgayHetHan)";
                     MessageBox.Show(this, "Loại bỏ phân công thành công.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     // if no assignments left, update DuAn.TrangThai -> 'Mới tạo'
-                    if (assignedIds.Count ==0)
+                    if (assignedIds.Count == 0)
                     {
                         try
                         {
@@ -824,14 +821,11 @@ VALUES (@MaTV, @MaDA, @NhiemVu, @TrangThai, @NgayHetHan)";
             public string EndDateText => EndDate.HasValue ? EndDate.Value.ToString("dd/MM/yyyy") : string.Empty;
             public string CreatedText => Created.HasValue ? Created.Value.ToString("dd/MM/yyyy HH:mm") : string.Empty;
         }
-<<<<<<< HEAD
-=======
 
         private void chartProjects_Paint_1(object sender, PaintEventArgs e)
         {
 
         }
->>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
     }
 }
 //Can be update in the future to add more features

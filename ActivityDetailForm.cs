@@ -35,5 +35,10 @@ namespace ClubManageApp
         {
             this.Close();
         }
+
+        private void txtDetails_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

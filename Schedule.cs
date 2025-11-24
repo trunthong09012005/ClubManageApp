@@ -220,6 +220,11 @@ namespace ClubManageApp
         {
 
         }
+
+        private void dgvMeetings_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 
     // Simple models for demo

@@ -54,29 +54,26 @@
             this.panelLeft.Controls.Add(this.btnDelete);
             this.panelLeft.Controls.Add(this.btnView);
             this.panelLeft.Controls.Add(this.dgvUsers);
-<<<<<<< HEAD
-            this.panelLeft.Location = new System.Drawing.Point(27, 33);
+            this.panelLeft.Location = new System.Drawing.Point(9, 10);
+            this.panelLeft.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panelLeft.Name = "panelLeft";
-            this.panelLeft.Size = new System.Drawing.Size(1360, 896);
-=======
-            this.panelLeft.Location = new System.Drawing.Point(8, 8);
-            this.panelLeft.Name = "panelLeft";
-            this.panelLeft.Size = new System.Drawing.Size(720, 696);
->>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
+            this.panelLeft.Size = new System.Drawing.Size(810, 870);
             this.panelLeft.TabIndex = 0;
             // 
             // txtSearch
             // 
-            this.txtSearch.Location = new System.Drawing.Point(12, 12);
+            this.txtSearch.Location = new System.Drawing.Point(14, 15);
+            this.txtSearch.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(520, 22);
+            this.txtSearch.Size = new System.Drawing.Size(584, 26);
             this.txtSearch.TabIndex = 0;
             // 
             // btnFilter
             // 
-            this.btnFilter.Location = new System.Drawing.Point(540, 10);
+            this.btnFilter.Location = new System.Drawing.Point(608, 12);
+            this.btnFilter.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnFilter.Name = "btnFilter";
-            this.btnFilter.Size = new System.Drawing.Size(75, 26);
+            this.btnFilter.Size = new System.Drawing.Size(84, 32);
             this.btnFilter.TabIndex = 1;
             this.btnFilter.Text = "Lọc";
             this.btnFilter.UseVisualStyleBackColor = true;
@@ -84,9 +81,10 @@
             // 
             // btnAdd
             // 
-            this.btnAdd.Location = new System.Drawing.Point(12, 44);
+            this.btnAdd.Location = new System.Drawing.Point(14, 55);
+            this.btnAdd.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(90, 28);
+            this.btnAdd.Size = new System.Drawing.Size(101, 35);
             this.btnAdd.TabIndex = 2;
             this.btnAdd.Text = "Tạo mới";
             this.btnAdd.UseVisualStyleBackColor = true;
@@ -94,9 +92,10 @@
             // 
             // btnEdit
             // 
-            this.btnEdit.Location = new System.Drawing.Point(110, 44);
+            this.btnEdit.Location = new System.Drawing.Point(124, 55);
+            this.btnEdit.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnEdit.Name = "btnEdit";
-            this.btnEdit.Size = new System.Drawing.Size(90, 28);
+            this.btnEdit.Size = new System.Drawing.Size(101, 35);
             this.btnEdit.TabIndex = 3;
             this.btnEdit.Text = "Chỉnh sửa";
             this.btnEdit.UseVisualStyleBackColor = true;
@@ -104,9 +103,10 @@
             // 
             // btnDelete
             // 
-            this.btnDelete.Location = new System.Drawing.Point(208, 44);
+            this.btnDelete.Location = new System.Drawing.Point(234, 55);
+            this.btnDelete.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(90, 28);
+            this.btnDelete.Size = new System.Drawing.Size(101, 35);
             this.btnDelete.TabIndex = 4;
             this.btnDelete.Text = "Xóa";
             this.btnDelete.UseVisualStyleBackColor = true;
@@ -114,9 +114,10 @@
             // 
             // btnView
             // 
-            this.btnView.Location = new System.Drawing.Point(306, 44);
+            this.btnView.Location = new System.Drawing.Point(344, 55);
+            this.btnView.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnView.Name = "btnView";
-            this.btnView.Size = new System.Drawing.Size(90, 28);
+            this.btnView.Size = new System.Drawing.Size(101, 35);
             this.btnView.TabIndex = 5;
             this.btnView.Text = "Xem";
             this.btnView.UseVisualStyleBackColor = true;
@@ -130,82 +131,56 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvUsers.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvUsers.Location = new System.Drawing.Point(12, 80);
+            this.dgvUsers.Location = new System.Drawing.Point(14, 100);
+            this.dgvUsers.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.dgvUsers.Name = "dgvUsers";
             this.dgvUsers.ReadOnly = true;
             this.dgvUsers.RowHeadersVisible = false;
-<<<<<<< HEAD
             this.dgvUsers.RowHeadersWidth = 51;
             this.dgvUsers.RowTemplate.Height = 24;
             this.dgvUsers.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvUsers.Size = new System.Drawing.Size(1332, 804);
-=======
-            this.dgvUsers.RowTemplate.Height = 24;
-            this.dgvUsers.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvUsers.Size = new System.Drawing.Size(692, 604);
->>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
+            this.dgvUsers.Size = new System.Drawing.Size(778, 755);
             this.dgvUsers.TabIndex = 6;
+            this.dgvUsers.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUsers_CellContentClick);
             // 
             // panelRight
             // 
             this.panelRight.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelRight.Controls.Add(this.chartByClass);
             this.panelRight.Controls.Add(this.chartGender);
-<<<<<<< HEAD
-            this.panelRight.Location = new System.Drawing.Point(1440, 33);
+            this.panelRight.Location = new System.Drawing.Point(828, 10);
+            this.panelRight.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panelRight.Name = "panelRight";
-            this.panelRight.Size = new System.Drawing.Size(346, 674);
+            this.panelRight.Size = new System.Drawing.Size(391, 870);
             this.panelRight.TabIndex = 1;
             // 
             // chartByClass
             // 
             this.chartByClass.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.chartByClass.Location = new System.Drawing.Point(12, 340);
+            this.chartByClass.Location = new System.Drawing.Point(14, 425);
+            this.chartByClass.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.chartByClass.Name = "chartByClass";
-            this.chartByClass.Size = new System.Drawing.Size(320, 320);
+            this.chartByClass.Size = new System.Drawing.Size(360, 400);
             this.chartByClass.TabIndex = 1;
             // 
             // chartGender
             // 
             this.chartGender.BackColor = System.Drawing.Color.WhiteSmoke;
-=======
-            this.panelRight.Location = new System.Drawing.Point(736, 8);
-            this.panelRight.Name = "panelRight";
-            this.panelRight.Size = new System.Drawing.Size(348, 696);
-            this.panelRight.TabIndex = 1;
-            // 
-            // chartGender
-            // 
->>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
-            this.chartGender.Location = new System.Drawing.Point(12, 12);
+            this.chartGender.Location = new System.Drawing.Point(14, 15);
+            this.chartGender.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.chartGender.Name = "chartGender";
-            this.chartGender.Size = new System.Drawing.Size(320, 320);
+            this.chartGender.Size = new System.Drawing.Size(360, 400);
             this.chartGender.TabIndex = 0;
-<<<<<<< HEAD
-=======
-            this.chartGender.BackColor = System.Drawing.Color.WhiteSmoke;
-            // 
-            // chartByClass
-            // 
-            this.chartByClass.Location = new System.Drawing.Point(12, 340);
-            this.chartByClass.Name = "chartByClass";
-            this.chartByClass.Size = new System.Drawing.Size(320, 320);
-            this.chartByClass.TabIndex = 1;
-            this.chartByClass.BackColor = System.Drawing.Color.WhiteSmoke;
->>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
             // 
             // ucUser
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.panelRight);
             this.Controls.Add(this.panelLeft);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "ucUser";
-<<<<<<< HEAD
-            this.Size = new System.Drawing.Size(1900, 1100);
-=======
-            this.Size = new System.Drawing.Size(1092, 712);
->>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
+            this.Size = new System.Drawing.Size(1228, 890);
             this.panelLeft.ResumeLayout(false);
             this.panelLeft.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUsers)).EndInit();

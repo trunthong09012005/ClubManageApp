@@ -16,7 +16,7 @@ namespace ClubManageApp
 
         // 🔗 Chuỗi kết nối SQL Server
 
-        private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;Persist Security Info=True;User ID=sa;Password=912005;Encrypt=True;TrustServerCertificate=True";
+        private string connectionString = @"Data Source=DESKTOP-B7F3HIU;Initial Catalog=QL_APP_LSC;Integrated Security=True;Encrypt=True;TrustServerCertificate=True";
 
         // Biến cho animation sidebar
         bool sidebarExpand = true;
@@ -1398,6 +1398,11 @@ namespace ClubManageApp
             parent.Controls.Add(textBox);
 
             yPos += 60;
+        }
+
+        private void MemberDashboard_Load_2(object sender, EventArgs e)
+        {
+
         }
 
         private void LoadCurrentProfileData()

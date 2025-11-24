@@ -191,5 +191,10 @@ namespace ClubManageApp
         {
 
         }
+
+        private void ActivityEditForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
