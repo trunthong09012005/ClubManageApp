@@ -57,9 +57,9 @@
             this.panelMeetings.Controls.Add(this.dgvMeetings);
             this.panelMeetings.Controls.Add(this.btnEditMeeting);
             this.panelMeetings.Controls.Add(this.btnNewMeeting);
-            this.panelMeetings.Location = new System.Drawing.Point(14, 13);
+            this.panelMeetings.Location = new System.Drawing.Point(27, 31);
             this.panelMeetings.Name = "panelMeetings";
-            this.panelMeetings.Size = new System.Drawing.Size(759, 320);
+            this.panelMeetings.Size = new System.Drawing.Size(1049, 404);
             this.panelMeetings.TabIndex = 0;
             // 
             // btnFilter
@@ -113,14 +113,14 @@
             this.dgvMeetings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvMeetings.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvMeetings.Location = new System.Drawing.Point(12, 90);
+            this.dgvMeetings.Location = new System.Drawing.Point(12, 100);
             this.dgvMeetings.Name = "dgvMeetings";
             this.dgvMeetings.ReadOnly = true;
             this.dgvMeetings.RowHeadersVisible = false;
             this.dgvMeetings.RowHeadersWidth = 51;
             this.dgvMeetings.RowTemplate.Height = 24;
             this.dgvMeetings.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvMeetings.Size = new System.Drawing.Size(724, 210);
+            this.dgvMeetings.Size = new System.Drawing.Size(1014, 284);
             this.dgvMeetings.TabIndex = 1;
             // 
             // btnEditMeeting
@@ -151,9 +151,9 @@
             // 
             this.panelParticipants.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelParticipants.Controls.Add(this.dgvParticipants);
-            this.panelParticipants.Location = new System.Drawing.Point(14, 357);
+            this.panelParticipants.Location = new System.Drawing.Point(27, 493);
             this.panelParticipants.Name = "panelParticipants";
-            this.panelParticipants.Size = new System.Drawing.Size(759, 340);
+            this.panelParticipants.Size = new System.Drawing.Size(1049, 475);
             this.panelParticipants.TabIndex = 1;
             // 
             // dgvParticipants
@@ -166,7 +166,7 @@
             this.dgvParticipants.RowHeadersWidth = 51;
             this.dgvParticipants.RowTemplate.Height = 24;
             this.dgvParticipants.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvParticipants.Size = new System.Drawing.Size(727, 310);
+            this.dgvParticipants.Size = new System.Drawing.Size(1014, 447);
             this.dgvParticipants.TabIndex = 0;
             this.dgvParticipants.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvParticipants_CellClick);
             // 
@@ -174,7 +174,7 @@
             // 
             this.panelCalendar.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelCalendar.Controls.Add(this.monthCalendar1);
-            this.panelCalendar.Location = new System.Drawing.Point(800, 13);
+            this.panelCalendar.Location = new System.Drawing.Point(1190, 46);
             this.panelCalendar.Name = "panelCalendar";
             this.panelCalendar.Size = new System.Drawing.Size(363, 238);
             this.panelCalendar.TabIndex = 2;
@@ -195,7 +195,7 @@
             this.Controls.Add(this.panelParticipants);
             this.Controls.Add(this.panelMeetings);
             this.Name = "ucSchedule";
-            this.Size = new System.Drawing.Size(1092, 712);
+            this.Size = new System.Drawing.Size(1600, 1000);
             this.panelMeetings.ResumeLayout(false);
             this.panelMeetings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMeetings)).EndInit();
