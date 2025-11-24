@@ -8,8 +8,8 @@ namespace ClubManageApp
 {
     public partial class ucAccount : UserControl
     {
-        private string connectionString = @"Data Source=DESKTOP-EJIGPN3;Initial Catalog=QL_APP_LSC;User ID=sa;Password=1234;TrustServerCertificate=True";
 
+        private string connectionString = @"Data Source=DESKTOP-EJIGPN3;Initial Catalog=QL_APP_LSC;User ID=sa;Password=1234;TrustServerCertificate=True";
         public ucAccount()
         {
             InitializeComponent();
