@@ -435,3 +435,13 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
         }
     }
 }
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features

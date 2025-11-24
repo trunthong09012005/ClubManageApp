@@ -139,6 +139,7 @@
             this.btnCreate.TabIndex = 2;
             this.btnCreate.Text = "Tạo mới";
             this.btnCreate.UseVisualStyleBackColor = true;
+            this.btnCreate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             // 
             // btnEdit
             // 
@@ -148,6 +149,7 @@
             this.btnEdit.TabIndex = 3;
             this.btnEdit.Text = "Chỉnh sửa";
             this.btnEdit.UseVisualStyleBackColor = true;
+            this.btnEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             // 
             // btnDelete
             // 
@@ -157,6 +159,7 @@
             this.btnDelete.TabIndex = 4;
             this.btnDelete.Text = "Xóa";
             this.btnDelete.UseVisualStyleBackColor = true;
+            this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             // 
             // chartSummary
             // 
@@ -201,3 +204,13 @@
         private System.Windows.Forms.Label label1;
     }
 }
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features
+//Can be update in the future to add more features
