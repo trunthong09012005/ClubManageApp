@@ -338,6 +338,23 @@ namespace ClubManageApp
             pulseTimer?.Dispose();
             base.OnHandleDestroyed(e);
         }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // ChatbotPanel2
+            // 
+            this.Name = "ChatbotPanel2";
+            this.Load += new System.EventHandler(this.ChatbotPanel2_Load);
+            this.ResumeLayout(false);
+
+        }
+
+        private void ChatbotPanel2_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 
     // ===================== FORM CHAT 1-1 - MODERN UI =====================

@@ -1398,6 +1398,11 @@ namespace ClubManageApp
             yPos += 60;
         }
 
+        private void MemberDashboard_Load_2(object sender, EventArgs e)
+        {
+
+        }
+
         private void LoadCurrentProfileData()
         {
             try
@@ -1579,6 +1584,16 @@ namespace ClubManageApp
         {
             chatbot?.Dispose();
             base.OnFormClosing(e);
+        }
+
+        private void flowTimeline_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void MemberDashboard_Load_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

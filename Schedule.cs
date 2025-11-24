@@ -215,6 +215,16 @@ namespace ClubManageApp
                 meetings.Add(form.Meeting);
             }
         }
+
+        private void ucSchedule_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dgvMeetings_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 
     // Simple models for demo

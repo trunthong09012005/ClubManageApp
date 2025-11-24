@@ -96,8 +96,9 @@ namespace ClubManageApp
             this.guna2Panel1.Controls.Add(this.lbTenclb);
             this.guna2Panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.guna2Panel1.Location = new System.Drawing.Point(0, 0);
+            this.guna2Panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.guna2Panel1.Name = "guna2Panel1";
-            this.guna2Panel1.Size = new System.Drawing.Size(300, 450);
+            this.guna2Panel1.Size = new System.Drawing.Size(338, 562);
             this.guna2Panel1.TabIndex = 1;
             // 
             // txtNhapLai
@@ -111,12 +112,12 @@ namespace ClubManageApp
             this.txtNhapLai.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtNhapLai.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtNhapLai.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtNhapLai.Location = new System.Drawing.Point(89, 313);
-            this.txtNhapLai.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.txtNhapLai.Location = new System.Drawing.Point(100, 391);
+            this.txtNhapLai.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.txtNhapLai.Name = "txtNhapLai";
             this.txtNhapLai.PlaceholderText = "Nhập lại mật khẩu...";
             this.txtNhapLai.SelectedText = "";
-            this.txtNhapLai.Size = new System.Drawing.Size(177, 31);
+            this.txtNhapLai.Size = new System.Drawing.Size(199, 39);
             this.txtNhapLai.TabIndex = 9;
             this.txtNhapLai.UseSystemPasswordChar = true;
             // 
@@ -124,9 +125,9 @@ namespace ClubManageApp
             // 
             this.lbnhaplaimatkhau.AutoSize = true;
             this.lbnhaplaimatkhau.ForeColor = System.Drawing.Color.Purple;
-            this.lbnhaplaimatkhau.Location = new System.Drawing.Point(12, 319);
+            this.lbnhaplaimatkhau.Location = new System.Drawing.Point(14, 399);
             this.lbnhaplaimatkhau.Name = "lbnhaplaimatkhau";
-            this.lbnhaplaimatkhau.Size = new System.Drawing.Size(57, 16);
+            this.lbnhaplaimatkhau.Size = new System.Drawing.Size(66, 20);
             this.lbnhaplaimatkhau.TabIndex = 8;
             this.lbnhaplaimatkhau.Text = "Nhập lại";
             // 
@@ -134,9 +135,9 @@ namespace ClubManageApp
             // 
             this.lbdangnhap.AutoSize = true;
             this.lbdangnhap.ForeColor = System.Drawing.Color.DimGray;
-            this.lbdangnhap.Location = new System.Drawing.Point(49, 396);
+            this.lbdangnhap.Location = new System.Drawing.Point(55, 495);
             this.lbdangnhap.Name = "lbdangnhap";
-            this.lbdangnhap.Size = new System.Drawing.Size(207, 16);
+            this.lbdangnhap.Size = new System.Drawing.Size(250, 20);
             this.lbdangnhap.TabIndex = 1;
             this.lbdangnhap.Text = "Đã có tài khoản? Đăng nhập ngay";
             this.lbdangnhap.Click += new System.EventHandler(this.lbDangNhap_Click);
@@ -145,9 +146,10 @@ namespace ClubManageApp
             // 
             this.pt2.Image = global::ClubManageApp.Properties.Resources.logo1;
             this.pt2.ImageRotate = 0F;
-            this.pt2.Location = new System.Drawing.Point(-42, 425);
+            this.pt2.Location = new System.Drawing.Point(-47, 531);
+            this.pt2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pt2.Name = "pt2";
-            this.pt2.Size = new System.Drawing.Size(174, 25);
+            this.pt2.Size = new System.Drawing.Size(196, 31);
             this.pt2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pt2.TabIndex = 1;
             this.pt2.TabStop = false;
@@ -163,9 +165,10 @@ namespace ClubManageApp
             this.btndangky.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.btndangky.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btndangky.ForeColor = System.Drawing.Color.Purple;
-            this.btndangky.Location = new System.Drawing.Point(89, 356);
+            this.btndangky.Location = new System.Drawing.Point(100, 445);
+            this.btndangky.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btndangky.Name = "btndangky";
-            this.btndangky.Size = new System.Drawing.Size(125, 30);
+            this.btndangky.Size = new System.Drawing.Size(141, 38);
             this.btndangky.TabIndex = 7;
             this.btndangky.Text = "Đăng ký";
             this.btndangky.Click += new System.EventHandler(this.btnDangKy_Click);
@@ -181,12 +184,12 @@ namespace ClubManageApp
             this.txtmatkhau.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtmatkhau.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtmatkhau.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtmatkhau.Location = new System.Drawing.Point(89, 263);
-            this.txtmatkhau.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.txtmatkhau.Location = new System.Drawing.Point(100, 329);
+            this.txtmatkhau.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.txtmatkhau.Name = "txtmatkhau";
             this.txtmatkhau.PlaceholderText = "Nhập mật khẩu...";
             this.txtmatkhau.SelectedText = "";
-            this.txtmatkhau.Size = new System.Drawing.Size(177, 31);
+            this.txtmatkhau.Size = new System.Drawing.Size(199, 39);
             this.txtmatkhau.TabIndex = 6;
             this.txtmatkhau.UseSystemPasswordChar = true;
             // 
@@ -201,22 +204,23 @@ namespace ClubManageApp
             this.txttaikhoan.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txttaikhoan.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txttaikhoan.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txttaikhoan.Location = new System.Drawing.Point(89, 211);
-            this.txttaikhoan.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.txttaikhoan.Location = new System.Drawing.Point(100, 264);
+            this.txttaikhoan.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.txttaikhoan.Name = "txttaikhoan";
             this.txttaikhoan.PlaceholderText = "Nhập tài khoản...";
             this.txttaikhoan.SelectedText = "";
-            this.txttaikhoan.Size = new System.Drawing.Size(177, 31);
+            this.txttaikhoan.Size = new System.Drawing.Size(199, 39);
             this.txttaikhoan.TabIndex = 1;
             // 
             // ptlogo
             // 
             this.ptlogo.Image = global::ClubManageApp.Properties.Resources.Logo;
             this.ptlogo.ImageRotate = 0F;
-            this.ptlogo.Location = new System.Drawing.Point(74, 18);
+            this.ptlogo.Location = new System.Drawing.Point(83, 22);
+            this.ptlogo.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.ptlogo.Name = "ptlogo";
             this.ptlogo.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-            this.ptlogo.Size = new System.Drawing.Size(140, 140);
+            this.ptlogo.Size = new System.Drawing.Size(158, 175);
             this.ptlogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.ptlogo.TabIndex = 1;
             this.ptlogo.TabStop = false;
@@ -225,9 +229,9 @@ namespace ClubManageApp
             // 
             this.lbtaikhoan.AutoSize = true;
             this.lbtaikhoan.ForeColor = System.Drawing.Color.Purple;
-            this.lbtaikhoan.Location = new System.Drawing.Point(12, 219);
+            this.lbtaikhoan.Location = new System.Drawing.Point(14, 274);
             this.lbtaikhoan.Name = "lbtaikhoan";
-            this.lbtaikhoan.Size = new System.Drawing.Size(67, 16);
+            this.lbtaikhoan.Size = new System.Drawing.Size(78, 20);
             this.lbtaikhoan.TabIndex = 5;
             this.lbtaikhoan.Text = "Tài khoản";
             // 
@@ -235,9 +239,9 @@ namespace ClubManageApp
             // 
             this.lbmatkhau.AutoSize = true;
             this.lbmatkhau.ForeColor = System.Drawing.Color.Purple;
-            this.lbmatkhau.Location = new System.Drawing.Point(13, 271);
+            this.lbmatkhau.Location = new System.Drawing.Point(15, 339);
             this.lbmatkhau.Name = "lbmatkhau";
-            this.lbmatkhau.Size = new System.Drawing.Size(61, 16);
+            this.lbmatkhau.Size = new System.Drawing.Size(75, 20);
             this.lbmatkhau.TabIndex = 3;
             this.lbmatkhau.Text = "Mật khẩu";
             // 
@@ -246,9 +250,9 @@ namespace ClubManageApp
             this.lbTenclb.AutoSize = true;
             this.lbTenclb.Font = new System.Drawing.Font("Segoe UI", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbTenclb.ForeColor = System.Drawing.Color.Purple;
-            this.lbTenclb.Location = new System.Drawing.Point(21, 161);
+            this.lbTenclb.Location = new System.Drawing.Point(24, 201);
             this.lbTenclb.Name = "lbTenclb";
-            this.lbTenclb.Size = new System.Drawing.Size(256, 31);
+            this.lbTenclb.Size = new System.Drawing.Size(315, 38);
             this.lbTenclb.TabIndex = 2;
             this.lbTenclb.Text = "CÂU LẠC BỘ KỸ NĂNG";
             this.lbTenclb.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -259,9 +263,10 @@ namespace ClubManageApp
             this.guna2Panel2.Controls.Add(this.lbdangky);
             this.guna2Panel2.Controls.Add(this.ptLogo2);
             this.guna2Panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.guna2Panel2.Location = new System.Drawing.Point(300, 0);
+            this.guna2Panel2.Location = new System.Drawing.Point(338, 0);
+            this.guna2Panel2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.guna2Panel2.Name = "guna2Panel2";
-            this.guna2Panel2.Size = new System.Drawing.Size(500, 450);
+            this.guna2Panel2.Size = new System.Drawing.Size(562, 562);
             this.guna2Panel2.TabIndex = 2;
             // 
             // lbdangky
@@ -273,7 +278,7 @@ namespace ClubManageApp
             this.lbdangky.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.lbdangky.Location = new System.Drawing.Point(0, 0);
             this.lbdangky.Name = "lbdangky";
-            this.lbdangky.Size = new System.Drawing.Size(304, 38);
+            this.lbdangky.Size = new System.Drawing.Size(354, 45);
             this.lbdangky.TabIndex = 0;
             this.lbdangky.Text = "ĐĂNG KÝ TÀI KHOẢN";
             // 
@@ -281,23 +286,26 @@ namespace ClubManageApp
             // 
             this.ptLogo2.Image = global::ClubManageApp.Properties.Resources._1;
             this.ptLogo2.ImageRotate = 0F;
-            this.ptLogo2.Location = new System.Drawing.Point(-389, -119);
+            this.ptLogo2.Location = new System.Drawing.Point(-438, -149);
+            this.ptLogo2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.ptLogo2.Name = "ptLogo2";
             this.ptLogo2.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-            this.ptLogo2.Size = new System.Drawing.Size(1267, 619);
+            this.ptLogo2.Size = new System.Drawing.Size(1425, 774);
             this.ptLogo2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.ptLogo2.TabIndex = 2;
             this.ptLogo2.TabStop = false;
+            this.ptLogo2.Click += new System.EventHandler(this.ptLogo2_Click);
             // 
             // SignUp
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(900, 562);
             this.Controls.Add(this.guna2Panel2);
             this.Controls.Add(this.guna2Panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "SignUp";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SignUp";
@@ -481,5 +489,9 @@ namespace ClubManageApp
             }
         }
 
+        private void ptLogo2_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

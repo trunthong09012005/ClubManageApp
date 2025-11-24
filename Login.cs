@@ -219,5 +219,10 @@
                 base.OnFormClosing(e);
                 Application.Exit();
             }
+
+        private void ptLogo2_Click(object sender, EventArgs e)
+        {
+
         }
+    }
     }

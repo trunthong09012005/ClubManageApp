@@ -188,6 +188,23 @@ namespace ClubManageApp
             badgeTimer?.Dispose();
             base.OnHandleDestroyed(e);
         }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // ChatbotPanel
+            // 
+            this.Name = "ChatbotPanel";
+            this.Load += new System.EventHandler(this.ChatbotPanel_Load);
+            this.ResumeLayout(false);
+
+        }
+
+        private void ChatbotPanel_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 
     // ============ FORM CHATBOT ============

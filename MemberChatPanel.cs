@@ -500,5 +500,22 @@ namespace ClubManageApp
             }
             base.Dispose(disposing);
         }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // MemberChatPanel
+            // 
+            this.Name = "MemberChatPanel";
+            this.Load += new System.EventHandler(this.MemberChatPanel_Load);
+            this.ResumeLayout(false);
+
+        }
+
+        private void MemberChatPanel_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

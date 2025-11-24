@@ -548,5 +548,10 @@ namespace ClubManageApp
                 this.Close();
             }
         }
+
+        private void dgvUsers_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }

@@ -371,5 +371,10 @@ namespace ClubManageApp
                 }
             }
         }
+
+        private void FormSignUp_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

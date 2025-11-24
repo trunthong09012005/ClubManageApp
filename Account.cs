@@ -355,6 +355,11 @@ namespace ClubManageApp
         {
 
         }
+
+        private void dgvMembers_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }
 
