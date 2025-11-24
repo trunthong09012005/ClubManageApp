@@ -32,10 +32,10 @@
             this.pnlGrid = new System.Windows.Forms.Panel();
             this.dgvNotifications = new System.Windows.Forms.DataGridView();
             this.pnlFilter = new System.Windows.Forms.Panel();
+            this.btnRefresh = new System.Windows.Forms.Button();
             this.lblSearch = new System.Windows.Forms.Label();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.btnSearch = new System.Windows.Forms.Button();
-            this.btnView = new System.Windows.Forms.Button();
             this.lblFilterType = new System.Windows.Forms.Label();
             this.cboFilterType = new System.Windows.Forms.ComboBox();
             this.lblFilterStatus = new System.Windows.Forms.Label();
@@ -44,9 +44,9 @@
             this.cboSortBy = new System.Windows.Forms.ComboBox();
             this.btnResetFilter = new System.Windows.Forms.Button();
             this.pnlToolbar = new System.Windows.Forms.Panel();
-            this.btnRefresh = new System.Windows.Forms.Button();
             this.btnEdit = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
+            this.btnView = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.pnlHeader = new System.Windows.Forms.Panel();
             this.lblHeader = new System.Windows.Forms.Label();
@@ -124,6 +124,19 @@
             this.pnlFilter.Size = new System.Drawing.Size(1092, 112);
             this.pnlFilter.TabIndex = 1;
             // 
+            // btnRefresh
+            // 
+            this.btnRefresh.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(168)))), ((int)(((byte)(85)))), ((int)(((byte)(247)))));
+            this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRefresh.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnRefresh.ForeColor = System.Drawing.Color.White;
+            this.btnRefresh.Location = new System.Drawing.Point(934, 51);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(140, 52);
+            this.btnRefresh.TabIndex = 0;
+            this.btnRefresh.Text = "🔄 Làm mới";
+            this.btnRefresh.UseVisualStyleBackColor = false;
+            // 
             // lblSearch
             // 
             this.lblSearch.AutoSize = true;
@@ -155,19 +168,6 @@
             this.btnSearch.TabIndex = 2;
             this.btnSearch.Text = "🔍 Tìm";
             this.btnSearch.UseVisualStyleBackColor = false;
-            // 
-            // btnView
-            // 
-            this.btnView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(156)))), ((int)(((byte)(39)))), ((int)(((byte)(176)))));
-            this.btnView.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnView.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnView.ForeColor = System.Drawing.Color.White;
-            this.btnView.Location = new System.Drawing.Point(541, 19);
-            this.btnView.Name = "btnView";
-            this.btnView.Size = new System.Drawing.Size(155, 52);
-            this.btnView.TabIndex = 3;
-            this.btnView.Text = "👁 Chi tiết";
-            this.btnView.UseVisualStyleBackColor = false;
             // 
             // lblFilterType
             // 
@@ -257,19 +257,6 @@
             this.pnlToolbar.Size = new System.Drawing.Size(1092, 89);
             this.pnlToolbar.TabIndex = 2;
             // 
-            // btnRefresh
-            // 
-            this.btnRefresh.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(168)))), ((int)(((byte)(85)))), ((int)(((byte)(247)))));
-            this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnRefresh.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnRefresh.ForeColor = System.Drawing.Color.White;
-            this.btnRefresh.Location = new System.Drawing.Point(934, 51);
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(140, 52);
-            this.btnRefresh.TabIndex = 0;
-            this.btnRefresh.Text = "🔄 Làm mới";
-            this.btnRefresh.UseVisualStyleBackColor = false;
-            // 
             // btnEdit
             // 
             this.btnEdit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(99)))), ((int)(((byte)(102)))), ((int)(((byte)(241)))));
@@ -297,6 +284,19 @@
             this.btnAdd.Text = "+ Thêm TB";
             this.btnAdd.UseVisualStyleBackColor = false;
             // 
+            // btnView
+            // 
+            this.btnView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(156)))), ((int)(((byte)(39)))), ((int)(((byte)(176)))));
+            this.btnView.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnView.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnView.ForeColor = System.Drawing.Color.White;
+            this.btnView.Location = new System.Drawing.Point(541, 19);
+            this.btnView.Name = "btnView";
+            this.btnView.Size = new System.Drawing.Size(155, 52);
+            this.btnView.TabIndex = 3;
+            this.btnView.Text = "👁 Chi tiết";
+            this.btnView.UseVisualStyleBackColor = false;
+            // 
             // btnDelete
             // 
             this.btnDelete.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(67)))), ((int)(((byte)(54)))));
@@ -321,6 +321,7 @@
             this.pnlHeader.Padding = new System.Windows.Forms.Padding(20);
             this.pnlHeader.Size = new System.Drawing.Size(1092, 115);
             this.pnlHeader.TabIndex = 3;
+            this.pnlHeader.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlHeader_Paint);
             // 
             // lblHeader
             // 

@@ -509,6 +509,11 @@ namespace ClubManageApp
         {
 
         }
+
+        private void pnlHeader_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 
     public class NotificationData
