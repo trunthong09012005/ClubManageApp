@@ -597,6 +597,11 @@ namespace ClubManageApp
         {
 
         }
+
+        private void pnlHeader_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 
     // Data model for Activity

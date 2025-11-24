@@ -337,7 +337,7 @@ namespace ClubManageApp
         private Label lbnhaplaimatkhau;
 
 
-        private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;Persist Security Info=True;User ID=sa;Password=912005;Encrypt=True;TrustServerCertificate=True";
+        private string connectionString = @"Data Source=DESKTOP-B7F3HIU;Initial Catalog=QL_APP_LSC;Integrated Security=True;Encrypt=True;TrustServerCertificate=True";
 
 
         // 🔐 Hàm băm SHA256

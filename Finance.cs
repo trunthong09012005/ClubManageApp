@@ -13,7 +13,7 @@ namespace ClubManageApp
         private DataView thuChiView;
 
 
-        private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;Persist Security Info=True;User ID=sa;Password=912005;Encrypt=True;TrustServerCertificate=True";      
+        private string connectionString = @"Data Source=DESKTOP-B7F3HIU;Initial Catalog=QL_APP_LSC;Integrated Security=True;Encrypt=True;TrustServerCertificate=True";      
 
 
 
@@ -437,14 +437,11 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
                 }
             }
         }
-<<<<<<< HEAD
-=======
-
         private void dgvThuChi_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }
->>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
+
     }
 }
 //Can be update in the future to add more features

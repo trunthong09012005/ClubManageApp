@@ -57,24 +57,20 @@
             this.panelMeetings.Controls.Add(this.dgvMeetings);
             this.panelMeetings.Controls.Add(this.btnEditMeeting);
             this.panelMeetings.Controls.Add(this.btnNewMeeting);
-<<<<<<< HEAD
-            this.panelMeetings.Location = new System.Drawing.Point(27, 31);
+            this.panelMeetings.Location = new System.Drawing.Point(16, 16);
+            this.panelMeetings.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panelMeetings.Name = "panelMeetings";
-            this.panelMeetings.Size = new System.Drawing.Size(1049, 404);
-=======
-            this.panelMeetings.Location = new System.Drawing.Point(14, 13);
-            this.panelMeetings.Name = "panelMeetings";
-            this.panelMeetings.Size = new System.Drawing.Size(759, 320);
->>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
+            this.panelMeetings.Size = new System.Drawing.Size(854, 400);
             this.panelMeetings.TabIndex = 0;
             // 
             // btnFilter
             // 
             this.btnFilter.BackColor = System.Drawing.SystemColors.Highlight;
             this.btnFilter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnFilter.Location = new System.Drawing.Point(562, 14);
+            this.btnFilter.Location = new System.Drawing.Point(632, 18);
+            this.btnFilter.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnFilter.Name = "btnFilter";
-            this.btnFilter.Size = new System.Drawing.Size(75, 27);
+            this.btnFilter.Size = new System.Drawing.Size(84, 34);
             this.btnFilter.TabIndex = 7;
             this.btnFilter.Text = "Lọc";
             this.btnFilter.UseVisualStyleBackColor = false;
@@ -83,18 +79,20 @@
             // txtFilter
             // 
             this.txtFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtFilter.Location = new System.Drawing.Point(15, 13);
+            this.txtFilter.Location = new System.Drawing.Point(17, 16);
+            this.txtFilter.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtFilter.Name = "txtFilter";
-            this.txtFilter.Size = new System.Drawing.Size(524, 27);
+            this.txtFilter.Size = new System.Drawing.Size(589, 31);
             this.txtFilter.TabIndex = 6;
             // 
             // btnViewMeeting
             // 
             this.btnViewMeeting.BackColor = System.Drawing.Color.Orange;
             this.btnViewMeeting.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnViewMeeting.Location = new System.Drawing.Point(267, 58);
+            this.btnViewMeeting.Location = new System.Drawing.Point(300, 72);
+            this.btnViewMeeting.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnViewMeeting.Name = "btnViewMeeting";
-            this.btnViewMeeting.Size = new System.Drawing.Size(120, 26);
+            this.btnViewMeeting.Size = new System.Drawing.Size(135, 32);
             this.btnViewMeeting.TabIndex = 5;
             this.btnViewMeeting.Text = "Xem";
             this.btnViewMeeting.UseVisualStyleBackColor = false;
@@ -104,9 +102,10 @@
             // 
             this.btnDeleteMeeting.BackColor = System.Drawing.Color.Crimson;
             this.btnDeleteMeeting.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDeleteMeeting.Location = new System.Drawing.Point(393, 58);
+            this.btnDeleteMeeting.Location = new System.Drawing.Point(442, 72);
+            this.btnDeleteMeeting.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnDeleteMeeting.Name = "btnDeleteMeeting";
-            this.btnDeleteMeeting.Size = new System.Drawing.Size(120, 26);
+            this.btnDeleteMeeting.Size = new System.Drawing.Size(135, 32);
             this.btnDeleteMeeting.TabIndex = 4;
             this.btnDeleteMeeting.Text = "Xóa";
             this.btnDeleteMeeting.UseVisualStyleBackColor = false;
@@ -119,31 +118,26 @@
             this.dgvMeetings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvMeetings.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-<<<<<<< HEAD
-            this.dgvMeetings.Location = new System.Drawing.Point(12, 100);
-=======
-            this.dgvMeetings.Location = new System.Drawing.Point(12, 90);
->>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
+            this.dgvMeetings.Location = new System.Drawing.Point(14, 112);
+            this.dgvMeetings.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.dgvMeetings.Name = "dgvMeetings";
             this.dgvMeetings.ReadOnly = true;
             this.dgvMeetings.RowHeadersVisible = false;
             this.dgvMeetings.RowHeadersWidth = 51;
             this.dgvMeetings.RowTemplate.Height = 24;
             this.dgvMeetings.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-<<<<<<< HEAD
-            this.dgvMeetings.Size = new System.Drawing.Size(1014, 284);
-=======
-            this.dgvMeetings.Size = new System.Drawing.Size(724, 210);
->>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
+            this.dgvMeetings.Size = new System.Drawing.Size(814, 262);
             this.dgvMeetings.TabIndex = 1;
+            this.dgvMeetings.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMeetings_CellContentClick);
             // 
             // btnEditMeeting
             // 
             this.btnEditMeeting.BackColor = System.Drawing.Color.Gold;
             this.btnEditMeeting.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnEditMeeting.Location = new System.Drawing.Point(141, 58);
+            this.btnEditMeeting.Location = new System.Drawing.Point(159, 72);
+            this.btnEditMeeting.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnEditMeeting.Name = "btnEditMeeting";
-            this.btnEditMeeting.Size = new System.Drawing.Size(120, 26);
+            this.btnEditMeeting.Size = new System.Drawing.Size(135, 32);
             this.btnEditMeeting.TabIndex = 3;
             this.btnEditMeeting.Text = "Chỉnh sửa";
             this.btnEditMeeting.UseVisualStyleBackColor = false;
@@ -153,9 +147,10 @@
             // 
             this.btnNewMeeting.BackColor = System.Drawing.Color.MediumTurquoise;
             this.btnNewMeeting.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnNewMeeting.Location = new System.Drawing.Point(15, 58);
+            this.btnNewMeeting.Location = new System.Drawing.Point(17, 72);
+            this.btnNewMeeting.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnNewMeeting.Name = "btnNewMeeting";
-            this.btnNewMeeting.Size = new System.Drawing.Size(120, 26);
+            this.btnNewMeeting.Size = new System.Drawing.Size(135, 32);
             this.btnNewMeeting.TabIndex = 2;
             this.btnNewMeeting.Text = "Tạo mới";
             this.btnNewMeeting.UseVisualStyleBackColor = false;
@@ -165,15 +160,10 @@
             // 
             this.panelParticipants.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelParticipants.Controls.Add(this.dgvParticipants);
-<<<<<<< HEAD
-            this.panelParticipants.Location = new System.Drawing.Point(27, 493);
+            this.panelParticipants.Location = new System.Drawing.Point(16, 446);
+            this.panelParticipants.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panelParticipants.Name = "panelParticipants";
-            this.panelParticipants.Size = new System.Drawing.Size(1049, 475);
-=======
-            this.panelParticipants.Location = new System.Drawing.Point(14, 357);
-            this.panelParticipants.Name = "panelParticipants";
-            this.panelParticipants.Size = new System.Drawing.Size(759, 340);
->>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
+            this.panelParticipants.Size = new System.Drawing.Size(854, 424);
             this.panelParticipants.TabIndex = 1;
             // 
             // dgvParticipants
@@ -181,16 +171,13 @@
             this.dgvParticipants.AllowUserToAddRows = false;
             this.dgvParticipants.AllowUserToDeleteRows = false;
             this.dgvParticipants.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvParticipants.Location = new System.Drawing.Point(12, 12);
+            this.dgvParticipants.Location = new System.Drawing.Point(14, 15);
+            this.dgvParticipants.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.dgvParticipants.Name = "dgvParticipants";
             this.dgvParticipants.RowHeadersWidth = 51;
             this.dgvParticipants.RowTemplate.Height = 24;
             this.dgvParticipants.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-<<<<<<< HEAD
-            this.dgvParticipants.Size = new System.Drawing.Size(1014, 447);
-=======
-            this.dgvParticipants.Size = new System.Drawing.Size(727, 310);
->>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
+            this.dgvParticipants.Size = new System.Drawing.Size(818, 388);
             this.dgvParticipants.TabIndex = 0;
             this.dgvParticipants.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvParticipants_CellClick);
             // 
@@ -198,18 +185,16 @@
             // 
             this.panelCalendar.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelCalendar.Controls.Add(this.monthCalendar1);
-<<<<<<< HEAD
-            this.panelCalendar.Location = new System.Drawing.Point(1190, 46);
-=======
-            this.panelCalendar.Location = new System.Drawing.Point(800, 13);
->>>>>>> 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab
+            this.panelCalendar.Location = new System.Drawing.Point(900, 16);
+            this.panelCalendar.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panelCalendar.Name = "panelCalendar";
-            this.panelCalendar.Size = new System.Drawing.Size(363, 238);
+            this.panelCalendar.Size = new System.Drawing.Size(408, 297);
             this.panelCalendar.TabIndex = 2;
             // 
             // monthCalendar1
             // 
-            this.monthCalendar1.Location = new System.Drawing.Point(29, 13);
+            this.monthCalendar1.Location = new System.Drawing.Point(33, 16);
+            this.monthCalendar1.Margin = new System.Windows.Forms.Padding(10, 11, 10, 11);
             this.monthCalendar1.MaxSelectionCount = 1;
             this.monthCalendar1.Name = "monthCalendar1";
             this.monthCalendar1.TabIndex = 0;
@@ -217,13 +202,14 @@
             // 
             // ucSchedule
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.panelCalendar);
             this.Controls.Add(this.panelParticipants);
             this.Controls.Add(this.panelMeetings);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "ucSchedule";
-            this.Size = new System.Drawing.Size(1600, 1000);
+            this.Size = new System.Drawing.Size(1800, 1250);
             this.panelMeetings.ResumeLayout(false);
             this.panelMeetings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMeetings)).EndInit();

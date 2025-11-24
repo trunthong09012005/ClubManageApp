@@ -307,6 +307,7 @@
             this.Name = "ActivityEditForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Thêm/Chỉnh sửa hoạt động";
+            this.Load += new System.EventHandler(this.ActivityEditForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.nudKinhPhiDuKien)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudSoLuongToiDa)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudNguoiPhuTrach)).EndInit();
