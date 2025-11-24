@@ -1,0 +1,187 @@
+[33mcommit 2b307b556b02188aaebd34998459a7ad81f5f5f4[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Mon Nov 24 12:18:06 2025 +0700
+
+    Resolve merge conflicts
+
+[33mcommit 67faacba9634e60bf896280f4d23871546a61a50[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: bb3ff17 cf06134
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Mon Nov 24 12:08:18 2025 +0700
+
+    Resolve conflicts - accept remote changes
+
+[33mcommit bb3ff17a6d954a8b63776e5f7857bfb0b438880b[m
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Mon Nov 24 11:57:49 2025 +0700
+
+    Fix .csproj XML error and update source files
+
+[33mcommit cf0613458adebb1ae21ab52fd9409b63277e9178[m
+Merge: 5362ccd 4f16428
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Mon Nov 24 11:32:02 2025 +0700
+
+    new
+
+[33mcommit 4f164284e22fe7714d7b3b09f295ed19be83ba04[m[33m ([m[1;31morigin/khoi[m[33m)[m
+Author: Khoi <khoingotuantu.305@gmail.com>
+Date:   Mon Nov 24 11:24:01 2025 +0700
+
+    Fix chatbot and size
+
+[33mcommit 01a4fdf586c209adaa63a4a1ca1b006bebd2bfab[m[33m ([m[1;31morigin/khang_git[m[33m)[m
+Author: Tich-ne1625 <vuongtieulam10062005@gmail.com>
+Date:   Mon Nov 24 10:50:39 2025 +0700
+
+    cập nhật file của nhánh lần cuối
+
+[33mcommit dc67ae100f08e0eb7513b1b91b96cfef8c83663f[m
+Author: Tich-ne1625 <vuongtieulam10062005@gmail.com>
+Date:   Mon Nov 24 10:05:42 2025 +0700
+
+    merge master
+
+[33mcommit 5362ccdc428153624205091fda746bf640c0b63d[m
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Mon Nov 24 10:01:40 2025 +0700
+
+    new
+
+[33mcommit d42f9a30a5915db122647767264ff44b25e7571d[m
+Merge: a3871fc cf223ca
+Author: Khoi <khoingotuantu.305@gmail.com>
+Date:   Mon Nov 24 09:37:19 2025 +0700
+
+    Fix merge conflict
+
+[33mcommit 484499acc820073d2ab2b1e6de1924e7b93b26ca[m
+Author: Tich-ne1625 <vuongtieulam10062005@gmail.com>
+Date:   Mon Nov 24 09:31:26 2025 +0700
+
+    thêm giao diện form con cho mục thông báo và hoạt động
+
+[33mcommit 82b1930b14ac1371ac64d9f313a14370a26bb542[m
+Author: Tich-ne1625 <vuongtieulam10062005@gmail.com>
+Date:   Mon Nov 24 09:30:44 2025 +0700
+
+    update file sql mẫu
+
+[33mcommit a3871fc65f668665ff145262a3ff65352c306b81[m
+Author: Khoi <khoingotuantu.305@gmail.com>
+Date:   Mon Nov 24 09:30:31 2025 +0700
+
+    Commit before pull
+
+[33mcommit cf223ca364d042932b8120e2067839acb0a8f2d9[m
+Merge: dd90bea 7d2463a
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Mon Nov 24 08:49:00 2025 +0700
+
+    Merge branch 'quang' of https://github.com/trunthong09012005/ClubManageApp
+
+[33mcommit 7d2463aed3ddfa2719e3053e01c8bbee05037e5e[m[33m ([m[1;31morigin/quang[m[33m)[m
+Author: ItsmeWanxibo <iamquangvinh290305@gmail.com>
+Date:   Mon Nov 24 06:22:15 2025 +0700
+
+    Chinh sua desktop
+
+[33mcommit dd90beab24f7ff617a307977426a72fc58f1a532[m
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Mon Nov 24 05:35:01 2025 +0700
+
+    new code
+
+[33mcommit 23542dee5caafa1e2faefc60cfd41a4207a59f07[m
+Merge: 7f42f75 dca2dc6
+Author: ItsmeWanxibo <iamquangvinh290305@gmail.com>
+Date:   Mon Nov 24 05:25:22 2025 +0700
+
+    Merge branch 'master' of https://github.com/trunthong09012005/ClubManageApp
+
+[33mcommit 7f42f75cd29e34d838f80ce6a567bec3d1aab818[m
+Author: ItsmeWanxibo <iamquangvinh290305@gmail.com>
+Date:   Mon Nov 24 05:25:15 2025 +0700
+
+    Du An - Tai Chinh
+
+[33mcommit dca2dc66f19061435ac25d74c5ec5220271e1536[m
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Mon Nov 24 04:15:38 2025 +0700
+
+    new code
+
+[33mcommit 87dec4443177b421bb8d99a015f27fad87483f9d[m
+Merge: b69ca31 539f8c7
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Mon Nov 24 04:05:52 2025 +0700
+
+    Merge branch 'khoi' of https://github.com/trunthong09012005/ClubManageApp
+
+[33mcommit b69ca317840d25c95ef4a1e30f6d6bec30de864a[m
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Mon Nov 24 04:02:18 2025 +0700
+
+    new
+
+[33mcommit 539f8c774430e33c6b1e1dd1d11a282f49437b65[m
+Author: Khoi <khoingotuantu.305@gmail.com>
+Date:   Mon Nov 24 03:56:20 2025 +0700
+
+    Them chuc nang Lich hop va Thanh vien
+
+[33mcommit e4accda84e9e65218d4d3c316b28dab13c0eecc0[m
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Mon Nov 24 02:54:23 2025 +0700
+
+    new code
+
+[33mcommit 964461605b23899aca800cad689fb512190123f4[m
+Merge: 3ad4ff5 f80bd07
+Author: ItsmeWanxibo <iamquangvinh290305@gmail.com>
+Date:   Mon Nov 24 00:11:20 2025 +0700
+
+    Merge branch 'master' of https://github.com/trunthong09012005/ClubManageApp
+
+[33mcommit 3ad4ff560d8f4db8ac288b41bba2759c17c2bd23[m
+Author: ItsmeWanxibo <iamquangvinh290305@gmail.com>
+Date:   Mon Nov 24 00:08:03 2025 +0700
+
+    Chinh connecString
+
+[33mcommit f80bd07c879eff84d5c01758d8f1001c3e699fcb[m
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Sun Nov 23 23:53:47 2025 +0700
+
+    new
+
+[33mcommit 92c1bd5e1a1a179981875a8069bbc1968de0852b[m
+Merge: a2358df b3dbadf
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Sun Nov 23 23:46:06 2025 +0700
+
+    Merge branch 'feature/my-branch' into master, resolving conflicts
+
+[33mcommit a2358dfd9b046d2b402e35bb47266b06de514fa7[m
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Sun Nov 23 23:27:13 2025 +0700
+
+    next
+
+[33mcommit b3dbadf48f046d85e77f425a82c8bbe7b49d44a7[m[33m ([m[1;32mkhoi[m[33m)[m
+Author: Khoi <khoingotuantu.305@gmail.com>
+Date:   Sun Nov 23 22:55:32 2025 +0700
+
+    Tao form va chinh sua
+
+[33mcommit ad8181ffe0ec0b2e2995ce133ee664ab0fd898f9[m
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Sun Nov 23 22:42:28 2025 +0700
+
+    next
+
+[33mcommit 950caf5a1b42ddc967f54c85728a128f6ea63245[m
+Author: trunthong09012005 <6451071075@st.utc2.edu.vn>
+Date:   Sun Nov 23 14:24:45 2025 +0700
+
+    Add project files.
