@@ -62,6 +62,24 @@
     <Compile Include="Account.Designer.cs">
       <DependentUpon>Account.cs</DependentUpon>
     </Compile>
+    <Compile Include="Activity.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Activity.Designer.cs">
+      <DependentUpon>Activity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ActivityDetailForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ActivityDetailForm.Designer.cs">
+      <DependentUpon>ActivityDetailForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ActivityEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ActivityEditForm.Designer.cs">
+      <DependentUpon>ActivityEditForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ChatbotPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -81,6 +99,7 @@
     <Compile Include="FormSignUp.Designer.cs">
       <DependentUpon>FormSignUp.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormThemSuaHoatDong.cs" />
     <Compile Include="Login.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -92,6 +111,12 @@
     </Compile>
     <Compile Include="MemberDashboard.Designer.cs">
       <DependentUpon>MemberDashboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Notification.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Notification.Designer.cs">
+      <DependentUpon>Notification.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -110,6 +135,21 @@
     <EmbeddedResource Include="Account.resx">
       <DependentUpon>Account.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Activity.resx">
+      <DependentUpon>Activity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ActivityDetailForm.resx">
+      <DependentUpon>ActivityDetailForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ActivityEditForm.resx">
+      <DependentUpon>ActivityEditForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChatbotPanel.resx">
+      <DependentUpon>ChatbotPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChatbotPanel2.resx">
+      <DependentUpon>ChatbotPanel2.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DashBoard.resx">
       <DependentUpon>DashBoard.cs</DependentUpon>
     </EmbeddedResource>
@@ -121,6 +161,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MemberDashboard.resx">
       <DependentUpon>MemberDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Notification.resx">
+      <DependentUpon>Notification.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

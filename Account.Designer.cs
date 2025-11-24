@@ -52,46 +52,52 @@
             // 
             // dgvMembers
             // 
-            this.dgvMembers.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.dgvMembers.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvMembers.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvMembers.Location = new System.Drawing.Point(20, 189);
+            this.dgvMembers.Location = new System.Drawing.Point(22, 236);
+            this.dgvMembers.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.dgvMembers.Name = "dgvMembers";
             this.dgvMembers.RowHeadersWidth = 51;
             this.dgvMembers.RowTemplate.Height = 24;
-            this.dgvMembers.Size = new System.Drawing.Size(1050, 500);
+            this.dgvMembers.Size = new System.Drawing.Size(1181, 625);
             this.dgvMembers.TabIndex = 0;
             this.dgvMembers.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMembers_CellClick);
+            this.dgvMembers.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMembers_CellContentClick);
             // 
             // txtMaTV
             // 
-            this.txtMaTV.Location = new System.Drawing.Point(23, 15);
+            this.txtMaTV.Location = new System.Drawing.Point(26, 19);
+            this.txtMaTV.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtMaTV.Name = "txtMaTV";
             this.txtMaTV.ReadOnly = true;
-            this.txtMaTV.Size = new System.Drawing.Size(151, 22);
+            this.txtMaTV.Size = new System.Drawing.Size(169, 26);
             this.txtMaTV.TabIndex = 1;
             // 
             // txtHoTen
             // 
-            this.txtHoTen.Location = new System.Drawing.Point(231, 15);
+            this.txtHoTen.Location = new System.Drawing.Point(260, 19);
+            this.txtHoTen.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtHoTen.Name = "txtHoTen";
-            this.txtHoTen.Size = new System.Drawing.Size(326, 22);
+            this.txtHoTen.Size = new System.Drawing.Size(366, 26);
             this.txtHoTen.TabIndex = 2;
             // 
             // txtEmail
             // 
-            this.txtEmail.Location = new System.Drawing.Point(613, 15);
+            this.txtEmail.Location = new System.Drawing.Point(690, 19);
+            this.txtEmail.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtEmail.Name = "txtEmail";
-            this.txtEmail.Size = new System.Drawing.Size(326, 22);
+            this.txtEmail.Size = new System.Drawing.Size(366, 26);
             this.txtEmail.TabIndex = 3;
             // 
             // txtSearch
             // 
             this.txtSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSearch.Location = new System.Drawing.Point(139, 149);
+            this.txtSearch.Location = new System.Drawing.Point(156, 186);
+            this.txtSearch.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(706, 28);
+            this.txtSearch.Size = new System.Drawing.Size(794, 32);
             this.txtSearch.TabIndex = 4;
             this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
             // 
@@ -99,9 +105,10 @@
             // 
             this.btnAdd.BackColor = System.Drawing.Color.DarkSeaGreen;
             this.btnAdd.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAdd.Location = new System.Drawing.Point(968, 15);
+            this.btnAdd.Location = new System.Drawing.Point(1089, 19);
+            this.btnAdd.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(102, 32);
+            this.btnAdd.Size = new System.Drawing.Size(115, 40);
             this.btnAdd.TabIndex = 5;
             this.btnAdd.Text = "Thêm";
             this.btnAdd.UseVisualStyleBackColor = false;
@@ -111,9 +118,10 @@
             // 
             this.btnUpdate.BackColor = System.Drawing.Color.Gold;
             this.btnUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnUpdate.Location = new System.Drawing.Point(968, 53);
+            this.btnUpdate.Location = new System.Drawing.Point(1089, 66);
+            this.btnUpdate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.Size = new System.Drawing.Size(102, 32);
+            this.btnUpdate.Size = new System.Drawing.Size(115, 40);
             this.btnUpdate.TabIndex = 6;
             this.btnUpdate.Text = "Sửa";
             this.btnUpdate.UseVisualStyleBackColor = false;
@@ -123,9 +131,10 @@
             // 
             this.btnDelete.BackColor = System.Drawing.Color.LightCoral;
             this.btnDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDelete.Location = new System.Drawing.Point(968, 91);
+            this.btnDelete.Location = new System.Drawing.Point(1089, 114);
+            this.btnDelete.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(102, 32);
+            this.btnDelete.Size = new System.Drawing.Size(115, 40);
             this.btnDelete.TabIndex = 7;
             this.btnDelete.Text = "Xóa";
             this.btnDelete.UseVisualStyleBackColor = false;
@@ -133,9 +142,10 @@
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(968, 146);
+            this.btnClear.Location = new System.Drawing.Point(1089, 182);
+            this.btnClear.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(102, 31);
+            this.btnClear.Size = new System.Drawing.Size(115, 39);
             this.btnClear.TabIndex = 8;
             this.btnClear.Text = "Xóa trắng";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -145,9 +155,10 @@
             // 
             this.btnRefresh.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnRefresh.Location = new System.Drawing.Point(20, 146);
+            this.btnRefresh.Location = new System.Drawing.Point(22, 182);
+            this.btnRefresh.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(102, 31);
+            this.btnRefresh.Size = new System.Drawing.Size(115, 39);
             this.btnRefresh.TabIndex = 9;
             this.btnRefresh.Text = "Tải lại";
             this.btnRefresh.UseVisualStyleBackColor = false;
@@ -157,9 +168,10 @@
             // 
             this.btnSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSearch.Location = new System.Drawing.Point(860, 146);
+            this.btnSearch.Location = new System.Drawing.Point(968, 182);
+            this.btnSearch.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(102, 31);
+            this.btnSearch.Size = new System.Drawing.Size(115, 39);
             this.btnSearch.TabIndex = 10;
             this.btnSearch.Text = "Tìm kiếm";
             this.btnSearch.UseVisualStyleBackColor = false;
@@ -168,51 +180,53 @@
             // lblSDT
             // 
             this.lblSDT.AutoSize = true;
-            this.lblSDT.Location = new System.Drawing.Point(20, 66);
+            this.lblSDT.Location = new System.Drawing.Point(22, 82);
             this.lblSDT.Name = "lblSDT";
-            this.lblSDT.Size = new System.Drawing.Size(34, 16);
+            this.lblSDT.Size = new System.Drawing.Size(41, 20);
             this.lblSDT.TabIndex = 11;
             this.lblSDT.Text = "SĐT";
             // 
             // lblDiaChi
             // 
             this.lblDiaChi.AutoSize = true;
-            this.lblDiaChi.Location = new System.Drawing.Point(291, 66);
+            this.lblDiaChi.Location = new System.Drawing.Point(327, 82);
             this.lblDiaChi.Name = "lblDiaChi";
-            this.lblDiaChi.Size = new System.Drawing.Size(47, 16);
+            this.lblDiaChi.Size = new System.Drawing.Size(57, 20);
             this.lblDiaChi.TabIndex = 13;
             this.lblDiaChi.Text = "Địa chỉ";
             // 
             // lblVaiTro
             // 
             this.lblVaiTro.AutoSize = true;
-            this.lblVaiTro.Location = new System.Drawing.Point(697, 66);
+            this.lblVaiTro.Location = new System.Drawing.Point(784, 82);
             this.lblVaiTro.Name = "lblVaiTro";
-            this.lblVaiTro.Size = new System.Drawing.Size(45, 16);
+            this.lblVaiTro.Size = new System.Drawing.Size(55, 20);
             this.lblVaiTro.TabIndex = 15;
             this.lblVaiTro.Text = "Vai trò";
             // 
             // lblTrangThai
             // 
             this.lblTrangThai.AutoSize = true;
-            this.lblTrangThai.Location = new System.Drawing.Point(140, 104);
+            this.lblTrangThai.Location = new System.Drawing.Point(158, 130);
             this.lblTrangThai.Name = "lblTrangThai";
-            this.lblTrangThai.Size = new System.Drawing.Size(67, 16);
+            this.lblTrangThai.Size = new System.Drawing.Size(80, 20);
             this.lblTrangThai.TabIndex = 17;
             this.lblTrangThai.Text = "Trạng thái";
             // 
             // txtSDT
             // 
-            this.txtSDT.Location = new System.Drawing.Point(60, 63);
+            this.txtSDT.Location = new System.Drawing.Point(68, 79);
+            this.txtSDT.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtSDT.Name = "txtSDT";
-            this.txtSDT.Size = new System.Drawing.Size(194, 22);
+            this.txtSDT.Size = new System.Drawing.Size(218, 26);
             this.txtSDT.TabIndex = 12;
             // 
             // txtDiaChi
             // 
-            this.txtDiaChi.Location = new System.Drawing.Point(344, 63);
+            this.txtDiaChi.Location = new System.Drawing.Point(387, 79);
+            this.txtDiaChi.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtDiaChi.Name = "txtDiaChi";
-            this.txtDiaChi.Size = new System.Drawing.Size(327, 22);
+            this.txtDiaChi.Size = new System.Drawing.Size(367, 26);
             this.txtDiaChi.TabIndex = 14;
             // 
             // cboVaiTro
@@ -224,9 +238,10 @@
             "Phó chủ nhiệm",
             "Trưởng ban",
             "Thành viên"});
-            this.cboVaiTro.Location = new System.Drawing.Point(748, 63);
+            this.cboVaiTro.Location = new System.Drawing.Point(842, 79);
+            this.cboVaiTro.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cboVaiTro.Name = "cboVaiTro";
-            this.cboVaiTro.Size = new System.Drawing.Size(191, 24);
+            this.cboVaiTro.Size = new System.Drawing.Size(214, 28);
             this.cboVaiTro.TabIndex = 16;
             // 
             // cboTrangThai
@@ -237,14 +252,15 @@
             "Hoạt động",
             "Khóa",
             "Chờ kích hoạt"});
-            this.cboTrangThai.Location = new System.Drawing.Point(213, 101);
+            this.cboTrangThai.Location = new System.Drawing.Point(240, 126);
+            this.cboTrangThai.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cboTrangThai.Name = "cboTrangThai";
-            this.cboTrangThai.Size = new System.Drawing.Size(272, 24);
+            this.cboTrangThai.Size = new System.Drawing.Size(306, 28);
             this.cboTrangThai.TabIndex = 18;
             // 
             // ucAccount
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.cboTrangThai);
             this.Controls.Add(this.lblTrangThai);
@@ -265,8 +281,9 @@
             this.Controls.Add(this.txtHoTen);
             this.Controls.Add(this.txtMaTV);
             this.Controls.Add(this.dgvMembers);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "ucAccount";
-            this.Size = new System.Drawing.Size(1092, 712);
+            this.Size = new System.Drawing.Size(1228, 890);
             this.Load += new System.EventHandler(this.ucAccount_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvMembers)).EndInit();
             this.ResumeLayout(false);

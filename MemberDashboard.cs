@@ -14,7 +14,7 @@ namespace ClubManageApp
         private int maTV;
 
         // 🔗 Chuỗi kết nối SQL Server
-        private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;User ID=sa;Password=912005;TrustServerCertificate=True";
+        private string connectionString = @"Data Source=DESKTOP-B7F3HIU;Initial Catalog=QL_APP_LSC;Integrated Security=True;TrustServerCertificate=True";
         // Biến cho animation sidebar
         bool sidebarExpand = true;
         private const int SIDEBAR_MAX = 250;
@@ -1216,6 +1216,16 @@ namespace ClubManageApp
         {
             chatbot?.Dispose();
             base.OnFormClosing(e);
+        }
+
+        private void flowTimeline_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void MemberDashboard_Load_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

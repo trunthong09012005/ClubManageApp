@@ -87,7 +87,7 @@ namespace ClubManageApp
         }
 
         // 🔗 Chuỗi kết nối SQL Server
-        private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;User ID=sa;Password=912005;TrustServerCertificate=True";
+        private string connectionString = @"Data Source=DESKTOP-B7F3HIU;Initial Catalog=QL_APP_LSC;Integrated Security=True;TrustServerCertificate=True";
         private readonly string role;
         private readonly string username;
         private readonly int maTV;
@@ -555,7 +555,7 @@ namespace ClubManageApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi mở Tài khoản: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lõi khi mở Tài khoản: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
         }
@@ -563,13 +563,81 @@ namespace ClubManageApp
         private void btnHoatDong_Click(object sender, EventArgs e)
         {
             SelectMenuButton(btnHoatDong);
-             ShowModulePlaceholder("Hoạt động");
-         }
+            try
+            {
+                if (this.contentPanel == null) return;
+
+                // Hide dashboard top stats/timeline when switching to activity
+                if (this.panelStats != null) this.panelStats.Visible = false;
+                if (this.lblTimeline != null) this.lblTimeline.Visible = false;
+                if (this.flowTimeline != null) this.flowTimeline.Visible = false;
+
+                var activity = new Activity();
+                activity.Dock = DockStyle.Fill;
+
+                this.contentPanel.Controls.Clear();
+                this.contentPanel.Controls.Add(activity);
+                activity.BringToFront();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi mở Hoạt động: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
  
          private void btnThongbao_Click(object sender, EventArgs e)
          {
             SelectMenuButton(btnThongbao);
-             ShowModulePlaceholder("Thông báo");
+            try
+            {
+                if (this.contentPanel == null) return;
+
+                // Hide dashboard top stats/timeline when switching to notifications
+                if (this.panelStats != null) this.panelStats.Visible = false;
+                if (this.lblTimeline != null) this.lblTimeline.Visible = false;
+                if (this.flowTimeline != null) this.flowTimeline.Visible = false;
+
+                var notificationControl = new Notification();
+
+                // Make sure it fills the available content area precisely
+                notificationControl.Dock = DockStyle.Fill;
+                notificationControl.Margin = new Padding(0);
+                notificationControl.Location = new Point(0, 0);
+                // Do not set Size or Anchor manually; let Dock=Fill handle sizing
+
+                // Remove padding inside contentPanel so child can occupy full area
+                try { this.contentPanel.Padding = new Padding(0); } catch { }
+                try { this.contentPanel.Margin = new Padding(0); } catch { }
+
+                this.contentPanel.Controls.Clear();
+                this.contentPanel.Controls.Add(notificationControl);
+                notificationControl.BringToFront();
+
+                // Ensure it resizes when contentPanel changes
+                this.contentPanel.Resize -= ContentPanel_Resize_AdjustChild;
+                this.contentPanel.Resize += ContentPanel_Resize_AdjustChild;
+
+                // Force layout refresh
+                this.contentPanel.PerformLayout();
+                this.contentPanel.Invalidate();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi mở Thông báo: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+         }
+
+         private void ContentPanel_Resize_AdjustChild(object sender, EventArgs e)
+         {
+             try
+             {
+                 if (this.contentPanel == null) return;
+                 if (this.contentPanel.Controls.Count == 0) return;
+                 var ctl = this.contentPanel.Controls[0];
+                 ctl.Location = new Point(0, 0);
+                 ctl.Size = this.contentPanel.ClientSize;
+             }
+             catch { }
          }
  
          private void btnTaiChinh_Click(object sender, EventArgs e)
@@ -660,6 +728,11 @@ namespace ClubManageApp
                 // Log lỗi nhưng không hiển thị cho user khi đóng form
                 System.Diagnostics.Debug.WriteLine($"Error during cleanup: {ex.Message}");
             }
+        }
+
+        private void flowTimeline_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

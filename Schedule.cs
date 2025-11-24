@@ -245,6 +245,11 @@ namespace ClubManageApp
                 MessageBox.Show($"{m.Title}\n\n{m.Content}", "Chi tiết");
             }
         }
+
+        private void ucSchedule_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 
     // Simple models for demo
