@@ -200,6 +200,7 @@
                 {
                     bool ok = (c >= '0' && c <= '9') ||
                               (c >= 'a' && c <= 'f') ||
+
                               (c >= 'A' && c <= 'F');
                     if (!ok) return false;
                 }
