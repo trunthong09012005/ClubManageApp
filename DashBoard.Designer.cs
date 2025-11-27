@@ -114,11 +114,10 @@
             this.guna2Panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.guna2Panel1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.guna2Panel1.Location = new System.Drawing.Point(0, 0);
-            this.guna2Panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.guna2Panel1.Name = "guna2Panel1";
             this.guna2Panel1.ShadowDecoration.Depth = 10;
             this.guna2Panel1.ShadowDecoration.Enabled = true;
-            this.guna2Panel1.Size = new System.Drawing.Size(1575, 88);
+            this.guna2Panel1.Size = new System.Drawing.Size(1400, 70);
             this.guna2Panel1.TabIndex = 0;
             // 
             // lblRole
@@ -128,9 +127,9 @@
             this.lblRole.BackColor = System.Drawing.Color.Transparent;
             this.lblRole.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblRole.ForeColor = System.Drawing.Color.White;
-            this.lblRole.Location = new System.Drawing.Point(1328, 48);
+            this.lblRole.Location = new System.Drawing.Point(1180, 38);
             this.lblRole.Name = "lblRole";
-            this.lblRole.Size = new System.Drawing.Size(67, 25);
+            this.lblRole.Size = new System.Drawing.Size(55, 20);
             this.lblRole.TabIndex = 1;
             this.lblRole.Text = "Vai trò:";
             // 
@@ -141,9 +140,9 @@
             this.lblUsername.BackColor = System.Drawing.Color.Transparent;
             this.lblUsername.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblUsername.ForeColor = System.Drawing.Color.White;
-            this.lblUsername.Location = new System.Drawing.Point(1328, 19);
+            this.lblUsername.Location = new System.Drawing.Point(1180, 15);
             this.lblUsername.Name = "lblUsername";
-            this.lblUsername.Size = new System.Drawing.Size(126, 28);
+            this.lblUsername.Size = new System.Drawing.Size(108, 23);
             this.lblUsername.TabIndex = 0;
             this.lblUsername.Text = "Người dùng";
             // 
@@ -153,18 +152,17 @@
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(90, 25);
+            this.label1.Location = new System.Drawing.Point(80, 20);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(609, 38);
+            this.label1.Size = new System.Drawing.Size(529, 32);
             this.label1.TabIndex = 1;
             this.label1.Text = "🎯 CLB KỸ NĂNG X LSC                                   ";
             // 
             // guna2Panel2
             // 
-            this.guna2Panel2.Location = new System.Drawing.Point(3, 746);
-            this.guna2Panel2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.guna2Panel2.Location = new System.Drawing.Point(3, 597);
             this.guna2Panel2.Name = "guna2Panel2";
-            this.guna2Panel2.Size = new System.Drawing.Size(230, 71);
+            this.guna2Panel2.Size = new System.Drawing.Size(204, 57);
             this.guna2Panel2.TabIndex = 2;
             // 
             // btnham
@@ -173,10 +171,9 @@
             this.btnham.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnham.Image = global::ClubManageApp.Properties.Resources.menu;
             this.btnham.ImageRotate = 0F;
-            this.btnham.Location = new System.Drawing.Point(17, 19);
-            this.btnham.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnham.Location = new System.Drawing.Point(15, 15);
             this.btnham.Name = "btnham";
-            this.btnham.Size = new System.Drawing.Size(56, 50);
+            this.btnham.Size = new System.Drawing.Size(50, 40);
             this.btnham.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.btnham.TabIndex = 1;
             this.btnham.TabStop = false;
@@ -195,19 +192,17 @@
             this.slidebar.Controls.Add(this.pndangxuat);
             this.slidebar.Controls.Add(this.panel3);
             this.slidebar.Dock = System.Windows.Forms.DockStyle.Left;
-            this.slidebar.Location = new System.Drawing.Point(0, 88);
-            this.slidebar.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.slidebar.Location = new System.Drawing.Point(0, 70);
             this.slidebar.Name = "slidebar";
-            this.slidebar.Size = new System.Drawing.Size(248, 912);
+            this.slidebar.Size = new System.Drawing.Size(220, 730);
             this.slidebar.TabIndex = 1;
             // 
             // panel1
             // 
             this.panel1.Controls.Add(this.btnDashBoard);
-            this.panel1.Location = new System.Drawing.Point(3, 4);
-            this.panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(244, 75);
+            this.panel1.Size = new System.Drawing.Size(217, 60);
             this.panel1.TabIndex = 2;
             // 
             // btnDashBoard
@@ -230,9 +225,8 @@
             this.btnDashBoard.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnDashBoard.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnDashBoard.Location = new System.Drawing.Point(0, 0);
-            this.btnDashBoard.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnDashBoard.Name = "btnDashBoard";
-            this.btnDashBoard.Size = new System.Drawing.Size(244, 75);
+            this.btnDashBoard.Size = new System.Drawing.Size(217, 60);
             this.btnDashBoard.TabIndex = 1;
             this.btnDashBoard.Text = "Dashboard";
             this.btnDashBoard.TextOffset = new System.Drawing.Point(8, 0);
@@ -241,10 +235,9 @@
             // panel2
             // 
             this.panel2.Controls.Add(this.btnTaiKhoan);
-            this.panel2.Location = new System.Drawing.Point(3, 87);
-            this.panel2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panel2.Location = new System.Drawing.Point(3, 69);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(244, 75);
+            this.panel2.Size = new System.Drawing.Size(217, 60);
             this.panel2.TabIndex = 3;
             // 
             // btnTaiKhoan
@@ -267,9 +260,8 @@
             this.btnTaiKhoan.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnTaiKhoan.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnTaiKhoan.Location = new System.Drawing.Point(0, 0);
-            this.btnTaiKhoan.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnTaiKhoan.Name = "btnTaiKhoan";
-            this.btnTaiKhoan.Size = new System.Drawing.Size(244, 75);
+            this.btnTaiKhoan.Size = new System.Drawing.Size(217, 60);
             this.btnTaiKhoan.TabIndex = 1;
             this.btnTaiKhoan.Text = "Tài khoản";
             this.btnTaiKhoan.TextOffset = new System.Drawing.Point(8, 0);
@@ -278,10 +270,9 @@
             // panel7
             // 
             this.panel7.Controls.Add(this.btnHoatDong);
-            this.panel7.Location = new System.Drawing.Point(3, 170);
-            this.panel7.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panel7.Location = new System.Drawing.Point(3, 135);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(244, 75);
+            this.panel7.Size = new System.Drawing.Size(217, 60);
             this.panel7.TabIndex = 8;
             // 
             // btnHoatDong
@@ -304,9 +295,8 @@
             this.btnHoatDong.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnHoatDong.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnHoatDong.Location = new System.Drawing.Point(0, 0);
-            this.btnHoatDong.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnHoatDong.Name = "btnHoatDong";
-            this.btnHoatDong.Size = new System.Drawing.Size(244, 75);
+            this.btnHoatDong.Size = new System.Drawing.Size(217, 60);
             this.btnHoatDong.TabIndex = 1;
             this.btnHoatDong.Text = "Hoạt động";
             this.btnHoatDong.TextOffset = new System.Drawing.Point(8, 0);
@@ -315,10 +305,9 @@
             // panel8
             // 
             this.panel8.Controls.Add(this.btnThongbao);
-            this.panel8.Location = new System.Drawing.Point(3, 253);
-            this.panel8.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panel8.Location = new System.Drawing.Point(3, 201);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(244, 75);
+            this.panel8.Size = new System.Drawing.Size(217, 60);
             this.panel8.TabIndex = 9;
             // 
             // btnThongbao
@@ -341,9 +330,8 @@
             this.btnThongbao.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnThongbao.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnThongbao.Location = new System.Drawing.Point(0, 0);
-            this.btnThongbao.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnThongbao.Name = "btnThongbao";
-            this.btnThongbao.Size = new System.Drawing.Size(244, 75);
+            this.btnThongbao.Size = new System.Drawing.Size(217, 60);
             this.btnThongbao.TabIndex = 1;
             this.btnThongbao.Text = "Thông báo";
             this.btnThongbao.TextOffset = new System.Drawing.Point(8, 0);
@@ -352,10 +340,9 @@
             // panel5
             // 
             this.panel5.Controls.Add(this.btnTaiChinh);
-            this.panel5.Location = new System.Drawing.Point(3, 336);
-            this.panel5.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panel5.Location = new System.Drawing.Point(3, 267);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(244, 75);
+            this.panel5.Size = new System.Drawing.Size(217, 60);
             this.panel5.TabIndex = 6;
             // 
             // btnTaiChinh
@@ -378,9 +365,8 @@
             this.btnTaiChinh.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnTaiChinh.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnTaiChinh.Location = new System.Drawing.Point(0, 0);
-            this.btnTaiChinh.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnTaiChinh.Name = "btnTaiChinh";
-            this.btnTaiChinh.Size = new System.Drawing.Size(244, 75);
+            this.btnTaiChinh.Size = new System.Drawing.Size(217, 60);
             this.btnTaiChinh.TabIndex = 1;
             this.btnTaiChinh.Text = "Tài Chính";
             this.btnTaiChinh.TextOffset = new System.Drawing.Point(8, 0);
@@ -389,10 +375,9 @@
             // panel4
             // 
             this.panel4.Controls.Add(this.btnDuAn);
-            this.panel4.Location = new System.Drawing.Point(3, 419);
-            this.panel4.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panel4.Location = new System.Drawing.Point(3, 333);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(244, 75);
+            this.panel4.Size = new System.Drawing.Size(217, 60);
             this.panel4.TabIndex = 5;
             // 
             // btnDuAn
@@ -415,9 +400,8 @@
             this.btnDuAn.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnDuAn.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnDuAn.Location = new System.Drawing.Point(0, 0);
-            this.btnDuAn.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnDuAn.Name = "btnDuAn";
-            this.btnDuAn.Size = new System.Drawing.Size(244, 75);
+            this.btnDuAn.Size = new System.Drawing.Size(217, 60);
             this.btnDuAn.TabIndex = 1;
             this.btnDuAn.Text = "Dự án";
             this.btnDuAn.TextOffset = new System.Drawing.Point(8, 0);
@@ -426,10 +410,9 @@
             // panel6
             // 
             this.panel6.Controls.Add(this.btnLichHop);
-            this.panel6.Location = new System.Drawing.Point(3, 502);
-            this.panel6.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panel6.Location = new System.Drawing.Point(3, 399);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(244, 75);
+            this.panel6.Size = new System.Drawing.Size(217, 60);
             this.panel6.TabIndex = 7;
             // 
             // btnLichHop
@@ -452,9 +435,8 @@
             this.btnLichHop.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnLichHop.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnLichHop.Location = new System.Drawing.Point(0, 0);
-            this.btnLichHop.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnLichHop.Name = "btnLichHop";
-            this.btnLichHop.Size = new System.Drawing.Size(244, 75);
+            this.btnLichHop.Size = new System.Drawing.Size(217, 60);
             this.btnLichHop.TabIndex = 1;
             this.btnLichHop.Text = "Lịch họp";
             this.btnLichHop.TextOffset = new System.Drawing.Point(8, 0);
@@ -463,10 +445,9 @@
             // pndangxuat
             // 
             this.pndangxuat.Controls.Add(this.btnThanhVien);
-            this.pndangxuat.Location = new System.Drawing.Point(3, 585);
-            this.pndangxuat.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.pndangxuat.Location = new System.Drawing.Point(3, 465);
             this.pndangxuat.Name = "pndangxuat";
-            this.pndangxuat.Size = new System.Drawing.Size(244, 75);
+            this.pndangxuat.Size = new System.Drawing.Size(217, 60);
             this.pndangxuat.TabIndex = 8;
             // 
             // btnThanhVien
@@ -489,9 +470,8 @@
             this.btnThanhVien.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnThanhVien.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnThanhVien.Location = new System.Drawing.Point(0, 0);
-            this.btnThanhVien.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnThanhVien.Name = "btnThanhVien";
-            this.btnThanhVien.Size = new System.Drawing.Size(244, 75);
+            this.btnThanhVien.Size = new System.Drawing.Size(217, 60);
             this.btnThanhVien.TabIndex = 2;
             this.btnThanhVien.Text = "Thành viên";
             this.btnThanhVien.TextOffset = new System.Drawing.Point(8, 0);
@@ -500,10 +480,9 @@
             // panel3
             // 
             this.panel3.Controls.Add(this.btnDangxuat);
-            this.panel3.Location = new System.Drawing.Point(3, 668);
-            this.panel3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panel3.Location = new System.Drawing.Point(3, 531);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(244, 75);
+            this.panel3.Size = new System.Drawing.Size(217, 60);
             this.panel3.TabIndex = 5;
             // 
             // btnDangxuat
@@ -524,9 +503,8 @@
             this.btnDangxuat.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnDangxuat.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnDangxuat.Location = new System.Drawing.Point(0, 0);
-            this.btnDangxuat.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnDangxuat.Name = "btnDangxuat";
-            this.btnDangxuat.Size = new System.Drawing.Size(244, 75);
+            this.btnDangxuat.Size = new System.Drawing.Size(217, 60);
             this.btnDangxuat.TabIndex = 2;
             this.btnDangxuat.Text = "Đăng xuất";
             this.btnDangxuat.TextOffset = new System.Drawing.Point(8, 0);
@@ -545,11 +523,10 @@
             this.panelStats.Controls.Add(this.panelPost);
             this.panelStats.Controls.Add(this.panelProject);
             this.panelStats.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelStats.Location = new System.Drawing.Point(248, 88);
-            this.panelStats.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panelStats.Location = new System.Drawing.Point(220, 70);
             this.panelStats.Name = "panelStats";
-            this.panelStats.Padding = new System.Windows.Forms.Padding(22, 19, 22, 19);
-            this.panelStats.Size = new System.Drawing.Size(1327, 175);
+            this.panelStats.Padding = new System.Windows.Forms.Padding(20, 15, 20, 15);
+            this.panelStats.Size = new System.Drawing.Size(1180, 140);
             this.panelStats.TabIndex = 2;
             // 
             // panelEvent
@@ -559,14 +536,13 @@
             this.panelEvent.Controls.Add(this.lblEventTitle);
             this.panelEvent.Controls.Add(this.pictureBox4);
             this.panelEvent.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(107)))), ((int)(((byte)(107)))));
-            this.panelEvent.Location = new System.Drawing.Point(1001, 25);
-            this.panelEvent.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panelEvent.Location = new System.Drawing.Point(890, 20);
             this.panelEvent.Name = "panelEvent";
             this.panelEvent.Radius = 12;
             this.panelEvent.ShadowColor = System.Drawing.Color.Black;
             this.panelEvent.ShadowDepth = 80;
             this.panelEvent.ShadowShift = 6;
-            this.panelEvent.Size = new System.Drawing.Size(304, 125);
+            this.panelEvent.Size = new System.Drawing.Size(270, 100);
             this.panelEvent.TabIndex = 6;
             // 
             // lblEventCount
@@ -575,9 +551,9 @@
             this.lblEventCount.BackColor = System.Drawing.Color.Transparent;
             this.lblEventCount.Font = new System.Drawing.Font("Segoe UI", 28F, System.Drawing.FontStyle.Bold);
             this.lblEventCount.ForeColor = System.Drawing.Color.White;
-            this.lblEventCount.Location = new System.Drawing.Point(101, 19);
+            this.lblEventCount.Location = new System.Drawing.Point(90, 15);
             this.lblEventCount.Name = "lblEventCount";
-            this.lblEventCount.Size = new System.Drawing.Size(64, 74);
+            this.lblEventCount.Size = new System.Drawing.Size(54, 62);
             this.lblEventCount.TabIndex = 2;
             this.lblEventCount.Text = "0";
             // 
@@ -587,9 +563,9 @@
             this.lblEventTitle.BackColor = System.Drawing.Color.Transparent;
             this.lblEventTitle.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.lblEventTitle.ForeColor = System.Drawing.Color.White;
-            this.lblEventTitle.Location = new System.Drawing.Point(107, 88);
+            this.lblEventTitle.Location = new System.Drawing.Point(95, 70);
             this.lblEventTitle.Name = "lblEventTitle";
-            this.lblEventTitle.Size = new System.Drawing.Size(153, 28);
+            this.lblEventTitle.Size = new System.Drawing.Size(130, 23);
             this.lblEventTitle.TabIndex = 1;
             this.lblEventTitle.Text = "Sự kiện sắp tới";
             // 
@@ -597,10 +573,9 @@
             // 
             this.pictureBox4.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox4.Image = global::ClubManageApp.Properties.Resources.icons8_schedule_30;
-            this.pictureBox4.Location = new System.Drawing.Point(17, 31);
-            this.pictureBox4.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.pictureBox4.Location = new System.Drawing.Point(15, 25);
             this.pictureBox4.Name = "pictureBox4";
-            this.pictureBox4.Size = new System.Drawing.Size(68, 75);
+            this.pictureBox4.Size = new System.Drawing.Size(60, 60);
             this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox4.TabIndex = 0;
             this.pictureBox4.TabStop = false;
@@ -613,14 +588,13 @@
             this.panelMember.Controls.Add(this.pictureBox1);
             this.panelMember.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(219)))), ((int)(((byte)(251)))));
             this.panelMember.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.panelMember.Location = new System.Drawing.Point(34, 25);
-            this.panelMember.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panelMember.Location = new System.Drawing.Point(30, 20);
             this.panelMember.Name = "panelMember";
             this.panelMember.Radius = 12;
             this.panelMember.ShadowColor = System.Drawing.Color.Black;
             this.panelMember.ShadowDepth = 80;
             this.panelMember.ShadowShift = 6;
-            this.panelMember.Size = new System.Drawing.Size(304, 125);
+            this.panelMember.Size = new System.Drawing.Size(270, 100);
             this.panelMember.TabIndex = 3;
             // 
             // lblMemberTitle
@@ -629,9 +603,9 @@
             this.lblMemberTitle.BackColor = System.Drawing.Color.Transparent;
             this.lblMemberTitle.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.lblMemberTitle.ForeColor = System.Drawing.Color.White;
-            this.lblMemberTitle.Location = new System.Drawing.Point(107, 88);
+            this.lblMemberTitle.Location = new System.Drawing.Point(95, 70);
             this.lblMemberTitle.Name = "lblMemberTitle";
-            this.lblMemberTitle.Size = new System.Drawing.Size(117, 28);
+            this.lblMemberTitle.Size = new System.Drawing.Size(97, 23);
             this.lblMemberTitle.TabIndex = 1;
             this.lblMemberTitle.Text = "Thành viên";
             // 
@@ -641,9 +615,9 @@
             this.lblMemberCount.BackColor = System.Drawing.Color.Transparent;
             this.lblMemberCount.Font = new System.Drawing.Font("Segoe UI", 28F, System.Drawing.FontStyle.Bold);
             this.lblMemberCount.ForeColor = System.Drawing.Color.White;
-            this.lblMemberCount.Location = new System.Drawing.Point(101, 19);
+            this.lblMemberCount.Location = new System.Drawing.Point(90, 15);
             this.lblMemberCount.Name = "lblMemberCount";
-            this.lblMemberCount.Size = new System.Drawing.Size(64, 74);
+            this.lblMemberCount.Size = new System.Drawing.Size(54, 62);
             this.lblMemberCount.TabIndex = 0;
             this.lblMemberCount.Text = "0";
             // 
@@ -651,10 +625,9 @@
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox1.Image = global::ClubManageApp.Properties.Resources.icons8_member_24;
-            this.pictureBox1.Location = new System.Drawing.Point(17, 31);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.pictureBox1.Location = new System.Drawing.Point(15, 25);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(68, 75);
+            this.pictureBox1.Size = new System.Drawing.Size(60, 60);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 2;
             this.pictureBox1.TabStop = false;
@@ -666,14 +639,13 @@
             this.panelPost.Controls.Add(this.lblPostTitle);
             this.panelPost.Controls.Add(this.pictureBox3);
             this.panelPost.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(177)))), ((int)(((byte)(160)))));
-            this.panelPost.Location = new System.Drawing.Point(675, 25);
-            this.panelPost.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panelPost.Location = new System.Drawing.Point(600, 20);
             this.panelPost.Name = "panelPost";
             this.panelPost.Radius = 12;
             this.panelPost.ShadowColor = System.Drawing.Color.Black;
             this.panelPost.ShadowDepth = 80;
             this.panelPost.ShadowShift = 6;
-            this.panelPost.Size = new System.Drawing.Size(304, 125);
+            this.panelPost.Size = new System.Drawing.Size(270, 100);
             this.panelPost.TabIndex = 5;
             // 
             // lblPostCount
@@ -682,9 +654,9 @@
             this.lblPostCount.BackColor = System.Drawing.Color.Transparent;
             this.lblPostCount.Font = new System.Drawing.Font("Segoe UI", 28F, System.Drawing.FontStyle.Bold);
             this.lblPostCount.ForeColor = System.Drawing.Color.White;
-            this.lblPostCount.Location = new System.Drawing.Point(101, 19);
+            this.lblPostCount.Location = new System.Drawing.Point(90, 15);
             this.lblPostCount.Name = "lblPostCount";
-            this.lblPostCount.Size = new System.Drawing.Size(64, 74);
+            this.lblPostCount.Size = new System.Drawing.Size(54, 62);
             this.lblPostCount.TabIndex = 2;
             this.lblPostCount.Text = "0";
             // 
@@ -694,9 +666,9 @@
             this.lblPostTitle.BackColor = System.Drawing.Color.Transparent;
             this.lblPostTitle.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.lblPostTitle.ForeColor = System.Drawing.Color.White;
-            this.lblPostTitle.Location = new System.Drawing.Point(107, 88);
+            this.lblPostTitle.Location = new System.Drawing.Point(95, 70);
             this.lblPostTitle.Name = "lblPostTitle";
-            this.lblPostTitle.Size = new System.Drawing.Size(96, 28);
+            this.lblPostTitle.Size = new System.Drawing.Size(81, 23);
             this.lblPostTitle.TabIndex = 1;
             this.lblPostTitle.Text = "Bài đăng";
             // 
@@ -704,10 +676,9 @@
             // 
             this.pictureBox3.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox3.Image = global::ClubManageApp.Properties.Resources.icons8_announcement_30;
-            this.pictureBox3.Location = new System.Drawing.Point(17, 31);
-            this.pictureBox3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.pictureBox3.Location = new System.Drawing.Point(15, 25);
             this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(68, 75);
+            this.pictureBox3.Size = new System.Drawing.Size(60, 60);
             this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox3.TabIndex = 0;
             this.pictureBox3.TabStop = false;
@@ -719,14 +690,13 @@
             this.panelProject.Controls.Add(this.lblProjectTitle);
             this.panelProject.Controls.Add(this.pictureBox2);
             this.panelProject.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(237)))), ((int)(((byte)(159)))));
-            this.panelProject.Location = new System.Drawing.Point(354, 25);
-            this.panelProject.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panelProject.Location = new System.Drawing.Point(315, 20);
             this.panelProject.Name = "panelProject";
             this.panelProject.Radius = 12;
             this.panelProject.ShadowColor = System.Drawing.Color.Black;
             this.panelProject.ShadowDepth = 80;
             this.panelProject.ShadowShift = 6;
-            this.panelProject.Size = new System.Drawing.Size(304, 125);
+            this.panelProject.Size = new System.Drawing.Size(270, 100);
             this.panelProject.TabIndex = 4;
             // 
             // lblProjectCount
@@ -735,9 +705,9 @@
             this.lblProjectCount.BackColor = System.Drawing.Color.Transparent;
             this.lblProjectCount.Font = new System.Drawing.Font("Segoe UI", 28F, System.Drawing.FontStyle.Bold);
             this.lblProjectCount.ForeColor = System.Drawing.Color.White;
-            this.lblProjectCount.Location = new System.Drawing.Point(101, 19);
+            this.lblProjectCount.Location = new System.Drawing.Point(90, 15);
             this.lblProjectCount.Name = "lblProjectCount";
-            this.lblProjectCount.Size = new System.Drawing.Size(64, 74);
+            this.lblProjectCount.Size = new System.Drawing.Size(54, 62);
             this.lblProjectCount.TabIndex = 2;
             this.lblProjectCount.Text = "0";
             // 
@@ -747,9 +717,9 @@
             this.lblProjectTitle.BackColor = System.Drawing.Color.Transparent;
             this.lblProjectTitle.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.lblProjectTitle.ForeColor = System.Drawing.Color.White;
-            this.lblProjectTitle.Location = new System.Drawing.Point(107, 88);
+            this.lblProjectTitle.Location = new System.Drawing.Point(95, 70);
             this.lblProjectTitle.Name = "lblProjectTitle";
-            this.lblProjectTitle.Size = new System.Drawing.Size(69, 28);
+            this.lblProjectTitle.Size = new System.Drawing.Size(58, 23);
             this.lblProjectTitle.TabIndex = 1;
             this.lblProjectTitle.Text = "Dự án";
             // 
@@ -757,10 +727,9 @@
             // 
             this.pictureBox2.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox2.Image = global::ClubManageApp.Properties.Resources.icons8_project_24;
-            this.pictureBox2.Location = new System.Drawing.Point(17, 31);
-            this.pictureBox2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.pictureBox2.Location = new System.Drawing.Point(15, 25);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(68, 75);
+            this.pictureBox2.Size = new System.Drawing.Size(60, 60);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox2.TabIndex = 0;
             this.pictureBox2.TabStop = false;
@@ -774,8 +743,8 @@
             this.lblTimeline.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
             this.lblTimeline.Location = new System.Drawing.Point(0, 0);
             this.lblTimeline.Name = "lblTimeline";
-            this.lblTimeline.Padding = new System.Windows.Forms.Padding(34, 19, 0, 12);
-            this.lblTimeline.Size = new System.Drawing.Size(439, 76);
+            this.lblTimeline.Padding = new System.Windows.Forms.Padding(30, 15, 0, 10);
+            this.lblTimeline.Size = new System.Drawing.Size(369, 62);
             this.lblTimeline.TabIndex = 3;
             this.lblTimeline.Text = "📰 BẢNG TIN - TIMELINE";
             // 
@@ -784,11 +753,10 @@
             this.flowTimeline.AutoScroll = true;
             this.flowTimeline.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(247)))));
             this.flowTimeline.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowTimeline.Location = new System.Drawing.Point(0, 76);
-            this.flowTimeline.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.flowTimeline.Location = new System.Drawing.Point(0, 62);
             this.flowTimeline.Name = "flowTimeline";
-            this.flowTimeline.Padding = new System.Windows.Forms.Padding(22, 25, 22, 25);
-            this.flowTimeline.Size = new System.Drawing.Size(1327, 661);
+            this.flowTimeline.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.flowTimeline.Size = new System.Drawing.Size(1180, 528);
             this.flowTimeline.TabIndex = 4;
             this.flowTimeline.Paint += new System.Windows.Forms.PaintEventHandler(this.flowTimeline_Paint);
             // 
@@ -798,10 +766,9 @@
             this.contentPanel.Controls.Add(this.flowTimeline);
             this.contentPanel.Controls.Add(this.lblTimeline);
             this.contentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.contentPanel.Location = new System.Drawing.Point(248, 263);
-            this.contentPanel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.contentPanel.Location = new System.Drawing.Point(220, 210);
             this.contentPanel.Name = "contentPanel";
-            this.contentPanel.Size = new System.Drawing.Size(1327, 737);
+            this.contentPanel.Size = new System.Drawing.Size(1180, 590);
             this.contentPanel.TabIndex = 5;
             // 
             // guna2Elipse1
@@ -823,16 +790,15 @@
             // 
             // DashBoard
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1575, 1000);
+            this.ClientSize = new System.Drawing.Size(1400, 800);
             this.Controls.Add(this.contentPanel);
             this.Controls.Add(this.panelStats);
             this.Controls.Add(this.slidebar);
             this.Controls.Add(this.guna2Panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "DashBoard";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Dashboard - Quản lý CLB";

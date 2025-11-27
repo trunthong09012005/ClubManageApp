@@ -144,6 +144,7 @@
     <Compile Include="Notification.Designer.cs">
       <DependentUpon>Notification.cs</DependentUpon>
     </Compile>
+    <Compile Include="Participant.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Project.cs">
       <SubType>UserControl</SubType>
@@ -157,6 +158,9 @@
     </Compile>
     <Compile Include="Schedule.Designer.cs">
       <DependentUpon>Schedule.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SendMailForm.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="SignUp.cs">
       <SubType>Form</SubType>

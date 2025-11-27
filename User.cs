@@ -553,5 +553,10 @@ namespace ClubManageApp
         {
 
         }
+
+        private void ucUser_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
