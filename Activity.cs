@@ -13,7 +13,7 @@ namespace ClubManageApp
 {
     public partial class Activity : UserControl
     {
-        private string connectionString = @"Data Source=DESKTOP-EJIGPN3;Initial Catalog=QL_APP_LSC;Persist Security Info=True;User ID=sa;Password=1234;Encrypt=True;TrustServerCertificate=True";
+        private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;Persist Security Info=True;User ID=sa;Password=912005;Encrypt=True;TrustServerCertificate=True";
         private BindingList<ActivityData> activities = new BindingList<ActivityData>();
         private BindingList<ActivityData> filteredActivities = new BindingList<ActivityData>();
 
@@ -309,7 +309,7 @@ namespace ClubManageApp
             }
 
             var selected = (ActivityData)dgvActivities.CurrentRow.DataBoundItem;
-            var result = MessageBox.Show($"Bạn có chắc chắn muốn xóa hoạt động '{selected.TenHD}'?", 
+            var result = MessageBox.Show($"Bạn có chắc chắn muốn xóa hoạt động '{selected.TenHD}'?",
                 "Xác nhận xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
             if (result == DialogResult.Yes)
@@ -377,7 +377,7 @@ namespace ClubManageApp
             // Search filter
             if (!string.IsNullOrEmpty(searchText))
             {
-                query = query.Where(a => a.TenHD.ToLower().Contains(searchText) || 
+                query = query.Where(a => a.TenHD.ToLower().Contains(searchText) ||
                                          a.DiaDiem.ToLower().Contains(searchText) ||
                                          a.MoTa.ToLower().Contains(searchText));
             }

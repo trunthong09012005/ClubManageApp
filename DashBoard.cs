@@ -87,7 +87,7 @@ namespace ClubManageApp
         }
 
         // 🔗 Chuỗi kết nối SQL Server
-        private string connectionString = @"Data Source=DESKTOP-EJIGPN3;Initial Catalog=QL_APP_LSC;Persist Security Info=True;User ID=sa;Password=1234;Encrypt=True;TrustServerCertificate=True";
+        private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;Persist Security Info=True;User ID=sa;Password=912005;Encrypt=True;TrustServerCertificate=True";
         private readonly string role;
         private readonly string username;
         private readonly int maTV;
@@ -508,9 +508,9 @@ namespace ClubManageApp
         private void btnDashBoard_Click(object sender, EventArgs e)
         {
             SelectMenuButton(btnDashBoard);
-             // Restore dashboard main content
-             try
-             {
+            // Restore dashboard main content
+            try
+            {
                 // Make sure the top stats and timeline label are visible
                 if (this.panelStats != null) this.panelStats.Visible = true;
                 if (this.lblTimeline != null) this.lblTimeline.Visible = true;
@@ -537,8 +537,8 @@ namespace ClubManageApp
         private void btnTaiKhoan_Click(object sender, EventArgs e)
         {
             SelectMenuButton(btnTaiKhoan);
-             try
-             {
+            try
+            {
                 if (this.contentPanel == null) return;
 
                 // Hide dashboard top stats/timeline when switching to account
@@ -584,9 +584,9 @@ namespace ClubManageApp
                 MessageBox.Show("Lỗi khi mở Hoạt động: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
- 
-         private void btnThongbao_Click(object sender, EventArgs e)
-         {
+
+        private void btnThongbao_Click(object sender, EventArgs e)
+        {
             SelectMenuButton(btnThongbao);
             try
             {
@@ -625,26 +625,26 @@ namespace ClubManageApp
             {
                 MessageBox.Show("Lỗi khi mở Thông báo: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-         }
+        }
 
-         private void ContentPanel_Resize_AdjustChild(object sender, EventArgs e)
-         {
-             try
-             {
-                 if (this.contentPanel == null) return;
-                 if (this.contentPanel.Controls.Count == 0) return;
-                 var ctl = this.contentPanel.Controls[0];
-                 ctl.Location = new Point(0, 0);
-                 ctl.Size = this.contentPanel.ClientSize;
-             }
-             catch { }
-         }
- 
-         private void btnTaiChinh_Click(object sender, EventArgs e)
-         {
+        private void ContentPanel_Resize_AdjustChild(object sender, EventArgs e)
+        {
+            try
+            {
+                if (this.contentPanel == null) return;
+                if (this.contentPanel.Controls.Count == 0) return;
+                var ctl = this.contentPanel.Controls[0];
+                ctl.Location = new Point(0, 0);
+                ctl.Size = this.contentPanel.ClientSize;
+            }
+            catch { }
+        }
+
+        private void btnTaiChinh_Click(object sender, EventArgs e)
+        {
             SelectMenuButton(btnTaiChinh);
-             try
-             {
+            try
+            {
                 if (this.contentPanel == null) return;
 
                 // Hide dashboard top stats/timeline when switching to finance
@@ -658,18 +658,18 @@ namespace ClubManageApp
                 this.contentPanel.Controls.Clear();
                 this.contentPanel.Controls.Add(finance);
                 finance.BringToFront();
-             }
-             catch (Exception ex)
-             {
-                 MessageBox.Show("Lỗi khi mở Tài Chính: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-             }
-         }
- 
-         private void btnDuAn_Click(object sender, EventArgs e)
-         {
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi mở Tài Chính: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnDuAn_Click(object sender, EventArgs e)
+        {
             SelectMenuButton(btnDuAn);
-             try
-             {
+            try
+            {
                 if (this.contentPanel == null) return;
 
                 // Hide dashboard top stats/timeline when switching to projects
@@ -683,15 +683,15 @@ namespace ClubManageApp
                 this.contentPanel.Controls.Clear();
                 this.contentPanel.Controls.Add(proj);
                 proj.BringToFront();
-             }
-             catch (Exception ex)
-             {
-                 MessageBox.Show("Lỗi khi mở Dự án: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-             }
-         }
- 
-         private void btnLichHop_Click(object sender, EventArgs e)
-         {
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi mở Dự án: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnLichHop_Click(object sender, EventArgs e)
+        {
             SelectMenuButton(btnLichHop);
             try
             {
@@ -715,8 +715,8 @@ namespace ClubManageApp
             }
         }
 
-         private void btnThanhVien_Click(object sender, EventArgs e)
-         {
+        private void btnThanhVien_Click(object sender, EventArgs e)
+        {
             SelectMenuButton(btnThanhVien);
             try
             {
@@ -738,7 +738,7 @@ namespace ClubManageApp
             {
                 MessageBox.Show("Lỗi khi mở Thành viên: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-         }
+        }
 
 
         // ================================
