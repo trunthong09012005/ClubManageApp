@@ -73,7 +73,7 @@ namespace ClubManageApp
             };
 
             foreach (DataGridViewColumn c in dgvUsers.Columns)
-            {
+            { 
                 if (allowed.Contains(c.Name))
                 {
                     // Set friendly headers

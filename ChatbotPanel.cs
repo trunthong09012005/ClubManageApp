@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using System.Media;
+using System.Linq;
 
 namespace ClubManageApp
 {
@@ -53,7 +54,6 @@ namespace ClubManageApp
             btnToggle.Click += BtnToggle_Click;
             this.Controls.Add(btnToggle);
 
-            // Badge số tin nhắn chưa đọc
             lblBadge = new Label()
             {
                 Size = new Size(22, 22),
@@ -89,15 +89,11 @@ namespace ClubManageApp
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    // Chỉ đếm tin nhắn chưa đọc từ Admin (không đếm tin cũ)
                     using (SqlCommand cmd = new SqlCommand(
-                        @"SELECT COUNT(*) FROM TinNhan TN
-                          INNER JOIN ThanhVien TV ON TN.MaNguoiGui = TV.MaTV
-                          LEFT JOIN TaiKhoan TK ON TN.MaNguoiGui = TK.MaTV
-                          WHERE TN.MaNguoiNhan = @maTV 
-                            AND TN.TrangThai = N'Chưa đọc'
-                            AND (TV.MaCV = 1 OR TK.QuyenHan IN (N'Admin', N'Quản trị viên'))
-                            AND TN.NgayGui >= DATEADD(HOUR, -1, GETDATE())", conn))
+                        @"SELECT COUNT(*) FROM TinNhan 
+                          WHERE MaNguoiNhan = @maTV 
+                            AND TrangThai = N'Chưa đọc'
+                            AND NgayGui >= DATEADD(HOUR, -24, GETDATE())", conn))
                     {
                         cmd.Parameters.AddWithValue("@maTV", maTV);
                         int count = Convert.ToInt32(cmd.ExecuteScalar());
@@ -135,13 +131,11 @@ namespace ClubManageApp
             if (chatForm == null || chatForm.IsDisposed)
             {
                 chatForm = new ChatbotForm(connectionString, maTV, username);
-                // Ensure toggle button returns to original icon/color when the chat form is closed or hidden
                 chatForm.FormClosed += (s, args) => {
                     btnToggle.Text = "💬";
                     btnToggle.BackColor = Color.FromArgb(79, 172, 254);
                 };
 
-                // Handle the case where the ChatbotForm is hidden (ChatbotForm uses Hide() on close button)
                 chatForm.VisibleChanged += (s, args) => {
                     try
                     {
@@ -188,23 +182,24 @@ namespace ClubManageApp
             badgeTimer?.Dispose();
             base.OnHandleDestroyed(e);
         }
+    }
 
-        private void InitializeComponent()
-        {
-            this.SuspendLayout();
-            // 
-            // ChatbotPanel
-            // 
-            this.Name = "ChatbotPanel";
-            this.Load += new System.EventHandler(this.ChatbotPanel_Load);
-            this.ResumeLayout(false);
+    // ============ MEMBER INFO CLASS ============
+    public class MemberInfo
+    {
+        public int MaTV { get; set; }
+        public string HoTen { get; set; }
+        public string ChucVu { get; set; }
+        public int UnreadCount { get; set; }
+        public bool IsOnline { get; set; }
+    }
 
-        }
-
-        private void ChatbotPanel_Load(object sender, EventArgs e)
-        {
-
-        }
+    // ============ CHAT MODE ENUM ============
+    public enum ChatMode
+    {
+        Bot,
+        Admin,
+        Member
     }
 
     // ============ FORM CHATBOT ============
@@ -212,20 +207,20 @@ namespace ClubManageApp
     {
         private FlowLayoutPanel flowMessages;
         private TextBox txtMessage;
-        private Button btnSend, btnSwitchMode;
-        private Panel pnlHeader;
+        private Button btnSend, btnSwitchMode, btnMemberList;
+        private Panel pnlHeader, pnlMemberList;
         private Label lblTitle, lblStatus, lblTyping;
-        private bool isAdminChatMode = false;
+        private ChatMode currentMode = ChatMode.Bot;
         private string connectionString;
         private int maTV;
         private string username;
         private int adminID;
         private string adminName;
+        private int? selectedMemberID = null;
+        private string selectedMemberName = "";
         private Timer refreshTimer;
         private int lastMessageID = 0;
         private Dictionary<string[], string> faqResponses;
-
-        // Track displayed messages to avoid duplicates caused by multiple DB rows
         private HashSet<string> displayedMessageKeys = new HashSet<string>(StringComparer.Ordinal);
 
         public event Action OnMessagesRead;
@@ -241,7 +236,7 @@ namespace ClubManageApp
             InitializeForm();
             SetupRefreshTimer();
 
-            AddBotMessage($"Xin chào {username}! 👋\n\n💡 Nhấn 'Chat Admin' để được hỗ trợ trực tiếp!");
+            AddBotMessage($"Xin chào {username}! 👋\n\n💡 Chọn chế độ chat:\n• 🤖 Chat Bot - Trả lời tự động\n• 👨‍💼 Chat Admin - Hỗ trợ trực tiếp\n• 👥 Chat Thành viên - Trò chuyện với bạn bè");
         }
 
         private void LoadAdminInfo()
@@ -251,7 +246,6 @@ namespace ClubManageApp
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    // Chỉ lấy để hiển thị tên, tin nhắn sẽ broadcast tới tất cả Admin
                     string query = @"SELECT TOP 1 TV.MaTV, TV.HoTen 
                                      FROM ThanhVien TV 
                                      LEFT JOIN TaiKhoan TK ON TV.MaTV = TK.MaTV 
@@ -270,7 +264,7 @@ namespace ClubManageApp
                         if (reader.Read())
                         {
                             adminID = Convert.ToInt32(reader["MaTV"]);
-                            adminName = "Admin CLB"; // Hiển thị tên chung
+                            adminName = "Admin CLB";
                         }
                         else
                         {
@@ -291,238 +285,31 @@ namespace ClubManageApp
         {
             faqResponses = new Dictionary<string[], string>
     {
-        // ========== CHÀO HỎI & GIỚI THIỆU (20) ==========
-        { new[] { "động lực", "motivation" },
-            "🔥 Cần động lực?\n\n💪 Hãy nhớ:\n• Mục tiêu của bạn\n• Những người ủng hộ bạn\n• CLB luôn bên cạnh\n\n🌟 Bạn làm được!" },
+        { new[] { "xin chào", "hello", "hi", "chào", "chao", "hey", "alo", "hế lô" },
+            "👋 Xin chào! Tôi là trợ lý ảo của CLB.\n\n💡 Tôi có thể giúp bạn:\n• Thông tin hoạt động\n• Điểm rèn luyện\n• Kết nối Admin\n• Chat với thành viên\n\nBạn cần gì?" },
 
-        { new[] { "thất bại", "fail", "failure" },
-            "💔 Thất bại là bài học!\n\n💡 Ghi nhớ:\n• Thất bại là mẹ thành công\n• Học hỏi từ sai lầm\n• Đứng lên và tiếp tục\n\n🚀 Bạn mạnh mẽ hơn bạn nghĩ!" },
+        { new[] { "hoạt động", "sự kiện", "event", "lịch", "offline", "workshop", "du lịch", "teambuilding", "sắp tới" },
+            "📅 Hoạt động CLB:\n\n🔹 Offline định kỳ: T7, CN\n🔹 Workshop: Hàng tháng\n🔹 Du lịch: Mùa hè, Tết\n🔹 Teambuilding: Quý\n\n💬 Chat Admin để biết chi tiết!" },
 
-        { new[] { "thành công", "success" },
-            "🎉 Chúc mừng! Tôi tự hào về bạn!\n\n🏆 Chia sẻ thành công với CLB để cùng vui nhé!" },
+        { new[] { "thành viên", "member", "bạn bè", "danh sách", "người", "kết nối", "chat với bạn" },
+            "👥 Kết nối thành viên:\n\n• Nhấn '👥 Danh sách' để xem\n• Chat trực tiếp 1-1\n• Xem trạng thái online\n• Tin nhắn chưa đọc\n\n🤝 Giao lưu ngay!" },
 
-        { new[] { "yêu", "love" },
-            "❤️ Tình yêu thật tuyệt!\n\nCLB cũng yêu bạn và luôn ủng hộ bạn! 💝" },
+        { new[] { "help", "giúp", "hướng dẫn", "trợ giúp", "hỗ trợ", "cách dùng", "sử dụng", "làm sao" },
+            "🤖 Hướng dẫn sử dụng:\n\n🔵 Chat Bot: Trả lời tự động\n🟢 Chat Admin: Hỗ trợ trực tiếp\n🟡 Chat Thành viên: Trò chuyện\n\n💡 Chuyển đổi bằng nút phía trên!" },
 
-        { new[] { "gia đình", "family" },
-            "👨‍👩‍👧‍👦 Gia đình quan trọng nhất!\n\nCLB cũng là gia đình thứ 2 của bạn! ❤️" },
-
-        { new[] { "bạn bè", "friends", "friendship" },
-            "👥 Tình bạn vô giá!\n\nCLB là nơi kết nối những tình bạn đẹp! 🤝" },
-
-        { new[] { "ước mơ", "dream" },
-            "✨ Đừng bao giờ từ bỏ ước mơ!\n\nCLB sẽ đồng hành cùng bạn thực hiện ước mơ! 🌟" },
-
-        { new[] { "hi vọng", "hope" },
-            "🌈 Luôn có hi vọng!\n\nMỗi ngày mới là cơ hội mới! 💫" },
-
-        // ========== THỜI TIẾT & MÙA (10) ==========
-        { new[] { "thời tiết", "weather" },
-            "🌤️ Hôm nay thời tiết thế nào?\n\nDù nắng hay mưa, CLB luôn vui vẻ! 😊" },
-
-        { new[] { "nắng", "sunny" },
-            "☀️ Trời nắng đẹp!\n\nHoạt động ngoài trời sẽ vui hơn! Tham gia picnic nhé!" },
-
-        { new[] { "mưa", "rain" },
-            "🌧️ Trời mưa rồi!\n\nHoạt động trong nhà vẫn vui lắm! Movie night, board game đều ok!" },
-
-        { new[] { "lạnh", "cold" },
-            "❄️ Trời lạnh!\n\nNhớ giữ ấm nhé! CLB có café ấm áp cho bạn! ☕" },
-
-        { new[] { "nóng", "hot" },
-            "🔥 Trời nóng quá!\n\nĐi bơi hoặc beach party cùng CLB nhé! 🏖️" },
-
-        { new[] { "mùa xuân", "spring" },
-            "🌸 Mùa xuân!\n\nMùa của sự khởi đầu! Nhiều hoạt động mới đang chờ!" },
-
-        { new[] { "mùa hè", "summer" },
-            "☀️ Mùa hè!\n\nDu lịch, picnic, teambuilding - Hè sôi động! 🏖️" },
-
-        { new[] { "mùa thu", "fall", "autumn" },
-            "🍂 Mùa thu!\n\nMùa của sự trầm lắng. Workshop, seminar sẽ nhiều hơn! 📚" },
-
-        { new[] { "mùa đông", "winter" },
-            "❄️ Mùa đông!\n\nHoạt động ấm áp trong nhà! Gala cuối năm đang đến! 🎄" },
-
-        { new[] { "tết", "năm mới", "new year" },
-            "🎊 Chúc mừng năm mới!\n\nCLB có nhiều hoạt động đón Tết! Gặp gỡ đầu năm nhé! 🧧" },
-
-        // ========== ĂN UỐNG (15) ==========
-        { new[] { "ăn", "đói", "hungry" },
-            "🍜 Đói à?\n\nOffline CLB thường có đồ ăn ngon! Hoặc đi ăn nhóm cuối tuần! 😋" },
-
-        { new[] { "cafe", "coffee", "cà phê" },
-            "☕ Cafe CLB:\n• Mỗi T7, CN buổi chiều\n• Địa điểm xoay vòng\n• Chat, networking\n\n💬 Tham gia để giao lưu!" },
-
-        { new[] { "trà sữa", "bubble tea" },
-            "🧋 Trà sữa party:\n• Thỉnh thoảng tổ chức\n• Nhiều vị ngon\n• Vừa uống vừa chat\n\n😋 Đăng ký với Admin!" },
-
-        { new[] { "ăn tối", "dinner" },
-            "🍽️ Dinner CLB:\n• Offline cuối tuần\n• Đi ăn nhóm\n• Chia sẻ chi phí\n\n👥 Vui vẻ cùng nhau!" },
-
-        { new[] { "buffet" },
-            "🍱 Buffet party:\n• Dịp đặc biệt\n• All you can eat\n• Giá ưu đãi\n\n🎉 Theo dõi thông báo!" },
-
-        { new[] { "nướng", "bbq" },
-            "🍖 BBQ party:\n• Beach hoặc resort\n• Tự tay nướng\n• Super fun!\n\n🔥 Hoạt động hot nhất!" },
-
-        { new[] { "lẩu", "hotpot" },
-            "🍲 Lẩu party:\n• Mùa đông\n• Ấm áp, thân mật\n• Giá sinh viên\n\n❤️ Gắn kết tuyệt vời!" },
-
-        { new[] { "pizza" },
-            "🍕 Pizza night:\n• Movie + Pizza\n• Order chung giảm giá\n• Chill cuối tuần\n\n😋 Đăng ký đi!" },
-
-        { new[] { "sinh tố", "smoothie" },
-            "🥤 Smoothie:\n• Healthy drink\n• Sau yoga, thể thao\n• Tự làm đơn giản\n\n💪 Tốt cho sức khỏe!" },
-
-        { new[] { "kem", "ice cream" },
-            "🍦 Ice cream:\n• Đi ăn nhóm\n• Mùa hè mát lạnh\n• Giải nhiệt tuyệt vời\n\n😋 Ai cùng đi nào!" },
-
-        { new[] { "bánh", "cake" },
-            "🎂 Bánh ngọt:\n• Sinh nhật thành viên\n• Sự kiện đặc biệt\n• Homemade luôn!\n\n💝 Ngọt ngào kỷ niệm!" },
-
-        { new[] { "snack", "đồ ăn vặt" },
-            "🍿 Snack:\n• Có trong mọi sự kiện\n• Free cho thành viên\n• Nhiều loại\n\n😊 Ăn vặt vui vẻ!" },
-
-        { new[] { "ăn chay", "vegetarian" },
-            "🥗 Ăn chay:\n• CLB respect mọi lựa chọn\n• Luôn có option chay\n• Healthy lifestyle\n\n🌱 Yên tâm tham gia!" },
-
-        { new[] { "món ngon", "food recommendation" },
-            "🍴 Món ngon gần CLB:\n• Chat Admin để biết\n• Thành viên share địa điểm\n• Review trên group\n\n😋 Khám phá cùng nhau!" },
-
-        { new[] { "nhậu", "party", "drink" },
-            "🍻 CLB có hoạt động:\n• Sinh nhật\n• Kỷ niệm\n• Gala dinner\n\n⚠️ Uống có trách nhiệm nhé!" },
-
-        // ========== CÔNG VIỆC & SỰ NGHIỆP (10) ==========
-        { new[] { "tìm việc", "job hunting" },
-            "💼 Tìm việc làm:\n• CLB kết nối doanh nghiệp\n• Post job trên group\n• Hỗ trợ CV\n\n📧 Gửi CV cho Admin!" },
-
-        { new[] { "cv", "resume" },
-            "📄 Hỗ trợ CV:\n• Review miễn phí\n• Template professional\n• Tips phỏng vấn\n\n✅ Gửi CV cho Admin review!" },
-
-        { new[] { "phỏng vấn", "interview" },
-            "👔 Chuẩn bị phỏng vấn:\n• Workshop hướng dẫn\n• Mock interview\n• Tư vấn 1-1\n\n💪 Đăng ký với Admin!" },
-
-        { new[] { "part time", "làm thêm" },
-            "⏰ Part-time:\n• Nhiều cơ hội\n• Linh hoạt thời gian\n• Post trên group\n\n💰 Theo dõi thông báo!" },
-
-        { new[] { "full time" },
-            "💼 Full-time job:\n• Kết nối alumni\n• Giới thiệu việc làm\n• Tư vấn career\n\n📞 Chat Admin để được hỗ trợ!" },
-
-        { new[] { "kỹ năng mềm", "soft skills" },
-            "🎯 Phát triển kỹ năng mềm:\n• Communication\n• Leadership\n• Teamwork\n• Time management\n\n💪 Workshop định kỳ!" },
-
-        { new[] { "networking" },
-            "🤝 Networking:\n• Sự kiện giao lưu\n• Alumni connection\n• Business card exchange\n\n💼 Mở rộng mạng lưới!" },
-
-        { new[] { "tăng lương", "promotion" },
-            "📈 Thăng tiến sự nghiệp:\n• Học hỏi không ngừng\n• Chủ động đề xuất\n• Kết quả làm việc\n\n💪 CLB đào tạo kỹ năng!" },
-
-        { new[] { "khởi nghiệp", "start up" },
-            "🚀 Khởi nghiệp:\n• Mentor hướng dẫn\n• Networking investor\n• Pitch competition\n\n💡 Biến ý tưởng thành hiện thực!" },
-
-        { new[] { "freelance" },
-            "💻 Freelance:\n• Linh hoạt thời gian\n• Nhiều dự án\n• Kinh nghiệm thực tế\n\n📝 Tham gia project CLB!" },
-
-        // ========== HỌC VẤN & BẰNG CẤP (10) ==========
-        { new[] { "tốt nghiệp", "graduation" },
-            "🎓 Tốt nghiệp:\n• Lễ tri ân\n• Album kỷ niệm\n• Giữ liên lạc alumni\n\n🎊 Chúc mừng!" },
-
-        { new[] { "học phí", "tuition fee" },
-            "💰 Học phí:\n• CLB hỗ trợ học bổng\n• Part-time để kiếm thêm\n• Tư vấn tài chính\n\n📞 Chat Admin nếu khó khăn!" },
-
-        { new[] { "điểm số", "grade", "gpa" },
-            "📊 Điểm số:\n• Nhóm học cùng nhau\n• Chia sẻ tài liệu\n• Gia sư hỗ trợ\n\n💪 Cùng nhau tiến bộ!" },
-
-        { new[] { "thi cử", "exam" },
-            "📝 Mùa thi:\n• Nhóm ôn tập\n• Đề thi cũ\n• Tips từ senior\n\n🍀 Chúc may mắn!" },
-
-        { new[] { "luận văn", "thesis" },
-            "📚 Luận văn:\n• Mentor hướng dẫn\n• Nhóm nghiên cứu\n• Review chéo\n\n💪 Cố gắng hoàn thành!" },
-
-        { new[] { "học bổng nước ngoài", "scholarship abroad" },
-            "✈️ Du học:\n• Tư vấn hồ sơ\n• Kinh nghiệm alumni\n• Tips xin học bổng\n\n🌍 Chat Admin để tìm hiểu!" },
-
-        { new[] { "trao đổi sinh viên", "exchange" },
-            "🌏 Exchange program:\n• Cơ hội tuyệt vời\n• Kinh nghiệm quốc tế\n• CLB hỗ trợ hồ sơ\n\n✈️ Đừng bỏ lỡ!" },
-
-        { new[] { "thực tập sinh", "intern" },
-            "👨‍💼 Thực tập:\n• CLB giới thiệu\n• Nhiều vị trí\n• Học hỏi thực tế\n\n📧 Gửi CV cho Admin!" },
-
-        { new[] { "nghiên cứu sinh", "phd" },
-            "🎓 PhD:\n• Alumni chia sẻ\n• Tư vấn định hướng\n• Kết nối giảng viên\n\n🔬 Chat Admin để biết thêm!" },
-
-        { new[] { "chuyển ngành", "switch major" },
-            "🔄 Chuyển ngành:\n• Cân nhắc kỹ\n• Tư vấn từ senior\n• Đánh giá năng lực\n\n💡 Chat Admin để tư vấn!" },
-
-        // ========== VUI VẺ & GIẢI TRÍ (15) ==========
-        { new[] { "hài hước", "funny", "joke" },
-            "😂 Muốn nghe chuyện vui?\n\nHãy đến offline CLB! Nhiều người hài hước lắm! 🎭" },
-
-        { new[] { "meme" },
-            "😆 Meme:\n• Group chat nhiều meme\n• Thi làm meme\n• Cười stress bay\n\n😂 Tham gia group nhé!" },
-
-        { new[] { "vui vẻ", "fun" },
-            "🎉 Vui vẻ là triết lý CLB!\n\nMọi hoạt động đều fun và ý nghĩa! Join us! 😄" },
-
-        { new[] { "chán", "boring" },
-            "😕 Chán à?\n\nHãy:\n• Tham gia hoạt động CLB\n• Chat với bạn bè\n• Thử thách mới\n\n🌟 CLB luôn sôi động!" },
-
-        { new[] { "thú vị", "interesting" },
-            "✨ CLB có nhiều điều thú vị:\n• Hoạt động đa dạng\n• Con người tuyệt vời\n• Trải nghiệm mới\n\n💫 Khám phá ngay!" },
-
-        { new[] { "bất ngờ", "surprise" },
-            "🎁 CLB thích làm bất ngờ:\n• Sinh nhật\n• Thành tích\n• Sự kiện đặc biệt\n\n🎊 Luôn có surprise!" },
-
-        { new[] { "kỷ niệm", "memory" },
-            "📸 Kỷ niệm CLB:\n• Album ảnh\n• Video recap\n• Câu chuyện đẹp\n\n💝 Tạo kỷ niệm cùng nhau!" },
-
-        { new[] { "du lịch ảo", "virtual tour" },
-            "🌍 Virtual tour:\n• Khám phá thế giới\n• Học văn hóa\n• Vui học\n\n💻 Hoạt động online thú vị!" },
-
-        { new[] { "trivia", "đố vui" },
-            "🧩 Trivia night:\n• Câu hỏi vui\n• Thi đua nhóm\n• Giải thưởng\n\n🏆 Mỗi tháng 1 lần!" },
-
-        { new[] { "magic", "ảo thuật" },
-            "🎩 Show ảo thuật:\n• Sự kiện lớn\n• Ma thuật gần\n• Wow amazing!\n\n✨ Đến xem nhé!" },
-
-        { new[] { "nhảy dây", "jump rope" },
-            "🤸 Nhảy dây:\n• Hoạt động thể thao\n• Giải stress\n• Rèn luyện sức khỏe\n\n💪 Tham gia buổi sáng!" },
-
-        { new[] { "cờ", "chess" },
-            "♟️ Cờ vua:\n• Câu lạc bộ cờ\n• Giải đấu\n• Rèn tư duy\n\n🧠 Đăng ký với Admin!" },
-
-        { new[] { "bóng bàn", "ping pong" },
-            "🏓 Bóng bàn:\n• Sân CLB có bàn\n• Chơi thoải mái\n• Giải thể thao\n\n⚡ Đến chơi nhé!" },
-
-        { new[] { "cầu lông", "badminton" },
-            "🏸 Cầu lông:\n• Mỗi T7, CN sáng\n• Sân gần trường\n• Miễn phí dụng cụ\n\n💪 Tham gia nào!" },
-
-        { new[] { "bơi", "swimming" },
-            "🏊 Bơi lội:\n• Mùa hè đi bơi\n• Pool party\n• Beach trip\n\n🌊 Giải nhiệt tuyệt vời!" },
-
-        // ========== KẾT THÚC (5) ==========
-        { new[] { "cảm ơn", "thanks", "thank you" },
-            "😊 Không có gì!\n\nNếu cần gì thêm, cứ hỏi tôi hoặc chat Admin nhé! 💙" },
-
-        { new[] { "tuyệt vời", "amazing", "awesome" },
-            "🌟 Cảm ơn! Bạn cũng tuyệt vời!\n\nCLB vui vì có bạn! 💫" },
-
-        { new[] { "love", "yêu clb" },
-            "❤️ CLB cũng yêu bạn!\n\nCùng nhau làm CLB tốt hơn mỗi ngày! 💝" },
-
-        { new[] { "help", "giúp", "hướng dẫn", "trợ giúp" },
-            "🤖 Tôi có thể giúp bạn:\n\n📅 Hoạt động CLB\n📊 Điểm rèn luyện\n👥 Thông tin thành viên\n💬 Kết nối Admin\n📚 Học tập & Kỹ năng\n🎉 Sự kiện & Giải trí\n\nHãy hỏi tôi bất cứ điều gì! 😊" },
-
-        { new[] { "ok", "được", "oke" },
-            "👍 Tuyệt!\n\nCó gì cần hỗ trợ thêm không? 😊" }
+        { new[] { "cảm ơn", "thanks", "thank you", "cam on", "cám ơn", "cảm ơn nhiều", "okela" },
+            "😊 Không có gì!\n\nCần gì thêm cứ hỏi nhé! 💙" }
     };
         }
+
         private void SetupRefreshTimer()
         {
-            refreshTimer = new Timer() { Interval = 1500 };
+            refreshTimer = new Timer() { Interval = 2000 };
             refreshTimer.Tick += (s, e) => {
-                if (isAdminChatMode) LoadNewMessages();
+                if (currentMode == ChatMode.Admin || currentMode == ChatMode.Member)
+                {
+                    LoadNewMessages();
+                }
             };
         }
 
@@ -546,6 +333,7 @@ namespace ClubManageApp
             };
 
             CreateHeader();
+            CreateMemberListPanel();
             CreateMessageArea();
             CreateInputArea();
         }
@@ -571,7 +359,7 @@ namespace ClubManageApp
         {
             pnlHeader = new Panel()
             {
-                Size = new Size(360, 75),
+                Size = new Size(360, 100),
                 Location = new Point(0, 0),
                 BackColor = Color.FromArgb(79, 172, 254)
             };
@@ -596,11 +384,12 @@ namespace ClubManageApp
             };
             pnlHeader.Controls.Add(lblStatus);
 
+            // Button Switch Mode
             btnSwitchMode = new Button()
             {
-                Text = $"💬 Chat {adminName}",
-                Size = new Size(140, 28),
-                Location = new Point(15, 52),
+                Text = "👨‍💼 Admin",
+                Size = new Size(80, 28),
+                Location = new Point(15, 60),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.FromArgb(52, 211, 153),
                 ForeColor = Color.White,
@@ -610,6 +399,22 @@ namespace ClubManageApp
             btnSwitchMode.FlatAppearance.BorderSize = 0;
             btnSwitchMode.Click += BtnSwitchMode_Click;
             pnlHeader.Controls.Add(btnSwitchMode);
+
+            // Button Member List
+            btnMemberList = new Button()
+            {
+                Text = "👥 Thành viên",
+                Size = new Size(110, 28),
+                Location = new Point(100, 60),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.FromArgb(255, 193, 7),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnMemberList.FlatAppearance.BorderSize = 0;
+            btnMemberList.Click += BtnMemberList_Click;
+            pnlHeader.Controls.Add(btnMemberList);
 
             Button btnClose = new Button()
             {
@@ -629,12 +434,27 @@ namespace ClubManageApp
             this.Controls.Add(pnlHeader);
         }
 
+        private void CreateMemberListPanel()
+        {
+            pnlMemberList = new Panel()
+            {
+                Location = new Point(0, 100),
+                Size = new Size(360, 400),
+                BackColor = Color.White,
+                Visible = false,
+                AutoScroll = true
+            };
+
+            this.Controls.Add(pnlMemberList);
+            pnlMemberList.BringToFront();
+        }
+
         private void CreateMessageArea()
         {
             flowMessages = new FlowLayoutPanel()
             {
-                Location = new Point(5, 80),
-                Size = new Size(350, 355),
+                Location = new Point(5, 105),
+                Size = new Size(350, 330),
                 AutoScroll = true,
                 FlowDirection = FlowDirection.TopDown,
                 WrapContents = false,
@@ -699,56 +519,348 @@ namespace ClubManageApp
 
         private void BtnSwitchMode_Click(object sender, EventArgs e)
         {
-            isAdminChatMode = !isAdminChatMode;
-            flowMessages.Controls.Clear();
-
-            if (isAdminChatMode)
+            if (currentMode == ChatMode.Bot)
             {
-                // Clear displayed keys when entering admin chat so history loads once
-                displayedMessageKeys.Clear();
-
-                lblTitle.Text = $"👤 {adminName}";
-                lblStatus.Text = "● Trực tuyến";
-                lblStatus.ForeColor = Color.FromArgb(52, 211, 153);
-                btnSwitchMode.Text = "🤖 Chat Bot";
-                btnSwitchMode.BackColor = Color.FromArgb(79, 172, 254);
-                pnlHeader.BackColor = Color.FromArgb(52, 73, 94);
-
-                // Lấy MAX ID hiện tại trước khi load tin cũ
-                int currentMaxID = GetCurrentMaxMessageID();
-
-                AddSystemMessage($"💬 Bắt đầu chat với {adminName}!");
-
-                // Load 10 tin nhắn gần nhất
-                LoadRecentMessages();
-
-                // Set lastMessageID sau khi load
-                lastMessageID = currentMaxID;
-
-                // Bắt đầu refresh
-                refreshTimer.Start();
-
-                // Test ngay lập tức
-                LoadNewMessages();
+                SwitchToAdminChat();
             }
             else
             {
-                lblTitle.Text = "🤖 Trợ lý CLB";
-                lblStatus.Text = "Bot tự động";
-                lblStatus.ForeColor = Color.FromArgb(220, 220, 220);
-                btnSwitchMode.Text = $"💬 Chat {adminName}";
-                btnSwitchMode.BackColor = Color.FromArgb(52, 211, 153);
-                pnlHeader.BackColor = Color.FromArgb(79, 172, 254);
-
-                refreshTimer.Stop();
-                AddBotMessage("Chào mừng quay lại! 👋\n\nTôi có thể giúp gì cho bạn?");
+                SwitchToBotChat();
             }
+        }
+
+        private void BtnMemberList_Click(object sender, EventArgs e)
+        {
+            if (pnlMemberList.Visible)
+            {
+                pnlMemberList.Visible = false;
+                flowMessages.Visible = true;
+            }
+            else
+            {
+                LoadMemberList();
+                pnlMemberList.Visible = true;
+                flowMessages.Visible = false;
+            }
+        }
+
+        private void LoadMemberList()
+        {
+            pnlMemberList.Controls.Clear();
+
+            // Search box
+            TextBox txtSearch = new TextBox()
+            {
+                Location = new Point(10, 10),
+                Size = new Size(340, 30),
+                Font = new Font("Segoe UI", 10),
+            };
+            txtSearch.ForeColor = Color.Gray;
+            txtSearch.Text = "🔍 Tìm kiếm thành viên...";
+            txtSearch.GotFocus += (s, e) => {
+                if (txtSearch.Text == "🔍 Tìm kiếm thành viên...")
+                {
+                    txtSearch.Text = "";
+                    txtSearch.ForeColor = Color.Black;
+                }
+            };
+            txtSearch.LostFocus += (s, e) => {
+                if (string.IsNullOrWhiteSpace(txtSearch.Text))
+                {
+                    txtSearch.Text = "🔍 Tìm kiếm thành viên...";
+                    txtSearch.ForeColor = Color.Gray;
+                }
+            };
+            pnlMemberList.Controls.Add(txtSearch);
+
+            FlowLayoutPanel flowMembers = new FlowLayoutPanel()
+            {
+                Location = new Point(0, 50),
+                Size = new Size(360, 350),
+                AutoScroll = true,
+                FlowDirection = FlowDirection.TopDown,
+                WrapContents = false
+            };
+            pnlMemberList.Controls.Add(flowMembers);
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = @"SELECT TV.MaTV, TV.HoTen, CV.TenCV, TV.TrangThai,
+                                    (SELECT COUNT(*) FROM TinNhan 
+                                     WHERE MaNguoiGui = TV.MaTV 
+                                       AND MaNguoiNhan = @myID 
+                                       AND TrangThai = N'Chưa đọc') as UnreadCount
+                                    FROM ThanhVien TV
+                                    LEFT JOIN ChucVu CV ON TV.MaCV = CV.MaCV
+                                    WHERE TV.MaTV != @myID
+                                    ORDER BY 
+                                        CASE WHEN TV.TrangThai = N'Đang hoạt động' THEN 0 ELSE 1 END,
+                                        UnreadCount DESC, 
+                                        TV.HoTen";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@myID", maTV);
+                        SqlDataReader reader = cmd.ExecuteReader();
+
+                        while (reader.Read())
+                        {
+                            MemberInfo member = new MemberInfo()
+                            {
+                                MaTV = Convert.ToInt32(reader["MaTV"]),
+                                HoTen = reader["HoTen"].ToString(),
+                                ChucVu = reader["TenCV"]?.ToString() ?? "Thành viên",
+                                UnreadCount = Convert.ToInt32(reader["UnreadCount"]),
+                                IsOnline = reader["TrangThai"].ToString() == "Đang hoạt động"
+                            };
+
+                            Panel memberItem = CreateMemberItem(member);
+                            flowMembers.Controls.Add(memberItem);
+                        }
+                    }
+                }
+
+                txtSearch.TextChanged += (s, e) => {
+                    string search = txtSearch.Text.ToLower();
+                    foreach (Control ctrl in flowMembers.Controls)
+                    {
+                        if (ctrl is Panel panel)
+                        {
+                            string memberName = panel.Tag?.ToString() ?? "";
+                            panel.Visible = memberName.ToLower().Contains(search);
+                        }
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi load danh sách: " + ex.Message);
+            }
+        }
+
+        private Panel CreateMemberItem(MemberInfo member)
+        {
+            Panel panel = new Panel()
+            {
+                Size = new Size(350, 60),
+                BackColor = Color.White,
+                Margin = new Padding(5, 2, 5, 2),
+                Cursor = Cursors.Hand,
+                Tag = member.HoTen
+            };
+
+            panel.Paint += (s, e) => {
+                e.Graphics.DrawLine(new Pen(Color.FromArgb(230, 230, 230)),
+                    0, panel.Height - 1, panel.Width, panel.Height - 1);
+            };
+
+            // Avatar with status indicator
+            Panel avatarContainer = new Panel()
+            {
+                Size = new Size(45, 45),
+                Location = new Point(10, 8),
+                BackColor = Color.Transparent
+            };
+
+            Label lblAvatar = new Label()
+            {
+                Text = member.HoTen.Substring(0, 1).ToUpper(),
+                Size = new Size(45, 45),
+                Location = new Point(0, 0),
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                ForeColor = Color.White,
+                BackColor = member.IsOnline ? Color.FromArgb(79, 172, 254) : Color.FromArgb(150, 150, 150),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+            var avatarPath = new GraphicsPath();
+            avatarPath.AddEllipse(0, 0, lblAvatar.Width, lblAvatar.Height);
+            lblAvatar.Region = new Region(avatarPath);
+            avatarContainer.Controls.Add(lblAvatar);
+
+            // Online status indicator
+            if (member.IsOnline)
+            {
+                Label lblOnline = new Label()
+                {
+                    Size = new Size(12, 12),
+                    Location = new Point(33, 33),
+                    BackColor = Color.FromArgb(52, 211, 153),
+                    BorderStyle = BorderStyle.FixedSingle
+                };
+                var onlinePath = new GraphicsPath();
+                onlinePath.AddEllipse(0, 0, lblOnline.Width, lblOnline.Height);
+                lblOnline.Region = new Region(onlinePath);
+                avatarContainer.Controls.Add(lblOnline);
+                lblOnline.BringToFront();
+            }
+
+            panel.Controls.Add(avatarContainer);
+
+            // Name
+            Label lblName = new Label()
+            {
+                Text = member.HoTen,
+                Location = new Point(65, 10),
+                Size = new Size(200, 20),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                ForeColor = Color.FromArgb(50, 50, 50)
+            };
+            panel.Controls.Add(lblName);
+
+            // Position with status
+            Label lblPosition = new Label()
+            {
+                Text = member.ChucVu + (member.IsOnline ? "" : " (Không hoạt động)"),
+                Location = new Point(65, 32),
+                Size = new Size(230, 16),
+                Font = new Font("Segoe UI", 8),
+                ForeColor = member.IsOnline ? Color.Gray : Color.FromArgb(180, 180, 180)
+            };
+            panel.Controls.Add(lblPosition);
+
+            // Unread badge
+            if (member.UnreadCount > 0)
+            {
+                Label lblUnread = new Label()
+                {
+                    Text = member.UnreadCount > 9 ? "9+" : member.UnreadCount.ToString(),
+                    Size = new Size(25, 25),
+                    Location = new Point(310, 18),
+                    Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                    ForeColor = Color.White,
+                    BackColor = Color.FromArgb(220, 53, 69),
+                    TextAlign = ContentAlignment.MiddleCenter
+                };
+                var badgePath = new GraphicsPath();
+                badgePath.AddEllipse(0, 0, lblUnread.Width, lblUnread.Height);
+                lblUnread.Region = new Region(badgePath);
+                panel.Controls.Add(lblUnread);
+            }
+
+            panel.Click += (s, e) => OpenMemberChat(member);
+            foreach (Control ctrl in panel.Controls)
+            {
+                ctrl.Click += (s, e) => OpenMemberChat(member);
+            }
+
+            panel.MouseEnter += (s, e) => panel.BackColor = Color.FromArgb(245, 245, 245);
+            panel.MouseLeave += (s, e) => panel.BackColor = Color.White;
+
+            return panel;
+        }
+
+        private void OpenMemberChat(MemberInfo member)
+        {
+            selectedMemberID = member.MaTV;
+            selectedMemberName = member.HoTen;
+            currentMode = ChatMode.Member;
+
+            pnlMemberList.Visible = false;
+            flowMessages.Visible = true;
+            flowMessages.Controls.Clear();
+            displayedMessageKeys.Clear();
+
+            lblTitle.Text = $"👤 {member.HoTen}";
+            lblStatus.Text = "● Trực tuyến";
+            lblStatus.ForeColor = Color.FromArgb(52, 211, 153);
+            btnSwitchMode.Text = "🤖 Bot";
+            btnSwitchMode.BackColor = Color.FromArgb(79, 172, 254);
+            pnlHeader.BackColor = Color.FromArgb(156, 39, 176);
+
+            int currentMaxID = GetCurrentMaxMessageID(member.MaTV);
+            AddSystemMessage($"💬 Chat với {member.HoTen}");
+            LoadRecentMessages(member.MaTV);
+            lastMessageID = currentMaxID;
+            refreshTimer.Start();
 
             txtMessage.Focus();
         }
 
-        // Load 10 tin nhắn gần nhất
-        private void LoadRecentMessages()
+        private void SwitchToAdminChat()
+        {
+            currentMode = ChatMode.Admin;
+            selectedMemberID = null;
+            flowMessages.Controls.Clear();
+            displayedMessageKeys.Clear();
+
+            lblTitle.Text = $"👨‍💼 {adminName}";
+            lblStatus.Text = "● Trực tuyến";
+            lblStatus.ForeColor = Color.FromArgb(52, 211, 153);
+            btnSwitchMode.Text = "🤖 Bot";
+            btnSwitchMode.BackColor = Color.FromArgb(79, 172, 254);
+            pnlHeader.BackColor = Color.FromArgb(52, 73, 94);
+
+            int currentMaxID = GetCurrentMaxMessageID(null);
+            AddSystemMessage($"💬 Chat với {adminName}");
+            LoadRecentMessagesAdmin();
+            lastMessageID = currentMaxID;
+            refreshTimer.Start();
+
+            txtMessage.Focus();
+        }
+
+        private void SwitchToBotChat()
+        {
+            currentMode = ChatMode.Bot;
+            selectedMemberID = null;
+            flowMessages.Controls.Clear();
+
+            lblTitle.Text = "🤖 Trợ lý CLB";
+            lblStatus.Text = "Bot tự động";
+            lblStatus.ForeColor = Color.FromArgb(220, 220, 220);
+            btnSwitchMode.Text = "👨‍💼 Admin";
+            btnSwitchMode.BackColor = Color.FromArgb(52, 211, 153);
+            pnlHeader.BackColor = Color.FromArgb(79, 172, 254);
+
+            refreshTimer.Stop();
+            AddBotMessage("Chào mừng quay lại! 👋\n\nTôi có thể giúp gì?");
+
+            txtMessage.Focus();
+        }
+
+        private int GetCurrentMaxMessageID(int? targetMemberID)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query;
+
+                    if (targetMemberID.HasValue)
+                    {
+                        query = @"SELECT ISNULL(MAX(MaTN), 0) FROM TinNhan 
+                                 WHERE (MaNguoiGui = @maTV AND MaNguoiNhan = @target)
+                                    OR (MaNguoiGui = @target AND MaNguoiNhan = @maTV)";
+                        using (SqlCommand cmd = new SqlCommand(query, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@maTV", maTV);
+                            cmd.Parameters.AddWithValue("@target", targetMemberID.Value);
+                            return Convert.ToInt32(cmd.ExecuteScalar());
+                        }
+                    }
+                    else
+                    {
+                        query = @"SELECT ISNULL(MAX(MaTN), 0) FROM TinNhan 
+                                 WHERE MaNguoiNhan = @maTV OR MaNguoiGui = @maTV";
+                        using (SqlCommand cmd = new SqlCommand(query, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@maTV", maTV);
+                            return Convert.ToInt32(cmd.ExecuteScalar());
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        private void LoadRecentMessages(int targetMemberID)
         {
             try
             {
@@ -756,7 +868,67 @@ namespace ClubManageApp
                 {
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand(
-                        @"SELECT TOP 10 MaTN, MaNguoiGui, NoiDung, NgayGui, TrangThai
+                        @"SELECT TOP 20 MaTN, MaNguoiGui, NoiDung, NgayGui, TrangThai
+                          FROM TinNhan
+                          WHERE (MaNguoiGui = @maTV AND MaNguoiNhan = @target)
+                             OR (MaNguoiGui = @target AND MaNguoiNhan = @maTV)
+                          ORDER BY NgayGui DESC", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@maTV", maTV);
+                        cmd.Parameters.AddWithValue("@target", targetMemberID);
+                        SqlDataReader reader = cmd.ExecuteReader();
+
+                        List<MessageData> messages = new List<MessageData>();
+                        while (reader.Read())
+                        {
+                            messages.Add(new MessageData
+                            {
+                                MaTN = Convert.ToInt32(reader["MaTN"]),
+                                MaNguoiGui = Convert.ToInt32(reader["MaNguoiGui"]),
+                                NoiDung = reader["NoiDung"].ToString(),
+                                NgayGui = Convert.ToDateTime(reader["NgayGui"]),
+                                TrangThai = reader["TrangThai"].ToString()
+                            });
+                        }
+                        reader.Close();
+
+                        messages.Reverse();
+
+                        foreach (var msg in messages)
+                        {
+                            string key = $"{msg.MaNguoiGui}|{msg.NoiDung?.Trim()}|{msg.NgayGui:s}";
+                            if (displayedMessageKeys.Contains(key)) continue;
+                            displayedMessageKeys.Add(key);
+
+                            bool isMe = (msg.MaNguoiGui == maTV);
+                            AddChatBubble(msg.NoiDung, isMe, msg.NgayGui, isMe ? msg.TrangThai : null);
+                        }
+
+                        if (messages.Count > 0)
+                        {
+                            AddSystemMessage($"📜 Đã load {messages.Count} tin nhắn");
+                        }
+                    }
+
+                    MarkMessagesAsRead(conn, targetMemberID);
+                    OnMessagesRead?.Invoke();
+                }
+            }
+            catch (Exception ex)
+            {
+                AddSystemMessage("⚠️ Lỗi: " + ex.Message);
+            }
+        }
+
+        private void LoadRecentMessagesAdmin()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(
+                        @"SELECT TOP 20 MaTN, MaNguoiGui, NoiDung, NgayGui, TrangThai
                           FROM TinNhan
                           WHERE (MaNguoiGui = @maTV AND MaNguoiNhan IN (
                                 SELECT TV.MaTV FROM ThanhVien TV 
@@ -787,14 +959,12 @@ namespace ClubManageApp
                         }
                         reader.Close();
 
-                        // Đảo ngược để hiển thị theo thứ tự thời gian
                         messages.Reverse();
 
-                        // Dedupe by (MaNguoiGui|NoiDung|NgayGui) to avoid broadcast duplicates
                         HashSet<string> seen = new HashSet<string>(StringComparer.Ordinal);
                         foreach (var msg in messages)
                         {
-                            string key = $"{msg.MaNguoiGui}|{msg.NoiDung?.Trim()}|{msg.NgayGui.ToString("s")}";
+                            string key = $"{msg.MaNguoiGui}|{msg.NoiDung?.Trim()}|{msg.NgayGui:s}";
                             if (seen.Contains(key)) continue;
                             seen.Add(key);
 
@@ -807,123 +977,42 @@ namespace ClubManageApp
 
                         if (messages.Count > 0)
                         {
-                            AddSystemMessage($"📜 Đã load {messages.Count} tin gần nhất");
+                            AddSystemMessage($"📜 Đã load {messages.Count} tin nhắn");
                         }
                     }
 
-                    MarkMessagesAsRead(conn);
+                    MarkMessagesAsReadAdmin(conn);
                     OnMessagesRead?.Invoke();
                 }
             }
             catch (Exception ex)
             {
-                AddSystemMessage("⚠️ Lỗi load tin cũ: " + ex.Message);
+                AddSystemMessage("⚠️ Lỗi: " + ex.Message);
             }
         }
 
-        // Class để lưu trữ tin nhắn
-        private class MessageData
-        {
-            public int MaTN { get; set; }
-            public int MaNguoiGui { get; set; }
-            public string NoiDung { get; set; }
-            public DateTime NgayGui { get; set; }
-            public string TrangThai { get; set; }
-        }
-
-        // Lấy ID tin nhắn mới nhất để làm baseline
-        private int GetCurrentMaxMessageID()
+        private void MarkMessagesAsRead(SqlConnection conn, int targetMemberID)
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlCommand cmd = new SqlCommand(
+                    @"UPDATE TinNhan SET TrangThai = N'Đã đọc' 
+                      WHERE MaNguoiGui = @target 
+                        AND MaNguoiNhan = @maTV 
+                        AND TrangThai = N'Chưa đọc'", conn))
                 {
-                    conn.Open();
-                    using (SqlCommand cmd = new SqlCommand(
-                        @"SELECT ISNULL(MAX(MaTN), 0) FROM TinNhan 
-                          WHERE MaNguoiNhan = @maTV OR MaNguoiGui = @maTV", conn))
-                    {
-                        cmd.Parameters.AddWithValue("@maTV", maTV);
-                        return Convert.ToInt32(cmd.ExecuteScalar());
-                    }
+                    cmd.Parameters.AddWithValue("@maTV", maTV);
+                    cmd.Parameters.AddWithValue("@target", targetMemberID);
+                    cmd.ExecuteNonQuery();
                 }
             }
-            catch
-            {
-                return 0;
-            }
+            catch { }
         }
 
-        private void LoadChatHistory()
+        private void MarkMessagesAsReadAdmin(SqlConnection conn)
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    // Lấy tin nhắn giữa member và TẤT CẢ Admin
-                    using (SqlCommand cmd = new SqlCommand(
-                        @"SELECT TOP 50 TN.MaTN, TN.MaNguoiGui, TN.NoiDung, TN.NgayGui, TN.TrangThai 
-                          FROM TinNhan TN
-                          LEFT JOIN ThanhVien TV ON TN.MaNguoiGui = TV.MaTV
-                          LEFT JOIN TaiKhoan TK ON TN.MaNguoiGui = TK.MaTV
-                          WHERE (TN.MaNguoiGui = @maTV AND (TV.MaCV = 1 OR TK.QuyenHan IN (N'Admin', N'Quản trị viên')))
-                             OR ((TV.MaCV = 1 OR TK.QuyenHan IN (N'Admin', N'Quản trị viên')) AND TN.MaNguoiNhan = @maTV)
-                             OR (TN.MaNguoiGui = @maTV AND TN.MaNguoiNhan IN (
-                                SELECT TV2.MaTV FROM ThanhVien TV2 
-                                LEFT JOIN TaiKhoan TK2 ON TV2.MaTV = TK2.MaTV
-                                WHERE TV2.MaCV = 1 OR TK2.QuyenHan IN (N'Admin', N'Quản trị viên')
-                             ))
-                          ORDER BY TN.NgayGui ASC", conn))
-                    {
-                        cmd.Parameters.AddWithValue("@maTV", maTV);
-                        SqlDataReader reader = cmd.ExecuteReader();
-
-                        int count = 0;
-                        HashSet<string> seen = new HashSet<string>(StringComparer.Ordinal);
-                        while (reader.Read())
-                        {
-                            count++;
-                            int msgID = Convert.ToInt32(reader["MaTN"]);
-                            bool isMe = Convert.ToInt32(reader["MaNguoiGui"]) == maTV;
-                            string content = reader["NoiDung"].ToString();
-                            DateTime time = Convert.ToDateTime(reader["NgayGui"]);
-
-                            string key = $"{reader["MaNguoiGui"]}|{content?.Trim()}|{time.ToString("s")}";
-                            if (seen.Contains(key)) continue;
-                            seen.Add(key);
-
-                            if (displayedMessageKeys.Contains(key)) continue;
-                            displayedMessageKeys.Add(key);
-
-                            string status = reader["TrangThai"].ToString();
-                            AddChatBubble(
-                                content,
-                                isMe,
-                                time,
-                                isMe ? status : null
-                            );
-                            if (msgID > lastMessageID) lastMessageID = msgID;
-                        }
-                        reader.Close();
-
-                        if (count == 0)
-                        {
-                            AddSystemMessage($"💬 Bắt đầu chat với {adminName}!");
-                        }
-                    }
-                    MarkMessagesAsRead(conn);
-                    OnMessagesRead?.Invoke();
-                }
-            }
-            catch (Exception ex) { AddSystemMessage("❌ Lỗi: " + ex.Message); }
-        }
-
-        private void MarkMessagesAsRead(SqlConnection conn)
-        {
-            try
-            {
-                // Đánh dấu tất cả tin từ Admin đã đọc
                 using (SqlCommand cmd = new SqlCommand(
                     @"UPDATE TN SET TN.TrangThai = N'Đã đọc' 
                       FROM TinNhan TN
@@ -948,79 +1037,111 @@ namespace ClubManageApp
                 {
                     conn.Open();
 
-                    // Chỉ lấy tin nhắn mới từ BẤT KỲ Admin nào (sau khi bắt đầu chat)
-                    string query = lastMessageID == 0
-                        ? @"SELECT TN.MaTN, TN.NoiDung, TN.NgayGui, TN.MaNguoiGui 
-                            FROM TinNhan TN
-                            INNER JOIN ThanhVien TV ON TN.MaNguoiGui = TV.MaTV
-                            LEFT JOIN TaiKhoan TK ON TN.MaNguoiGui = TK.MaTV
-                            WHERE TN.MaNguoiNhan = @maTV
-                              AND (TV.MaCV = 1 OR TK.QuyenHan IN (N'Admin', N'Quản trị viên'))
-                              AND TN.NgayGui >= DATEADD(SECOND, -5, GETDATE())
-                            ORDER BY TN.NgayGui ASC"
-                        : @"SELECT TN.MaTN, TN.NoiDung, TN.NgayGui, TN.MaNguoiGui 
-                            FROM TinNhan TN
-                            INNER JOIN ThanhVien TV ON TN.MaNguoiGui = TV.MaTV
-                            LEFT JOIN TaiKhoan TK ON TN.MaNguoiGui = TK.MaTV
-                            WHERE TN.MaTN > @lastID 
-                              AND TN.MaNguoiNhan = @maTV
-                              AND (TV.MaCV = 1 OR TK.QuyenHan IN (N'Admin', N'Quản trị viên'))
-                            ORDER BY TN.NgayGui ASC";
-
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    string query;
+                    if (currentMode == ChatMode.Member && selectedMemberID.HasValue)
                     {
-                        if (lastMessageID > 0)
+                        query = lastMessageID == 0
+                            ? @"SELECT MaTN, NoiDung, NgayGui, MaNguoiGui 
+                                FROM TinNhan
+                                WHERE ((MaNguoiGui = @target AND MaNguoiNhan = @maTV)
+                                   OR (MaNguoiGui = @maTV AND MaNguoiNhan = @target))
+                                  AND NgayGui >= DATEADD(SECOND, -5, GETDATE())
+                                ORDER BY NgayGui ASC"
+                            : @"SELECT MaTN, NoiDung, NgayGui, MaNguoiGui 
+                                FROM TinNhan
+                                WHERE MaTN > @lastID 
+                                  AND ((MaNguoiGui = @target AND MaNguoiNhan = @maTV)
+                                   OR (MaNguoiGui = @maTV AND MaNguoiNhan = @target))
+                                ORDER BY NgayGui ASC";
+
+                        using (SqlCommand cmd = new SqlCommand(query, conn))
                         {
-                            cmd.Parameters.AddWithValue("@lastID", lastMessageID);
-                        }
-                        cmd.Parameters.AddWithValue("@maTV", maTV);
-                        SqlDataReader reader = cmd.ExecuteReader();
-                        bool hasNew = false;
+                            if (lastMessageID > 0)
+                                cmd.Parameters.AddWithValue("@lastID", lastMessageID);
+                            cmd.Parameters.AddWithValue("@maTV", maTV);
+                            cmd.Parameters.AddWithValue("@target", selectedMemberID.Value);
 
-                        while (reader.Read())
-                        {
-                            hasNew = true;
-                            int maNguoiGui = Convert.ToInt32(reader["MaNguoiGui"]);
-                            DateTime ngay = Convert.ToDateTime(reader["NgayGui"]);
-                            string content = reader["NoiDung"].ToString();
+                            SqlDataReader reader = cmd.ExecuteReader();
+                            bool hasNew = false;
 
-                            string key = $"{maNguoiGui}|{content?.Trim()}|{ngay.ToString("s")}";
-                            if (displayedMessageKeys.Contains(key))
-                                continue;
+                            while (reader.Read())
+                            {
+                                hasNew = true;
+                                int maNguoiGui = Convert.ToInt32(reader["MaNguoiGui"]);
+                                DateTime ngay = Convert.ToDateTime(reader["NgayGui"]);
+                                string content = reader["NoiDung"].ToString();
 
-                            lastMessageID = Convert.ToInt32(reader["MaTN"]);
-                            displayedMessageKeys.Add(key);
-                            AddChatBubble(content, false, ngay, null);
-                            SystemSounds.Asterisk.Play();
-                        }
-                        reader.Close();
+                                string key = $"{maNguoiGui}|{content?.Trim()}|{ngay:s}";
+                                if (displayedMessageKeys.Contains(key)) continue;
 
-                        if (hasNew)
-                        {
-                            MarkMessagesAsRead(conn);
-                            OnMessagesRead?.Invoke();
+                                lastMessageID = Convert.ToInt32(reader["MaTN"]);
+                                displayedMessageKeys.Add(key);
+                                AddChatBubble(content, maNguoiGui == maTV, ngay, null);
+                                if (maNguoiGui != maTV)
+                                    SystemSounds.Asterisk.Play();
+                            }
+                            reader.Close();
+
+                            if (hasNew)
+                            {
+                                MarkMessagesAsRead(conn, selectedMemberID.Value);
+                                OnMessagesRead?.Invoke();
+                            }
                         }
                     }
-                }
-            }
-            catch { }
-        }
+                    else if (currentMode == ChatMode.Admin)
+                    {
+                        query = lastMessageID == 0
+                            ? @"SELECT TN.MaTN, TN.NoiDung, TN.NgayGui, TN.MaNguoiGui 
+                                FROM TinNhan TN
+                                INNER JOIN ThanhVien TV ON TN.MaNguoiGui = TV.MaTV
+                                LEFT JOIN TaiKhoan TK ON TN.MaNguoiGui = TK.MaTV
+                                WHERE TN.MaNguoiNhan = @maTV
+                                  AND (TV.MaCV = 1 OR TK.QuyenHan IN (N'Admin', N'Quản trị viên'))
+                                  AND TN.NgayGui >= DATEADD(SECOND, -5, GETDATE())
+                                ORDER BY TN.NgayGui ASC"
+                            : @"SELECT TN.MaTN, TN.NoiDung, TN.NgayGui, TN.MaNguoiGui 
+                                FROM TinNhan TN
+                                INNER JOIN ThanhVien TV ON TN.MaNguoiGui = TV.MaTV
+                                LEFT JOIN TaiKhoan TK ON TN.MaNguoiGui = TK.MaTV
+                                WHERE TN.MaTN > @lastID 
+                                  AND TN.MaNguoiNhan = @maTV
+                                  AND (TV.MaCV = 1 OR TK.QuyenHan IN (N'Admin', N'Quản trị viên'))
+                                ORDER BY TN.NgayGui ASC";
 
-        private void UpdateMessageStatus(SqlConnection conn)
-        {
-            try
-            {
-                // Kiểm tra trạng thái tin nhắn đã gửi
-                using (SqlCommand cmd = new SqlCommand(
-                    @"SELECT TN.MaTN 
-                      FROM TinNhan TN
-                      INNER JOIN ThanhVien TV ON TN.MaNguoiNhan = TV.MaTV
-                      LEFT JOIN TaiKhoan TK ON TN.MaNguoiNhan = TK.MaTV
-                      WHERE TN.MaNguoiGui = @maTV 
-                        AND (TV.MaCV = 1 OR TK.QuyenHan IN (N'Admin', N'Quản trị viên'))
-                        AND TN.TrangThai = N'Đã đọc'", conn))
-                {
-                    cmd.Parameters.AddWithValue("@maTV", maTV);
+                        using (SqlCommand cmd = new SqlCommand(query, conn))
+                        {
+                            if (lastMessageID > 0)
+                                cmd.Parameters.AddWithValue("@lastID", lastMessageID);
+                            cmd.Parameters.AddWithValue("@maTV", maTV);
+
+                            SqlDataReader reader = cmd.ExecuteReader();
+                            bool hasNew = false;
+
+                            while (reader.Read())
+                            {
+                                hasNew = true;
+                                int maNguoiGui = Convert.ToInt32(reader["MaNguoiGui"]);
+                                DateTime ngay = Convert.ToDateTime(reader["NgayGui"]);
+                                string content = reader["NoiDung"].ToString();
+
+                                string key = $"{maNguoiGui}|{content?.Trim()}|{ngay:s}";
+                                if (displayedMessageKeys.Contains(key)) continue;
+
+                                lastMessageID = Convert.ToInt32(reader["MaTN"]);
+                                displayedMessageKeys.Add(key);
+                                AddChatBubble(content, false, ngay, null);
+                                SystemSounds.Asterisk.Play();
+                            }
+                            reader.Close();
+
+                            if (hasNew)
+                            {
+                                MarkMessagesAsReadAdmin(conn);
+                                OnMessagesRead?.Invoke();
+                            }
+                        }
+                    }
                 }
             }
             catch { }
@@ -1032,9 +1153,13 @@ namespace ClubManageApp
             if (string.IsNullOrEmpty(message)) return;
             txtMessage.Clear();
 
-            if (isAdminChatMode)
+            if (currentMode == ChatMode.Admin)
             {
                 SendAdminMessage(message);
+            }
+            else if (currentMode == ChatMode.Member && selectedMemberID.HasValue)
+            {
+                SendMemberMessage(message, selectedMemberID.Value);
             }
             else
             {
@@ -1057,6 +1182,40 @@ namespace ClubManageApp
             txtMessage.Focus();
         }
 
+        private void SendMemberMessage(string message, int targetMemberID)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(
+                        @"INSERT INTO TinNhan (MaNguoiGui, MaNguoiNhan, NoiDung, NgayGui, TrangThai)
+                          VALUES (@nguoiGui, @nguoiNhan, @noiDung, GETDATE(), N'Chưa đọc');
+                          SELECT SCOPE_IDENTITY();", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@nguoiGui", maTV);
+                        cmd.Parameters.AddWithValue("@nguoiNhan", targetMemberID);
+                        cmd.Parameters.AddWithValue("@noiDung", message);
+                        object result = cmd.ExecuteScalar();
+
+                        if (result != null)
+                        {
+                            lastMessageID = Convert.ToInt32(result);
+                        }
+
+                        AddChatBubble(message, true, DateTime.Now, "Đã gửi");
+                        string key = $"{maTV}|{message?.Trim()}|{DateTime.Now:s}";
+                        displayedMessageKeys.Add(key);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddSystemMessage("❌ Lỗi: " + ex.Message);
+            }
+        }
+
         private void SendAdminMessage(string message)
         {
             try
@@ -1064,7 +1223,6 @@ namespace ClubManageApp
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    // BROADCAST: Gửi tin nhắn tới TẤT CẢ Admin (trừ chính mình)
                     using (SqlCommand cmd = new SqlCommand(
                         @"INSERT INTO TinNhan (MaNguoiGui, MaNguoiNhan, NoiDung, NgayGui, TrangThai)
                           SELECT @nguoiGui, TV.MaTV, @noiDung, GETDATE(), N'Chưa đọc'
@@ -1072,7 +1230,6 @@ namespace ClubManageApp
                           LEFT JOIN TaiKhoan TK ON TV.MaTV = TK.MaTV
                           WHERE (TV.MaCV = 1 OR TK.QuyenHan IN (N'Admin', N'Quản trị viên'))
                             AND TV.MaTV != @nguoiGui;
-                          
                           SELECT SCOPE_IDENTITY();", conn))
                     {
                         cmd.Parameters.AddWithValue("@nguoiGui", maTV);
@@ -1083,28 +1240,93 @@ namespace ClubManageApp
                         {
                             lastMessageID = Convert.ToInt32(result);
                         }
-                        // Add local bubble once and register key to prevent duplicates when loading from DB
+
                         AddChatBubble(message, true, DateTime.Now, "Đã gửi");
-                        string key = $"{maTV}|{message?.Trim()}|{DateTime.Now.ToString("s")}";
+                        string key = $"{maTV}|{message?.Trim()}|{DateTime.Now:s}";
                         displayedMessageKeys.Add(key);
                     }
                 }
             }
-            catch (Exception ex) { AddSystemMessage("❌ Lỗi: " + ex.Message); }
+            catch (Exception ex)
+            {
+                AddSystemMessage("❌ Lỗi: " + ex.Message);
+            }
         }
 
-        private string GetBotResponse(string message)
+        private string GetBotResponse(string userMessage)
         {
-            string lower = message.ToLower();
+            if (string.IsNullOrWhiteSpace(userMessage))
+                return "🤔 Bạn chưa nhập gì cả! Hãy hỏi tôi nhé 💬";
 
-            foreach (var faq in faqResponses)
-                foreach (string kw in faq.Key)
-                    if (lower.Contains(kw)) return faq.Value;
+            string normalized = NormalizeText(userMessage);
 
-            if (lower.Contains("hoạt động sắp tới")) return GetUpcomingActivities();
-            if (lower.Contains("điểm của tôi") || lower.Contains("điểm hiện tại")) return GetMemberPoints();
+            // Tìm phản hồi FAQ có số lượng từ khóa khớp nhiều nhất
+            string faqResponse = FindBestFAQMatch(normalized);
+            if (faqResponse != null)
+                return faqResponse;
 
-            return $"🤔 Tôi chưa hiểu câu hỏi.\n\n💡 Nhấn 'Chat {adminName}' để được hỗ trợ!";
+            // Các câu hỏi đặc biệt (có thể mở rộng thêm)
+            if (normalized.Contains("hoạt động sắp tới") ||
+                normalized.Contains("lịch hoạt động") ||
+                normalized.Contains("sự kiện sắp"))
+            {
+                return GetUpcomingActivities();
+            }
+
+            if (normalized.Contains("điểm của tôi") ||
+                normalized.Contains("điểm rèn luyện") ||
+                normalized.Contains("điểm hiện tại") ||
+                normalized.Contains("xếp loại"))
+            {
+                return GetMemberPoints();
+            }
+
+            // Không hiểu → gợi ý chuyển chế độ
+            return "🤔 Mình chưa hiểu rõ câu hỏi của bạn.\n\n" +
+                   "💡 Bạn có thể:\n" +
+                   "• Hỏi lại chi tiết hơn\n" +
+                   "• Chuyển sang 👨‍💼 Chat Admin để được hỗ trợ trực tiếp\n" +
+                   "• Hoặc 👥 Chat Thành viên để giao lưu!";
+        }
+
+        // Chuẩn hóa văn bản: lowercase, loại bỏ dấu câu thừa
+        private string NormalizeText(string text)
+        {
+            return text.ToLowerInvariant()
+                       .Replace("?", "")
+                       .Replace("!", "")
+                       .Replace(".", "")
+                       .Replace(",", "")
+                       .Replace("  ", " ")
+                       .Trim();
+        }
+
+        // Tìm phản hồi FAQ tốt nhất dựa trên số lượng từ khóa khớp
+        private string FindBestFAQMatch(string normalizedInput)
+        {
+            string bestResponse = null;
+            int bestMatchCount = 0;
+
+            foreach (var entry in faqResponses)
+            {
+                int matchCount = 0;
+                foreach (string keyword in entry.Key)
+                {
+                    string normKeyword = NormalizeText(keyword);
+                    if (normalizedInput.Contains(normKeyword))
+                        matchCount++;
+                }
+
+                // Chỉ chấp nhận nếu có ít nhất 1 từ khóa khớp
+                // Và ưu tiên cái có nhiều từ khóa khớp hơn
+                if (matchCount > bestMatchCount)
+                {
+                    bestMatchCount = matchCount;
+                    bestResponse = entry.Value;
+                }
+            }
+
+            return bestMatchCount > 0 ? bestResponse : null;
         }
 
         private string GetUpcomingActivities()
@@ -1278,6 +1500,15 @@ namespace ClubManageApp
                 flowMessages.ScrollControlIntoView(flowMessages.Controls[flowMessages.Controls.Count - 1]);
                 flowMessages.VerticalScroll.Value = flowMessages.VerticalScroll.Maximum;
             }
+        }
+
+        private class MessageData
+        {
+            public int MaTN { get; set; }
+            public int MaNguoiGui { get; set; }
+            public string NoiDung { get; set; }
+            public DateTime NgayGui { get; set; }
+            public string TrangThai { get; set; }
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
