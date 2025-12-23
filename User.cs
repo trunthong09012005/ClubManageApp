@@ -12,7 +12,7 @@ namespace ClubManageApp
 {
     public partial class ucUser : UserControl
     {
-        private BindingList<Participant> users = new BindingList<Participant>();
+        private BindingList<ucParticipant> users = new BindingList<ucParticipant>();
 
         // store rectangles of drawn columns for hover detection
         private List<KeyValuePair<Rectangle, string>> classColumnRects = new List<KeyValuePair<Rectangle, string>>();
@@ -53,11 +53,11 @@ namespace ClubManageApp
         private void InitializeDemoData()
         {
             // sample users - expanded to include more columns matching ThanhVien
-            users.Add(new Participant { Id = 1, HoTen = "Nguyễn Vương Khang", NgaySinh = DateTime.Parse("2004-02-15"), GioiTinh = "Nam", Lop = "DHKTPM17A", Khoa = "Công nghệ thông tin", SDT = "0912345678", Email = "huytm@student.hcmute.edu.vn", DiaChi = "Quận 7, TP.HCM", VaiTro = "Chủ nhiệm", MaCV = 1, MaBan = null });
-            users.Add(new Participant { Id = 2, HoTen = "Nguyễn Thị Lan", NgaySinh = DateTime.Parse("2005-05-10"), GioiTinh = "Nữ", Lop = "DHKTPM17A", Khoa = "Công nghệ thông tin", SDT = "0987654321", Email = "lannt@student.hcmute.edu.vn", DiaChi = "Quận 5, TP.HCM", VaiTro = "Phó chủ nhiệm", MaCV = 2, MaBan = null });
-            users.Add(new Participant { Id = 3, HoTen = "Lê Quốc Bảo", NgaySinh = DateTime.Parse("2005-09-21"), GioiTinh = "Nam", Lop = "DHKTPM17B", Khoa = "Công nghệ thông tin", SDT = "0977112233", Email = "baolq@student.hcmute.edu.vn", DiaChi = "Quận 10, TP.HCM", VaiTro = "Trưởng ban", MaCV = 4, MaBan = 1 });
-            users.Add(new Participant { Id = 4, HoTen = "Phạm Thị Mai", NgaySinh = DateTime.Parse("2005-03-18"), GioiTinh = "Nữ", Lop = "DHKTPM17B", Khoa = "Công nghệ thông tin", SDT = "0965432109", Email = "maipt@student.hcmute.edu.vn", DiaChi = "Quận 3, TP.HCM", VaiTro = "Trưởng ban", MaCV = 4, MaBan = 2 });
-            users.Add(new Participant { Id = 5, HoTen = "Hoàng Văn Nam", NgaySinh = DateTime.Parse("2004-11-25"), GioiTinh = "Nam", Lop = "DHKTPM17C", Khoa = "Công nghệ thông tin", SDT = "0923456789", Email = "namhv@student.hcmute.edu.vn", DiaChi = "Quận 1, TP.HCM", VaiTro = "Trưởng ban", MaCV = 4, MaBan = 3 });
+            users.Add(new ucParticipant { Id = 1, HoTen = "Nguyễn Vương Khang", NgaySinh = DateTime.Parse("2004-02-15"), GioiTinh = "Nam", Lop = "DHKTPM17A", Khoa = "Công nghệ thông tin", SDT = "0912345678", Email = "huytm@student.hcmute.edu.vn", DiaChi = "Quận 7, TP.HCM", VaiTro = "Chủ nhiệm", MaCV = 1, MaBan = null });
+            users.Add(new ucParticipant { Id = 2, HoTen = "Nguyễn Thị Lan", NgaySinh = DateTime.Parse("2005-05-10"), GioiTinh = "Nữ", Lop = "DHKTPM17A", Khoa = "Công nghệ thông tin", SDT = "0987654321", Email = "lannt@student.hcmute.edu.vn", DiaChi = "Quận 5, TP.HCM", VaiTro = "Phó chủ nhiệm", MaCV = 2, MaBan = null });
+            users.Add(new ucParticipant { Id = 3, HoTen = "Lê Quốc Bảo", NgaySinh = DateTime.Parse("2005-09-21"), GioiTinh = "Nam", Lop = "DHKTPM17B", Khoa = "Công nghệ thông tin", SDT = "0977112233", Email = "baolq@student.hcmute.edu.vn", DiaChi = "Quận 10, TP.HCM", VaiTro = "Trưởng ban", MaCV = 4, MaBan = 1 });
+            users.Add(new ucParticipant { Id = 4, HoTen = "Phạm Thị Mai", NgaySinh = DateTime.Parse("2005-03-18"), GioiTinh = "Nữ", Lop = "DHKTPM17B", Khoa = "Công nghệ thông tin", SDT = "0965432109", Email = "maipt@student.hcmute.edu.vn", DiaChi = "Quận 3, TP.HCM", VaiTro = "Trưởng ban", MaCV = 4, MaBan = 2 });
+            users.Add(new ucParticipant { Id = 5, HoTen = "Hoàng Văn Nam", NgaySinh = DateTime.Parse("2004-11-25"), GioiTinh = "Nam", Lop = "DHKTPM17C", Khoa = "Công nghệ thông tin", SDT = "0923456789", Email = "namhv@student.hcmute.edu.vn", DiaChi = "Quận 1, TP.HCM", VaiTro = "Trưởng ban", MaCV = 4, MaBan = 3 });
         }
 
         private void WireGrid()
@@ -313,7 +313,7 @@ namespace ClubManageApp
                     (u.VaiTro ?? string.Empty).ToLower().Contains(q)
                 ).ToList();
 
-                dgvUsers.DataSource = new BindingList<Participant>(filtered);
+                dgvUsers.DataSource = new BindingList<ucParticipant>(filtered);
             }
         }
 
@@ -332,7 +332,7 @@ namespace ClubManageApp
         private void btnEdit_Click(object sender, EventArgs e)
         {
             if (dgvUsers.CurrentRow == null) return;
-            var selected = (Participant)dgvUsers.CurrentRow.DataBoundItem;
+            var selected = (ucParticipant)dgvUsers.CurrentRow.DataBoundItem;
             var form = new UserEditForm(selected);
             if (form.ShowDialog() == DialogResult.OK)
             {
@@ -357,7 +357,7 @@ namespace ClubManageApp
         private void btnDelete_Click(object sender, EventArgs e)
         {
             if (dgvUsers.CurrentRow == null) return;
-            var selected = (Participant)dgvUsers.CurrentRow.DataBoundItem;
+            var selected = (ucParticipant)dgvUsers.CurrentRow.DataBoundItem;
             var r = MessageBox.Show($"Xóa thành viên '{selected.HoTen}'?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (r == DialogResult.Yes)
             {
@@ -369,7 +369,7 @@ namespace ClubManageApp
         private void btnView_Click(object sender, EventArgs e)
         {
             if (dgvUsers.CurrentRow == null) return;
-            var selected = (Participant)dgvUsers.CurrentRow.DataBoundItem;
+            var selected = (ucParticipant)dgvUsers.CurrentRow.DataBoundItem;
             var info = new StringBuilder();
             info.AppendLine($"MaTV: {selected.Id}");
             info.AppendLine($"Họ tên: {selected.HoTen}");
@@ -419,7 +419,7 @@ namespace ClubManageApp
         // small edit form for user (inside same namespace so Participant type is available)
         public class UserEditForm : Form
         {
-            public Participant User { get; private set; }
+            public ucParticipant User { get; private set; }
 
             private TextBox txtHoTen;
             private DateTimePicker dtpNgaySinh;
@@ -438,12 +438,12 @@ namespace ClubManageApp
             public UserEditForm()
             {
                 InitializeForm();
-                User = new Participant();
+                User = new ucParticipant();
             }
 
-            public UserEditForm(Participant p) : this()
+            public UserEditForm(ucParticipant p) : this()
             {
-                User = new Participant
+                User = new ucParticipant
                 {
                     Id = p.Id,
                     HoTen = p.HoTen,

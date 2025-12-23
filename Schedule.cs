@@ -19,7 +19,7 @@ namespace ClubManageApp
         private string connectionString = @"Data Source=DESKTOP-EJIGPN3;Initial Catalog=QL_APP_LSC;Persist Security Info=True;User ID=sa;Password=1234;Encrypt=True;TrustServerCertificate=True";
 
         private BindingList<Meeting> meetings = new BindingList<Meeting>();
-        private BindingList<Participant> participants = new BindingList<Participant>();
+        private BindingList<ucParticipant> participants = new BindingList<ucParticipant>();
         private BindingList<Minute> minutes = new BindingList<Minute>();
         private BindingList<KyLuat> kyLuats = new BindingList<KyLuat>();
 
@@ -114,7 +114,7 @@ namespace ClubManageApp
                 {
                     while (rdr.Read())
                     {
-                        var p = new Participant();
+                        var p = new ucParticipant();
                         p.Id = rdr["MaTV"] != DBNull.Value ? Convert.ToInt32(rdr["MaTV"]) : 0;
                         p.HoTen = rdr["HoTen"] != DBNull.Value ? rdr["HoTen"].ToString() : string.Empty;
                         p.NgaySinh = rdr["NgaySinh"] != DBNull.Value ? Convert.ToDateTime(rdr["NgaySinh"]) : default(DateTime);
@@ -163,16 +163,16 @@ namespace ClubManageApp
         // If DB not available, add sample participants (existing hard-coded data)
         private void AddSampleParticipants()
         {
-            participants.Add(new Participant { Id = 1, HoTen = "Nguyễn Vương Khang", NgaySinh = DateTime.Parse("2004-02-15"), GioiTinh = "Nam", Lop = "DHKTPM17A", Khoa = "Công nghệ thông tin", SDT = "0912345678", Email = "huytm@student.hcmute.edu.vn", DiaChi = "Quận 7, TP.HCM", VaiTro = "Chủ nhiệm", MaCV = 1, MaBan = null });
-            participants.Add(new Participant { Id = 2, HoTen = "Nguyễn Thị Lan", NgaySinh = DateTime.Parse("2005-05-10"), GioiTinh = "Nữ", Lop = "DHKTPM17A", Khoa = "Công nghệ thông tin", SDT = "0987654321", Email = "lannt@student.hcmute.edu.vn", DiaChi = "Quận 5, TP.HCM", VaiTro = "Phó chủ nhiệm", MaCV = 2, MaBan = null });
-            participants.Add(new Participant { Id = 3, HoTen = "Lê Quốc Bảo", NgaySinh = DateTime.Parse("2005-09-21"), GioiTinh = "Nam", Lop = "DHKTPM17B", Khoa = "Công nghệ thông tin", SDT = "0977112233", Email = "baolq@student.hcmute.edu.vn", DiaChi = "Quận 10, TP.HCM", VaiTro = "Trưởng ban", MaCV = 4, MaBan = 1 });
-            participants.Add(new Participant { Id = 4, HoTen = "Phạm Thị Mai", NgaySinh = DateTime.Parse("2005-03-18"), GioiTinh = "Nữ", Lop = "DHKTPM17B", Khoa = "Công nghệ thông tin", SDT = "0965432109", Email = "maipt@student.hcmute.edu.vn", DiaChi = "Quận 3, TP.HCM", VaiTro = "Trưởng ban", MaCV = 4, MaBan = 2 });
-            participants.Add(new Participant { Id = 5, HoTen = "Hoàng Văn Nam", NgaySinh = DateTime.Parse("2004-11-25"), GioiTinh = "Nam", Lop = "DHKTPM17C", Khoa = "Công nghệ thông tin", SDT = "0923456789", Email = "namhv@student.hcmute.edu.vn", DiaChi = "Quận 1, TP.HCM", VaiTro = "Trưởng ban", MaCV = 4, MaBan = 3 });
-            participants.Add(new Participant { Id = 6, HoTen = "Võ Thị Hoa", NgaySinh = DateTime.Parse("2005-07-08"), GioiTinh = "Nữ", Lop = "DHKTPM17A", Khoa = "Công nghệ thông tin", SDT = "0934567890", Email = "hoavt@student.hcmute.edu.vn", DiaChi = "Quận 6, TP.HCM", VaiTro = "Thành viên", MaCV = 6, MaBan = 1 });
-            participants.Add(new Participant { Id = 7, HoTen = "Đặng Minh Tuấn", NgaySinh = DateTime.Parse("2005-01-30"), GioiTinh = "Nam", Lop = "DHKTPM17B", Khoa = "Công nghệ thông tin", SDT = "0945678901", Email = "tuandm@student.hcmute.edu.vn", DiaChi = "Quận 8, TP.HCM", VaiTro = "Thành viên", MaCV = 6, MaBan = 2 });
-            participants.Add(new Participant { Id = 8, HoTen = "Trương Thị Lan Anh", NgaySinh = DateTime.Parse("2004-12-12"), GioiTinh = "Nữ", Lop = "DHKTPM17C", Khoa = "Công nghệ thông tin", SDT = "0956789012", Email = "anhttl@student.hcmute.edu.vn", DiaChi = "Quận 12, TP.HCM", VaiTro = "Thành viên", MaCV = 6, MaBan = 3 });
-            participants.Add(new Participant { Id = 9, HoTen = "Ngô Văn Đức", NgaySinh = DateTime.Parse("2005-04-20"), GioiTinh = "Nam", Lop = "DHKTPM17A", Khoa = "Công nghệ thông tin", SDT = "0967890123", Email = "ducnv@student.hcmute.edu.vn", DiaChi = "Thủ Đức, TP.HCM", VaiTro = "Thành viên", MaCV = 6, MaBan = 1 });
-            participants.Add(new Participant { Id = 10, HoTen = "Bùi Thị Ngọc", NgaySinh = DateTime.Parse("2005-08-15"), GioiTinh = "Nữ", Lop = "DHKTPM17B", Khoa = "Công nghệ thông tin", SDT = "0978901234", Email = "ngocbt@student.hcmute.edu.vn", DiaChi = "Bình Thạnh, TP.HCM", VaiTro = "Thành viên", MaCV = 6, MaBan = 2 });
+            participants.Add(new ucParticipant { Id = 1, HoTen = "Nguyễn Vương Khang", NgaySinh = DateTime.Parse("2004-02-15"), GioiTinh = "Nam", Lop = "DHKTPM17A", Khoa = "Công nghệ thông tin", SDT = "0912345678", Email = "huytm@student.hcmute.edu.vn", DiaChi = "Quận 7, TP.HCM", VaiTro = "Chủ nhiệm", MaCV = 1, MaBan = null });
+            participants.Add(new ucParticipant { Id = 2, HoTen = "Nguyễn Thị Lan", NgaySinh = DateTime.Parse("2005-05-10"), GioiTinh = "Nữ", Lop = "DHKTPM17A", Khoa = "Công nghệ thông tin", SDT = "0987654321", Email = "lannt@student.hcmute.edu.vn", DiaChi = "Quận 5, TP.HCM", VaiTro = "Phó chủ nhiệm", MaCV = 2, MaBan = null });
+            participants.Add(new ucParticipant { Id = 3, HoTen = "Lê Quốc Bảo", NgaySinh = DateTime.Parse("2005-09-21"), GioiTinh = "Nam", Lop = "DHKTPM17B", Khoa = "Công nghệ thông tin", SDT = "0977112233", Email = "baolq@student.hcmute.edu.vn", DiaChi = "Quận 10, TP.HCM", VaiTro = "Trưởng ban", MaCV = 4, MaBan = 1 });
+            participants.Add(new ucParticipant { Id = 4, HoTen = "Phạm Thị Mai", NgaySinh = DateTime.Parse("2005-03-18"), GioiTinh = "Nữ", Lop = "DHKTPM17B", Khoa = "Công nghệ thông tin", SDT = "0965432109", Email = "maipt@student.hcmute.edu.vn", DiaChi = "Quận 3, TP.HCM", VaiTro = "Trưởng ban", MaCV = 4, MaBan = 2 });
+            participants.Add(new ucParticipant { Id = 5, HoTen = "Hoàng Văn Nam", NgaySinh = DateTime.Parse("2004-11-25"), GioiTinh = "Nam", Lop = "DHKTPM17C", Khoa = "Công nghệ thông tin", SDT = "0923456789", Email = "namhv@student.hcmute.edu.vn", DiaChi = "Quận 1, TP.HCM", VaiTro = "Trưởng ban", MaCV = 4, MaBan = 3 });
+            participants.Add(new ucParticipant { Id = 6, HoTen = "Võ Thị Hoa", NgaySinh = DateTime.Parse("2005-07-08"), GioiTinh = "Nữ", Lop = "DHKTPM17A", Khoa = "Công nghệ thông tin", SDT = "0934567890", Email = "hoavt@student.hcmute.edu.vn", DiaChi = "Quận 6, TP.HCM", VaiTro = "Thành viên", MaCV = 6, MaBan = 1 });
+            participants.Add(new ucParticipant { Id = 7, HoTen = "Đặng Minh Tuấn", NgaySinh = DateTime.Parse("2005-01-30"), GioiTinh = "Nam", Lop = "DHKTPM17B", Khoa = "Công nghệ thông tin", SDT = "0945678901", Email = "tuandm@student.hcmute.edu.vn", DiaChi = "Quận 8, TP.HCM", VaiTro = "Thành viên", MaCV = 6, MaBan = 2 });
+            participants.Add(new ucParticipant { Id = 8, HoTen = "Trương Thị Lan Anh", NgaySinh = DateTime.Parse("2004-12-12"), GioiTinh = "Nữ", Lop = "DHKTPM17C", Khoa = "Công nghệ thông tin", SDT = "0956789012", Email = "anhttl@student.hcmute.edu.vn", DiaChi = "Quận 12, TP.HCM", VaiTro = "Thành viên", MaCV = 6, MaBan = 3 });
+            participants.Add(new ucParticipant { Id = 9, HoTen = "Ngô Văn Đức", NgaySinh = DateTime.Parse("2005-04-20"), GioiTinh = "Nam", Lop = "DHKTPM17A", Khoa = "Công nghệ thông tin", SDT = "0967890123", Email = "ducnv@student.hcmute.edu.vn", DiaChi = "Thủ Đức, TP.HCM", VaiTro = "Thành viên", MaCV = 6, MaBan = 1 });
+            participants.Add(new ucParticipant { Id = 10, HoTen = "Bùi Thị Ngọc", NgaySinh = DateTime.Parse("2005-08-15"), GioiTinh = "Nữ", Lop = "DHKTPM17B", Khoa = "Công nghệ thông tin", SDT = "0978901234", Email = "ngocbt@student.hcmute.edu.vn", DiaChi = "Bình Thạnh, TP.HCM", VaiTro = "Thành viên", MaCV = 6, MaBan = 2 });
         }
 
         private void WireGrids()
@@ -298,7 +298,7 @@ namespace ClubManageApp
         private void dgvParticipants_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
-            var selected = (Participant)dgvParticipants.Rows[e.RowIndex].DataBoundItem;
+            var selected = (ucParticipant)dgvParticipants.Rows[e.RowIndex].DataBoundItem;
             // Show context menu with Send Notification
             var menu = new ContextMenu();
             var mi = new MenuItem("Gửi thông báo", (s, ev) => SendNotificationTo(selected));
@@ -307,7 +307,7 @@ namespace ClubManageApp
             menu.Show(dgvParticipants, new Point(cellRect.Left, cellRect.Bottom));
         }
 
-        private void SendNotificationTo(Participant p)
+        private void SendNotificationTo(ucParticipant p)
         {
             using (var form = new SendMailForm(p))
             {

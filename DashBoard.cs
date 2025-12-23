@@ -702,19 +702,12 @@ namespace ClubManageApp
                 if (this.lblTimeline != null) this.lblTimeline.Visible = false;
                 if (this.flowTimeline != null) this.flowTimeline.Visible = false;
 
-                //var schedule = new ucSchedule();
-                //schedule.Dock = DockStyle.Fill;
-
-                //this.contentPanel.Controls.Clear();
-                //this.contentPanel.Controls.Add(schedule);
-                //schedule.BringToFront();
-
-                var test = new ucMeeting();
-                test.Dock = DockStyle.Fill;
+                var meet = new ucMeeting();
+                meet.Dock = DockStyle.Fill;
 
                 this.contentPanel.Controls.Clear();
-                this.contentPanel.Controls.Add(test);
-                test.BringToFront();
+                this.contentPanel.Controls.Add(meet);
+                meet.BringToFront();
             }
             catch (Exception ex)
             {
@@ -734,12 +727,13 @@ namespace ClubManageApp
                 if (this.lblTimeline != null) this.lblTimeline.Visible = false;
                 if (this.flowTimeline != null) this.flowTimeline.Visible = false;
 
-                var userCtrl = new ucUser();
-                userCtrl.Dock = DockStyle.Fill;
+                // Truyền role của user hiện tại vào ucUserTest
+                var test = new ucUserTest(this.role);
+                test.Dock = DockStyle.Fill;
 
                 this.contentPanel.Controls.Clear();
-                this.contentPanel.Controls.Add(userCtrl);
-                userCtrl.BringToFront();
+                this.contentPanel.Controls.Add(test);
+                test.BringToFront();
             }
             catch (Exception ex)
             {

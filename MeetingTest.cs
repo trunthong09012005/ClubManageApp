@@ -12,36 +12,178 @@ using System.IO;
 using System.Net;
 using System.Net.Mail;
 using System.Data.SqlClient;
+using System.Text.RegularExpressions;
 
 namespace ClubManageApp
 {
     public partial class ucMeeting : UserControl
     {
-        private EventInfo selectedEvent = null; // Lưu sự kiện được chọn
-        private DateTime currentMonth; // Tháng hiện tại đang hiển thị
-        private CultureInfo culture = new CultureInfo("vi-VN"); // Culture tiếng Việt
-        private const int PANEL_MARGIN = 2; // Margin giữa các panel
-        private List<EventInfo> events; // Danh sách tất cả sự kiện
-        private DateTime selectedDate; // Ngày được chọn
-        private List<Participant> participants; // Danh sách thành viên
+        private EventInfo selectedEvent = null;
+        private DateTime currentMonth;
+        private CultureInfo culture = new CultureInfo("vi-VN");
+        private const int PANEL_MARGIN = 2;
+        private List<EventInfo> events;
+        private DateTime selectedDate;
+        private List<ucParticipant> participants;
         private string connectionString = @"Data Source=DESKTOP-EJIGPN3;Initial Catalog=QL_APP_LSC;Persist Security Info=True;User ID=sa;Password=1234;Encrypt=True;TrustServerCertificate=True";
 
         public ucMeeting()
         {
             InitializeComponent();
-            currentMonth = DateTime.Now; // Khởi tạo tháng hiện tại
-            events = new List<EventInfo>(); // Khởi tạo danh sách sự kiện
-            participants = new List<Participant>(); // Khởi tạo danh sách thành viên
+            currentMonth = DateTime.Now;
+            events = new List<EventInfo>();
+            participants = new List<ucParticipant>();
             
-            // Load participants from database
             LoadParticipants();
+            LoadEventsFromDatabase();
             
-            // Thêm một số sự kiện mẫu
-            AddSampleEvents();
+            if (events.Count == 0)
+            {
+                AddSampleEvents();
+            }
             
             LoadCalendar();
             InitializeMonthYearSelector();
             ClearEventInfo();
+        }
+
+        // Load sự kiện từ database
+        private void LoadEventsFromDatabase()
+        {
+            try
+            {
+                events.Clear();
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    // Tạo bảng SuKien nếu chưa tồn tại
+                    var createTableCmd = new SqlCommand(@"
+                        IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'SuKien')
+                        BEGIN
+                            CREATE TABLE SuKien (
+                                MaSK INT IDENTITY(1,1) PRIMARY KEY,
+                                TieuDe NVARCHAR(255) NOT NULL,
+                                NgaySuKien DATE NOT NULL,
+                                GioBatDau NVARCHAR(10) NOT NULL,
+                                GioKetThuc NVARCHAR(10) NOT NULL,
+                                DiaDiem NVARCHAR(255) NULL,
+                                MoTa NVARCHAR(MAX) NULL,
+                                NgayTao DATETIME DEFAULT GETDATE()
+                            )
+                        END", conn);
+                    createTableCmd.ExecuteNonQuery();
+
+                    // Load dữ liệu
+                    var cmd = new SqlCommand(@"SELECT MaSK, TieuDe, NgaySuKien, GioBatDau, GioKetThuc, DiaDiem, MoTa FROM SuKien ORDER BY NgaySuKien", conn);
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read())
+                        {
+                            var evt = new EventInfo();
+                            evt.Id = rdr["MaSK"] != DBNull.Value ? Convert.ToInt32(rdr["MaSK"]) : 0;
+                            evt.Title = rdr["TieuDe"] != DBNull.Value ? rdr["TieuDe"].ToString() : string.Empty;
+                            evt.Date = rdr["NgaySuKien"] != DBNull.Value ? Convert.ToDateTime(rdr["NgaySuKien"]) : DateTime.Now;
+                            evt.StartTime = rdr["GioBatDau"] != DBNull.Value ? rdr["GioBatDau"].ToString() : "00:00";
+                            evt.EndTime = rdr["GioKetThuc"] != DBNull.Value ? rdr["GioKetThuc"].ToString() : "00:00";
+                            evt.Location = rdr["DiaDiem"] != DBNull.Value ? rdr["DiaDiem"].ToString() : string.Empty;
+                            evt.Description = rdr["MoTa"] != DBNull.Value ? rdr["MoTa"].ToString() : string.Empty;
+                            events.Add(evt);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Nếu không kết nối được database hoặc có lỗi, log ra console
+                MessageBox.Show($"Không thể tải sự kiện từ database: {ex.Message}\n\nSẽ sử dụng dữ liệu mẫu.", "Thông báo", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        // Lưu sự kiện vào database
+        private bool SaveEventToDatabase(EventInfo evt)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    var cmd = new SqlCommand(@"
+                        INSERT INTO SuKien (TieuDe, NgaySuKien, GioBatDau, GioKetThuc, DiaDiem, MoTa)
+                        VALUES (@TieuDe, @NgaySuKien, @GioBatDau, @GioKetThuc, @DiaDiem, @MoTa);
+                        SELECT CAST(SCOPE_IDENTITY() AS INT);", conn);
+                    
+                    cmd.Parameters.AddWithValue("@TieuDe", evt.Title ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@NgaySuKien", evt.Date);
+                    cmd.Parameters.AddWithValue("@GioBatDau", evt.StartTime ?? "00:00");
+                    cmd.Parameters.AddWithValue("@GioKetThuc", evt.EndTime ?? "00:00");
+                    cmd.Parameters.AddWithValue("@DiaDiem", evt.Location ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@MoTa", evt.Description ?? string.Empty);
+                    
+                    int newId = (int)cmd.ExecuteScalar();
+                    evt.Id = newId;
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi lưu sự kiện: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
+        // Cập nhật sự kiện trong database
+        private bool UpdateEventInDatabase(EventInfo evt)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    var cmd = new SqlCommand(@"
+                        UPDATE SuKien 
+                        SET TieuDe = @TieuDe, NgaySuKien = @NgaySuKien, GioBatDau = @GioBatDau, 
+                            GioKetThuc = @GioKetThuc, DiaDiem = @DiaDiem, MoTa = @MoTa
+                        WHERE MaSK = @MaSK", conn);
+                    
+                    cmd.Parameters.AddWithValue("@MaSK", evt.Id);
+                    cmd.Parameters.AddWithValue("@TieuDe", evt.Title ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@NgaySuKien", evt.Date);
+                    cmd.Parameters.AddWithValue("@GioBatDau", evt.StartTime ?? "00:00");
+                    cmd.Parameters.AddWithValue("@GioKetThuc", evt.EndTime ?? "00:00");
+                    cmd.Parameters.AddWithValue("@DiaDiem", evt.Location ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@MoTa", evt.Description ?? string.Empty);
+                    
+                    cmd.ExecuteNonQuery();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi cập nhật sự kiện: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
+        // Xóa sự kiện khỏi database
+        private bool DeleteEventFromDatabase(int eventId)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    var cmd = new SqlCommand("DELETE FROM SuKien WHERE MaSK = @MaSK", conn);
+                    cmd.Parameters.AddWithValue("@MaSK", eventId);
+                    cmd.ExecuteNonQuery();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi xóa sự kiện: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
         }
 
         // Load danh sách thành viên từ database
@@ -58,7 +200,7 @@ namespace ClubManageApp
                     {
                         while (rdr.Read())
                         {
-                            var p = new Participant();
+                            var p = new ucParticipant();
                             p.Id = rdr["MaTV"] != DBNull.Value ? Convert.ToInt32(rdr["MaTV"]) : 0;
                             p.HoTen = rdr["HoTen"] != DBNull.Value ? rdr["HoTen"].ToString() : string.Empty;
                             p.NgaySinh = rdr["NgaySinh"] != DBNull.Value ? Convert.ToDateTime(rdr["NgaySinh"]) : default(DateTime);
@@ -86,9 +228,65 @@ namespace ClubManageApp
         // Thêm participant mẫu nếu không load được từ database
         private void AddSampleParticipants()
         {
-            participants.Add(new Participant { Id = 1, HoTen = "Nguyễn Vương Khang", Email = "khang@student.hcmute.edu.vn", Lop = "DHKTPM17A", VaiTro = "Thành viên" });
-            participants.Add(new Participant { Id = 2, HoTen = "Nguyễn Thị Lan", Email = "lan@student.hcmute.edu.vn", Lop = "DHKTPM17A", VaiTro = "Thành viên" });
-            participants.Add(new Participant { Id = 3, HoTen = "Lê Quốc Bảo", Email = "bao@student.hcmute.edu.vn", Lop = "DHKTPM17B", VaiTro = "Thành viên" });
+            participants.Add(new ucParticipant { Id = 1, HoTen = "Nguyễn Vương Khang", Email = "khang@student.hcmute.edu.vn", Lop = "DHKTPM17A", VaiTro = "Thành viên" });
+            participants.Add(new ucParticipant { Id = 2, HoTen = "Nguyễn Thị Lan", Email = "lan@student.hcmute.edu.vn", Lop = "DHKTPM17A", VaiTro = "Thành viên" });
+            participants.Add(new ucParticipant { Id = 3, HoTen = "Lê Quốc Bảo", Email = "bao@student.hcmute.edu.vn", Lop = "DHKTPM17B", VaiTro = "Thành viên" });
+        }
+
+        // Kiểm tra email hợp lệ
+        private bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
+            try
+            {
+                // Kiểm tra format email bằng Regex
+                string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+                if (!Regex.IsMatch(email, pattern))
+                    return false;
+
+                // Kiểm tra bằng MailAddress để đảm bảo
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // Kiểm tra ngày sự kiện hợp lệ
+        private bool ValidateEventDate(DateTime eventDate, string action = "thêm")
+        {
+            // Kiểm tra ngày không được ở quá khứ
+            if (eventDate.Date < DateTime.Now.Date)
+            {
+                MessageBox.Show(
+                    $"Không thể {action} sự kiện cho ngày trong quá khứ!\n\n" +
+                    $"Ngày được chọn: {eventDate:dd/MM/yyyy}\n" +
+                    $"Ngày hiện tại: {DateTime.Now:dd/MM/yyyy}\n\n" +
+                    $"Vui lòng chọn ngày từ hôm nay trở đi.",
+                    "Ngày không hợp lệ",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return false;
+            }
+
+            // Kiểm tra ngày không quá xa trong tương lai (tùy chọn, ví dụ: không quá 2 năm)
+            if (eventDate.Date > DateTime.Now.Date.AddYears(2))
+            {
+                DialogResult result = MessageBox.Show(
+                    $"Ngày sự kiện quá xa trong tương lai ({eventDate:dd/MM/yyyy}).\n\n" +
+                    $"Bạn có chắc chắn muốn tiếp tục?",
+                    "Xác nhận",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+                
+                return result == DialogResult.Yes;
+            }
+
+            return true;
         }
 
         // Xử lý nút Gửi email
@@ -114,13 +312,80 @@ namespace ClubManageApp
                 var subject = dlg.Subject;
                 var bodyTemplate = dlg.Body;
 
-                var recipients = participants.Where(p => !string.IsNullOrWhiteSpace(p.Email)).ToList();
-                if (recipients.Count == 0)
+                // Validate email người gửi
+                if (!IsValidEmail(from))
                 {
-                    MessageBox.Show("Không có thành viên nào có email trong hệ thống!", "Thông báo",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(
+                        "Email người gửi không hợp lệ!\n\n" +
+                        "Vui lòng nhập địa chỉ email đúng định dạng.\n" +
+                        "Ví dụ: example@domain.com",
+                        "Email không hợp lệ",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
                     return;
                 }
+
+                // Lọc và validate email người nhận
+                var validRecipients = new List<ucParticipant>();
+                var invalidEmails = new List<string>();
+
+                foreach (var p in participants)
+                {
+                    if (string.IsNullOrWhiteSpace(p.Email))
+                    {
+                        continue; // Bỏ qua người không có email
+                    }
+
+                    if (IsValidEmail(p.Email))
+                    {
+                        validRecipients.Add(p);
+                    }
+                    else
+                    {
+                        invalidEmails.Add($"{p.HoTen} ({p.Email})");
+                    }
+                }
+
+                // Thông báo nếu có email không hợp lệ
+                if (invalidEmails.Count > 0)
+                {
+                    string message = $"Phát hiện {invalidEmails.Count} email không hợp lệ:\n\n";
+                    message += string.Join("\n", invalidEmails.Take(5));
+                    
+                    if (invalidEmails.Count > 5)
+                    {
+                        message += $"\n... và {invalidEmails.Count - 5} email khác";
+                    }
+                    
+                    message += "\n\nCác email này sẽ bị bỏ qua khi gửi.";
+                    
+                    MessageBox.Show(message, "Cảnh báo Email không hợp lệ",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+                if (validRecipients.Count == 0)
+                {
+                    MessageBox.Show(
+                        "Không có thành viên nào có email hợp lệ trong hệ thống!\n\n" +
+                        "Vui lòng kiểm tra và cập nhật email cho thành viên.",
+                        "Không có người nhận",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    return;
+                }
+
+                // Xác nhận trước khi gửi
+                DialogResult confirmResult = MessageBox.Show(
+                    $"Bạn sắp gửi email đến {validRecipients.Count} thành viên.\n\n" +
+                    $"Tiêu đề: {subject}\n" +
+                    $"Người gửi: {from}\n\n" +
+                    $"Bạn có chắc chắn muốn tiếp tục?",
+                    "Xác nhận gửi email",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (confirmResult != DialogResult.Yes)
+                    return;
 
                 var errors = new List<string>();
                 var succeeded = 0;
@@ -132,7 +397,7 @@ namespace ClubManageApp
                 // Gửi email tuần tự
                 await Task.Run(() =>
                 {
-                    foreach (var recipient in recipients)
+                    foreach (var recipient in validRecipients)
                     {
                         try
                         {
@@ -169,7 +434,11 @@ namespace ClubManageApp
                 btnGuiEmail.Enabled = true;
                 btnGuiEmail.Text = "📧 Gửi email";
 
-                var msgSum = $"Gửi xong!\n\nThành công: {succeeded}/{recipients.Count}\nThất bại: {errors.Count}";
+                var msgSum = $"Gửi xong!\n\nThành công: {succeeded}/{validRecipients.Count}\nThất bại: {errors.Count}";
+                if (invalidEmails.Count > 0)
+                {
+                    msgSum += $"\nEmail không hợp lệ (bỏ qua): {invalidEmails.Count}";
+                }
                 if (errors.Count > 0)
                 {
                     msgSum += "\n\nChi tiết lỗi (tối đa 5):\n" + string.Join("\n", errors.Take(5));
@@ -636,22 +905,34 @@ namespace ClubManageApp
         // Xử lý nút Thêm sự kiện
         private void btnThemSuKien_Click(object sender, EventArgs e)
         {
-            DateTime dateForNewEvent = lstEvents.Items.Count > 0 ? selectedDate : DateTime.Now;
+            // Sử dụng đúng ngày được chọn, hoặc ngày hiện tại nếu chưa chọn
+            DateTime dateForNewEvent = selectedDate != default(DateTime) ? selectedDate : DateTime.Now.Date;
             
-            frmAddEditEvent frm = new frmAddEditEvent(dateForNewEvent);
+            // Validate ngày trước khi mở form
+            if (!ValidateEventDate(dateForNewEvent, "thêm"))
+            {
+                return; // Dừng lại nếu ngày không hợp lệ
+            }
+            
+            frmAddEditEvent frm = new frmAddEditEvent(dateForNewEvent, events);
             if (frm.ShowDialog() == DialogResult.OK)
             {
-                // Tạo ID mới
-                frm.Event.Id = events.Count > 0 ? events.Max(ev => ev.Id) + 1 : 1;
-                
-                events.Add(frm.Event);
-                LoadCalendar();
-                
-                // Hiển thị lại sự kiện của ngày đó
-                if (lstEvents.Items.Count > 0 || dateForNewEvent == selectedDate)
+                // Validate lại ngày sau khi người dùng có thể đã thay đổi
+                if (!ValidateEventDate(frm.Event.Date, "thêm"))
                 {
-                    DisplayEventsForDate(frm.Event.Date);
+                    return;
+                }
+
+                // Lưu vào database trước
+                if (SaveEventToDatabase(frm.Event))
+                {
+                    // Nếu lưu thành công, thêm vào danh sách
+                    events.Add(frm.Event);
+                    LoadCalendar();
+                    
+                    // Hiển thị lại sự kiện của ngày đó
                     selectedDate = frm.Event.Date;
+                    DisplayEventsForDate(frm.Event.Date);
                     
                     // Highlight lại panel của ngày vừa thêm
                     foreach (Control control in flowLayoutPanel1.Controls)
@@ -665,10 +946,10 @@ namespace ClubManageApp
                             }
                         }
                     }
+                    
+                    MessageBox.Show("Đã thêm sự kiện thành công!", "Thông báo",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-                
-                MessageBox.Show("Đã thêm sự kiện thành công!", "Thông báo",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -677,22 +958,49 @@ namespace ClubManageApp
         {
             if (selectedEvent != null)
             {
-                frmAddEditEvent frm = new frmAddEditEvent(selectedEvent.Date, selectedEvent);
+                // Cho phép sửa sự kiện trong quá khứ nhưng không cho đổi ngày về quá khứ
+                frmAddEditEvent frm = new frmAddEditEvent(selectedEvent.Date, events, selectedEvent);
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
-                    // Cập nhật sự kiện trong danh sách
-                    int index = events.FindIndex(ev => ev.Id == selectedEvent.Id);
-                    if (index >= 0)
+                    // Nếu ngày sự kiện bị thay đổi, validate ngày mới
+                    if (frm.Event.Date.Date != selectedEvent.Date.Date)
                     {
-                        events[index] = frm.Event;
-                        events[index].Id = selectedEvent.Id; // Giữ nguyên ID
+                        if (!ValidateEventDate(frm.Event.Date, "sửa"))
+                        {
+                            return;
+                        }
                     }
-                    
-                    LoadCalendar();
-                    DisplayEventsForDate(selectedDate);
-                    
-                    MessageBox.Show("Đã cập nhật sự kiện thành công!", "Thông báo",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    // Nếu sự kiện đã qua và người dùng đang cố sửa về quá khứ xa hơn
+                    else if (selectedEvent.Date.Date < DateTime.Now.Date && frm.Event.Date.Date < DateTime.Now.Date)
+                    {
+                        DialogResult result = MessageBox.Show(
+                            "Sự kiện này đã diễn ra trong quá khứ.\n\n" +
+                            "Bạn có chắc chắn muốn cập nhật thông tin không?",
+                            "Cảnh báo",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Warning);
+                        
+                        if (result != DialogResult.Yes)
+                            return;
+                    }
+
+                    // Cập nhật trong database
+                    if (UpdateEventInDatabase(frm.Event))
+                    {
+                        // Cập nhật sự kiện trong danh sách
+                        int index = events.FindIndex(ev => ev.Id == selectedEvent.Id);
+                        if (index >= 0)
+                        {
+                            events[index] = frm.Event;
+                            events[index].Id = selectedEvent.Id;
+                        }
+                        
+                        LoadCalendar();
+                        DisplayEventsForDate(selectedDate);
+                        
+                        MessageBox.Show("Đã cập nhật sự kiện thành công!", "Thông báo",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
             }
             else
@@ -715,13 +1023,17 @@ namespace ClubManageApp
                 
                 if (result == DialogResult.Yes)
                 {
-                    events.RemoveAll(ev => ev.Id == selectedEvent.Id);
-                    
-                    LoadCalendar();
-                    DisplayEventsForDate(selectedDate);
-                    
-                    MessageBox.Show("Đã xóa sự kiện thành công!", "Thông báo", 
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    // Xóa khỏi database
+                    if (DeleteEventFromDatabase(selectedEvent.Id))
+                    {
+                        events.RemoveAll(ev => ev.Id == selectedEvent.Id);
+                        
+                        LoadCalendar();
+                        DisplayEventsForDate(selectedDate);
+                        
+                        MessageBox.Show("Đã xóa sự kiện thành công!", "Thông báo", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
             }
             else

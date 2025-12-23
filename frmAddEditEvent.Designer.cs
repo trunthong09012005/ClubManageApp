@@ -1,4 +1,4 @@
-namespace ClubManageApp
+﻿namespace ClubManageApp
 {
     partial class frmAddEditEvent
     {
@@ -38,6 +38,7 @@ namespace ClubManageApp
             this.mtbEndTime = new System.Windows.Forms.MaskedTextBox();
             this.lblLocation = new System.Windows.Forms.Label();
             this.txtLocation = new System.Windows.Forms.TextBox();
+            this.btnSelectRoom = new System.Windows.Forms.Button();
             this.lblDescription = new System.Windows.Forms.Label();
             this.txtDescription = new System.Windows.Forms.TextBox();
             this.btnSave = new System.Windows.Forms.Button();
@@ -52,7 +53,7 @@ namespace ClubManageApp
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(70, 23);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "Ti�u ??:";
+            this.lblTitle.Text = "Tiêu đề:";
             // 
             // txtTitle
             // 
@@ -70,7 +71,7 @@ namespace ClubManageApp
             this.lblDate.Name = "lblDate";
             this.lblDate.Size = new System.Drawing.Size(56, 23);
             this.lblDate.TabIndex = 2;
-            this.lblDate.Text = "Ng�y:";
+            this.lblDate.Text = "Ngày:";
             // 
             // dtpDate
             // 
@@ -89,7 +90,7 @@ namespace ClubManageApp
             this.lblStartTime.Name = "lblStartTime";
             this.lblStartTime.Size = new System.Drawing.Size(110, 23);
             this.lblStartTime.TabIndex = 4;
-            this.lblStartTime.Text = "Gi? b?t ??u:";
+            this.lblStartTime.Text = "Giờ bắt đầu:";
             // 
             // mtbStartTime
             // 
@@ -110,7 +111,7 @@ namespace ClubManageApp
             this.lblEndTime.Name = "lblEndTime";
             this.lblEndTime.Size = new System.Drawing.Size(115, 23);
             this.lblEndTime.TabIndex = 6;
-            this.lblEndTime.Text = "Gi? k?t th�c:";
+            this.lblEndTime.Text = "Giờ kết thúc:";
             // 
             // mtbEndTime
             // 
@@ -131,15 +132,31 @@ namespace ClubManageApp
             this.lblLocation.Name = "lblLocation";
             this.lblLocation.Size = new System.Drawing.Size(81, 23);
             this.lblLocation.TabIndex = 8;
-            this.lblLocation.Text = "??a ?i?m:";
+            this.lblLocation.Text = "Địa điểm:";
             // 
             // txtLocation
             // 
             this.txtLocation.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.txtLocation.Location = new System.Drawing.Point(150, 177);
             this.txtLocation.Name = "txtLocation";
-            this.txtLocation.Size = new System.Drawing.Size(350, 30);
+            this.txtLocation.Size = new System.Drawing.Size(260, 30);
             this.txtLocation.TabIndex = 9;
+            // 
+            // btnSelectRoom
+            // 
+            this.btnSelectRoom.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.btnSelectRoom.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnSelectRoom.FlatAppearance.BorderSize = 0;
+            this.btnSelectRoom.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSelectRoom.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnSelectRoom.ForeColor = System.Drawing.Color.White;
+            this.btnSelectRoom.Location = new System.Drawing.Point(420, 177);
+            this.btnSelectRoom.Name = "btnSelectRoom";
+            this.btnSelectRoom.Size = new System.Drawing.Size(80, 30);
+            this.btnSelectRoom.TabIndex = 10;
+            this.btnSelectRoom.Text = "📍 Chọn";
+            this.btnSelectRoom.UseVisualStyleBackColor = false;
+            this.btnSelectRoom.Click += new System.EventHandler(this.btnSelectRoom_Click);
             // 
             // lblDescription
             // 
@@ -148,8 +165,8 @@ namespace ClubManageApp
             this.lblDescription.Location = new System.Drawing.Point(30, 230);
             this.lblDescription.Name = "lblDescription";
             this.lblDescription.Size = new System.Drawing.Size(60, 23);
-            this.lblDescription.TabIndex = 10;
-            this.lblDescription.Text = "M� t?:";
+            this.lblDescription.TabIndex = 11;
+            this.lblDescription.Text = "Mô tả:";
             // 
             // txtDescription
             // 
@@ -159,7 +176,7 @@ namespace ClubManageApp
             this.txtDescription.Name = "txtDescription";
             this.txtDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtDescription.Size = new System.Drawing.Size(350, 150);
-            this.txtDescription.TabIndex = 11;
+            this.txtDescription.TabIndex = 12;
             // 
             // btnSave
             // 
@@ -172,8 +189,8 @@ namespace ClubManageApp
             this.btnSave.Location = new System.Drawing.Point(150, 400);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(150, 45);
-            this.btnSave.TabIndex = 12;
-            this.btnSave.Text = "L?u";
+            this.btnSave.TabIndex = 13;
+            this.btnSave.Text = "Lưu";
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
@@ -189,8 +206,8 @@ namespace ClubManageApp
             this.btnCancel.Location = new System.Drawing.Point(320, 400);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(150, 45);
-            this.btnCancel.TabIndex = 13;
-            this.btnCancel.Text = "H?y";
+            this.btnCancel.TabIndex = 14;
+            this.btnCancel.Text = "Hủy";
             this.btnCancel.UseVisualStyleBackColor = false;
             // 
             // frmAddEditEvent
@@ -204,6 +221,7 @@ namespace ClubManageApp
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.txtDescription);
             this.Controls.Add(this.lblDescription);
+            this.Controls.Add(this.btnSelectRoom);
             this.Controls.Add(this.txtLocation);
             this.Controls.Add(this.lblLocation);
             this.Controls.Add(this.mtbEndTime);
@@ -219,7 +237,7 @@ namespace ClubManageApp
             this.MinimizeBox = false;
             this.Name = "frmAddEditEvent";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Th�m/S?a S? ki?n";
+            this.Text = "Thêm/Sửa sự kiện";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -237,6 +255,7 @@ namespace ClubManageApp
         private System.Windows.Forms.MaskedTextBox mtbEndTime;
         private System.Windows.Forms.Label lblLocation;
         private System.Windows.Forms.TextBox txtLocation;
+        private System.Windows.Forms.Button btnSelectRoom;
         private System.Windows.Forms.Label lblDescription;
         private System.Windows.Forms.TextBox txtDescription;
         private System.Windows.Forms.Button btnSave;
