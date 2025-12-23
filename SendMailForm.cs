@@ -9,7 +9,7 @@ namespace ClubManageApp
 {
     public partial class SendMailForm : Form
     {
-        private Participant recipient;
+        private ucParticipant recipient;
         private TextBox txtSender;
         private TextBox txtPassword;
         private TextBox txtSmtp;
@@ -20,7 +20,7 @@ namespace ClubManageApp
         private Button btnSend;
         private Button btnCancel;
 
-        public SendMailForm(Participant p)
+        public SendMailForm(ucParticipant p)
         {
             recipient = p;
             InitializeComponentManual();

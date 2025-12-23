@@ -109,11 +109,15 @@
       <DependentUpon>DashBoard.cs</DependentUpon>
     </Compile>
     <Compile Include="DashboardEnhancements.cs" />
+    <Compile Include="EventInfo.cs" />
     <Compile Include="Finance.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Finance.Designer.cs">
       <DependentUpon>Finance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAddEditMember.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormSignUp.cs">
       <SubType>Form</SubType>
@@ -122,12 +126,28 @@
       <DependentUpon>FormSignUp.cs</DependentUpon>
     </Compile>
     <Compile Include="FormThemSuaHoatDong.cs" />
+    <Compile Include="frmAddEditEvent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmAddEditEvent.Designer.cs" />
     <Compile Include="GraphicsExtensions.cs" />
     <Compile Include="Login.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Login.Designer.cs">
       <DependentUpon>Login.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Meetings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Meetings.Designer.cs">
+      <DependentUpon>Meetings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MeetingTest.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MeetingTest.Designer.cs">
+      <DependentUpon>MeetingTest.cs</DependentUpon>
     </Compile>
     <Compile Include="MemberChatPanel.cs">
       <SubType>UserControl</SubType>
@@ -144,7 +164,7 @@
     <Compile Include="Notification.Designer.cs">
       <DependentUpon>Notification.cs</DependentUpon>
     </Compile>
-    <Compile Include="Participant.cs" />
+    <Compile Include="ParticipantModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Project.cs">
       <SubType>UserControl</SubType>
@@ -153,6 +173,9 @@
       <DependentUpon>Project.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RoomSelectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Schedule.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -173,6 +196,12 @@
     </Compile>
     <Compile Include="User.Designer.cs">
       <DependentUpon>User.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserTest.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserTest.Designer.cs">
+      <DependentUpon>UserTest.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Account.resx">
       <DependentUpon>Account.cs</DependentUpon>
@@ -197,6 +226,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Meetings.resx">
+      <DependentUpon>Meetings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MeetingTest.resx">
+      <DependentUpon>MeetingTest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MemberChatPanel.resx">
       <DependentUpon>MemberChatPanel.cs</DependentUpon>
@@ -229,6 +264,13 @@
     <EmbeddedResource Include="User.resx">
       <DependentUpon>User.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UserTest.resx">
+      <DependentUpon>UserTest.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="CHANGELOG_RoomSelection_v2.0.md" />
+    <None Include="DEMO_RoomSelection.md" />
+    <None Include="FEATURE_TimeSync.md" />
+    <None Include="HUONG_DAN_SO_DO_PHONG.md" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

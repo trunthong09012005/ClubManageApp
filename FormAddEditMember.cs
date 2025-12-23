@@ -1,0 +1,695 @@
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+
+namespace ClubManageApp
+{
+    public class FormAddEditMember : Form
+    {
+        #region Fields
+
+        private string connectionString;
+        private int? maTV; // null for add, value for edit
+        private string currentUserRole; // Role c?a ng??i ??ng nh?p
+        
+        private TextBox txtHoTen, txtEmail, txtSDT, txtDiaChi, txtLop, txtKhoa;
+        private DateTimePicker dtpNgaySinh;
+        private ComboBox cboGioiTinh, cboVaiTro, cboTrangThai, cboChucVu, cboBan;
+        private Button btnSave, btnCancel;
+
+        #endregion
+
+        #region Constructor
+
+        public FormAddEditMember(string connString, string userRole, int? memberID = null)
+        {
+            this.connectionString = connString;
+            this.currentUserRole = userRole;
+            this.maTV = memberID;
+            InitializeForm();
+            
+            if (maTV.HasValue)
+                LoadMemberData();
+        }
+
+        #endregion
+
+        #region Form Initialization
+
+        private void InitializeForm()
+        {
+            this.Text = maTV.HasValue ? "S?a thông tin thành viên" : "Thêm thành viên m?i";
+            this.Size = new Size(600, 700);
+            this.StartPosition = FormStartPosition.CenterParent;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.BackColor = Color.FromArgb(245, 247, 250);
+
+            int yPos = 20;
+
+            AddFormField("H? tên (*)", ref txtHoTen, ref yPos);
+            AddFormField("Email (*)", ref txtEmail, ref yPos);
+            AddFormField("S?T", ref txtSDT, ref yPos);
+            
+            Label lblNgaySinh = new Label 
+            { 
+                Text = "Ngày sinh:", 
+                Location = new Point(20, yPos), 
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10)
+            };
+            dtpNgaySinh = new DateTimePicker 
+            { 
+                Location = new Point(150, yPos), 
+                Size = new Size(400, 25),
+                Font = new Font("Segoe UI", 10),
+                Format = DateTimePickerFormat.Short,
+                MaxDate = DateTime.Now.AddYears(-15), // Ít nh?t 15 tu?i
+                MinDate = DateTime.Now.AddYears(-100)
+            };
+            this.Controls.Add(lblNgaySinh);
+            this.Controls.Add(dtpNgaySinh);
+            yPos += 40;
+
+            AddComboField("Gi?i tính", ref cboGioiTinh, new[] { "Nam", "N?", "Khác" }, ref yPos);
+            AddFormField("L?p", ref txtLop, ref yPos);
+            AddFormField("Khoa", ref txtKhoa, ref yPos);
+            AddFormField("??a ch?", ref txtDiaChi, ref yPos);
+            
+            LoadAndAddComboField("Vai trò", ref cboVaiTro, "SELECT DISTINCT VaiTro FROM ThanhVien WHERE VaiTro IS NOT NULL", ref yPos);
+            
+            // ?? Ch? Admin m?i th?y Admin trong dropdown
+            if (cboVaiTro != null && !string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                // Xóa "Admin" kh?i combobox n?u không ph?i Admin
+                for (int i = cboVaiTro.Items.Count - 1; i >= 0; i--)
+                {
+                    if (string.Equals(cboVaiTro.Items[i]?.ToString(), "Admin", StringComparison.OrdinalIgnoreCase))
+                    {
+                        cboVaiTro.Items.RemoveAt(i);
+                    }
+                }
+            }
+            
+            AddComboField("Tr?ng thái", ref cboTrangThai, new[] { "Ho?t ??ng", "T?m ng?ng", "Ngh?" }, ref yPos);
+            LoadAndAddComboField("Ch?c v?", ref cboChucVu, "SELECT MaCV, TenCV FROM ChucVu", ref yPos, true);
+            LoadAndAddComboField("Ban", ref cboBan, "SELECT MaBan, TenBan FROM BanChuyenMon", ref yPos, true);
+
+            // Buttons
+            Panel pnlButtons = new Panel
+            {
+                Location = new Point(0, yPos + 10),
+                Size = new Size(600, 60),
+                BackColor = Color.White
+            };
+
+            btnSave = new Button
+            {
+                Text = "?? L?u",
+                Location = new Point(170, 10),
+                Size = new Size(120, 40),
+                BackColor = Color.FromArgb(76, 175, 80),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnSave.FlatAppearance.BorderSize = 0;
+            btnSave.Click += BtnSave_Click;
+
+            btnCancel = new Button
+            {
+                Text = "? H?y",
+                Location = new Point(310, 10),
+                Size = new Size(120, 40),
+                BackColor = Color.FromArgb(244, 67, 54),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnCancel.FlatAppearance.BorderSize = 0;
+            btnCancel.Click += (s, e) => this.DialogResult = DialogResult.Cancel;
+
+            pnlButtons.Controls.Add(btnSave);
+            pnlButtons.Controls.Add(btnCancel);
+            this.Controls.Add(pnlButtons);
+
+            // Add validation event handlers
+            txtHoTen.Leave += TxtHoTen_Leave;
+            txtEmail.Leave += TxtEmail_Leave;
+            txtSDT.Leave += TxtSDT_Leave;
+            txtSDT.KeyPress += TxtSDT_KeyPress;
+        }
+
+        private void AddFormField(string label, ref TextBox textBox, ref int yPos)
+        {
+            Label lbl = new Label 
+            { 
+                Text = label, 
+                Location = new Point(20, yPos), 
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10)
+            };
+            textBox = new TextBox 
+            { 
+                Location = new Point(150, yPos), 
+                Size = new Size(400, 25),
+                Font = new Font("Segoe UI", 10)
+            };
+            this.Controls.Add(lbl);
+            this.Controls.Add(textBox);
+            yPos += 40;
+        }
+
+        private void AddComboField(string label, ref ComboBox combo, string[] items, ref int yPos)
+        {
+            Label lbl = new Label 
+            { 
+                Text = label, 
+                Location = new Point(20, yPos), 
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10)
+            };
+            combo = new ComboBox 
+            { 
+                Location = new Point(150, yPos), 
+                Size = new Size(400, 25),
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = new Font("Segoe UI", 10)
+            };
+            combo.Items.AddRange(items);
+            this.Controls.Add(lbl);
+            this.Controls.Add(combo);
+            yPos += 40;
+        }
+
+        private void LoadAndAddComboField(string label, ref ComboBox combo, string query, ref int yPos, bool hasID = false)
+        {
+            Label lbl = new Label 
+            { 
+                Text = label, 
+                Location = new Point(20, yPos), 
+                AutoSize = true,
+                Font = new Font("Segoe UI", 10)
+            };
+            combo = new ComboBox 
+            { 
+                Location = new Point(150, yPos), 
+                Size = new Size(400, 25),
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = new Font("Segoe UI", 10)
+            };
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (hasID)
+                            {
+                                combo.Items.Add(new ComboBoxItem
+                                {
+                                    Value = reader.GetInt32(0),
+                                    Text = reader.GetString(1)
+                                });
+                            }
+                            else
+                            {
+                                combo.Items.Add(reader.GetString(0));
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"L?i khi t?i d? li?u ComboBox: {ex.Message}", "L?i", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            if (hasID)
+            {
+                combo.DisplayMember = "Text";
+                combo.ValueMember = "Value";
+            }
+
+            this.Controls.Add(lbl);
+            this.Controls.Add(combo);
+            yPos += 40;
+        }
+
+        #endregion
+
+        #region Data Loading
+
+        private void LoadMemberData()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "SELECT * FROM ThanhVien WHERE MaTV = @MaTV";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@MaTV", maTV.Value);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                txtHoTen.Text = reader["HoTen"].ToString();
+                                txtEmail.Text = reader["Email"].ToString();
+                                txtSDT.Text = reader["SDT"]?.ToString() ?? "";
+                                txtDiaChi.Text = reader["DiaChi"]?.ToString() ?? "";
+                                txtLop.Text = reader["Lop"]?.ToString() ?? "";
+                                txtKhoa.Text = reader["Khoa"]?.ToString() ?? "";
+                                
+                                if (reader["NgaySinh"] != DBNull.Value)
+                                {
+                                    DateTime ngaySinh = Convert.ToDateTime(reader["NgaySinh"]);
+                                    if (ngaySinh <= dtpNgaySinh.MaxDate && ngaySinh >= dtpNgaySinh.MinDate)
+                                        dtpNgaySinh.Value = ngaySinh;
+                                }
+                                
+                                cboGioiTinh.SelectedItem = reader["GioiTinh"]?.ToString();
+                                
+                                // Load vai trò - n?u là Admin và user không ph?i Admin thì thêm vào ?? hi?n th? nh?ng disable
+                                string vaiTro = reader["VaiTro"]?.ToString();
+                                if (!string.IsNullOrEmpty(vaiTro))
+                                {
+                                    if (string.Equals(vaiTro, "Admin", StringComparison.OrdinalIgnoreCase) && 
+                                        !string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        // Thêm "Admin" vào combobox ?? hi?n th? (read-only)
+                                        if (!cboVaiTro.Items.Contains(vaiTro))
+                                            cboVaiTro.Items.Add(vaiTro);
+                                        cboVaiTro.SelectedItem = vaiTro;
+                                        cboVaiTro.Enabled = false; // Không cho phép thay ??i
+                                        
+                                        // Hi?n th? thông báo
+                                        Label lblWarning = new Label
+                                        {
+                                            Text = "?? Ch? Admin m?i có quy?n thay ??i vai trò Admin",
+                                            Location = new Point(150, cboVaiTro.Location.Y + 30),
+                                            AutoSize = true,
+                                            ForeColor = Color.Red,
+                                            Font = new Font("Segoe UI", 9, FontStyle.Italic)
+                                        };
+                                        this.Controls.Add(lblWarning);
+                                    }
+                                    else
+                                    {
+                                        cboVaiTro.SelectedItem = vaiTro;
+                                    }
+                                }
+                                
+                                cboTrangThai.SelectedItem = reader["TrangThai"]?.ToString();
+                                
+                                if (reader["MaCV"] != DBNull.Value)
+                                {
+                                    int maCV = Convert.ToInt32(reader["MaCV"]);
+                                    foreach (ComboBoxItem item in cboChucVu.Items)
+                                    {
+                                        if (item.Value == maCV)
+                                        {
+                                            cboChucVu.SelectedItem = item;
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                if (reader["MaBan"] != DBNull.Value)
+                                {
+                                    int maBan = Convert.ToInt32(reader["MaBan"]);
+                                    foreach (ComboBoxItem item in cboBan.Items)
+                                    {
+                                        if (item.Value == maBan)
+                                        {
+                                            cboBan.SelectedItem = item;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"L?i khi t?i d? li?u: {ex.Message}", "L?i", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        #endregion
+
+        #region Validation Event Handlers
+
+        private void TxtHoTen_Leave(object sender, EventArgs e)
+        {
+            string hoTen = txtHoTen.Text.Trim();
+            if (string.IsNullOrWhiteSpace(hoTen))
+            {
+                txtHoTen.BackColor = Color.FromArgb(255, 230, 230);
+                return;
+            }
+
+            // Ki?m tra tên ch? ch?a ch? cái và kho?ng tr?ng
+            if (!Regex.IsMatch(hoTen, @"^[\p{L}\s]+$"))
+            {
+                txtHoTen.BackColor = Color.FromArgb(255, 230, 230);
+                MessageBox.Show("H? tên ch? ???c ch?a ch? cái và kho?ng tr?ng!", "C?nh báo", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtHoTen.Focus();
+                return;
+            }
+
+            // Ki?m tra ?? dài
+            if (hoTen.Length < 2 || hoTen.Length > 150)
+            {
+                txtHoTen.BackColor = Color.FromArgb(255, 230, 230);
+                MessageBox.Show("H? tên ph?i có ?? dài t? 2 ??n 150 ký t?!", "C?nh báo", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtHoTen.Focus();
+                return;
+            }
+
+            txtHoTen.BackColor = Color.White;
+        }
+
+        private void TxtEmail_Leave(object sender, EventArgs e)
+        {
+            string email = txtEmail.Text.Trim();
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                txtEmail.BackColor = Color.FromArgb(255, 230, 230);
+                return;
+            }
+
+            if (!IsValidEmail(email))
+            {
+                txtEmail.BackColor = Color.FromArgb(255, 230, 230);
+                MessageBox.Show("Email không h?p l?! Vui lòng nh?p ?úng ??nh d?ng email.", "C?nh báo", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtEmail.Focus();
+                return;
+            }
+
+            // Ki?m tra email ?ã t?n t?i (n?u là thêm m?i ho?c email khác v?i email c?)
+            if (IsEmailExists(email))
+            {
+                txtEmail.BackColor = Color.FromArgb(255, 230, 230);
+                MessageBox.Show("Email này ?ã ???c s? d?ng b?i thành viên khác!", "C?nh báo", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtEmail.Focus();
+                return;
+            }
+
+            txtEmail.BackColor = Color.White;
+        }
+
+        private void TxtSDT_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Ch? cho phép nh?p s? và các phím ?i?u khi?n
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void TxtSDT_Leave(object sender, EventArgs e)
+        {
+            string sdt = txtSDT.Text.Trim();
+            if (string.IsNullOrWhiteSpace(sdt))
+            {
+                txtSDT.BackColor = Color.White;
+                return;
+            }
+
+            // Ki?m tra ??nh d?ng s? ?i?n tho?i Vi?t Nam
+            if (!Regex.IsMatch(sdt, @"^(0|\+84)[0-9]{9,10}$"))
+            {
+                txtSDT.BackColor = Color.FromArgb(255, 230, 230);
+                MessageBox.Show("S? ?i?n tho?i không h?p l?!\n??nh d?ng: 0xxxxxxxxx ho?c +84xxxxxxxxx", "C?nh báo", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtSDT.Focus();
+                return;
+            }
+
+            txtSDT.BackColor = Color.White;
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void BtnSave_Click(object sender, EventArgs e)
+        {
+            // Comprehensive validation
+            var validationResult = ValidateAllFields();
+            if (!validationResult.IsValid)
+            {
+                MessageBox.Show(validationResult.ErrorMessage, "L?i Validation", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // ?? Ki?m tra quy?n ch?nh s?a vai trò Admin
+            string selectedRole = cboVaiTro.SelectedItem?.ToString();
+            if (!string.IsNullOrEmpty(selectedRole) && 
+                string.Equals(selectedRole, "Admin", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show("? Ch? có Admin m?i ???c phép ??t vai trò Admin cho ng??i khác!", 
+                    "Không có quy?n", 
+                    MessageBoxButtons.OK, 
+                    MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query;
+                    
+                    if (maTV.HasValue)
+                    {
+                        query = @"UPDATE ThanhVien SET 
+                            HoTen = @HoTen, Email = @Email, SDT = @SDT, DiaChi = @DiaChi,
+                            NgaySinh = @NgaySinh, GioiTinh = @GioiTinh, Lop = @Lop, Khoa = @Khoa,
+                            VaiTro = @VaiTro, TrangThai = @TrangThai, MaCV = @MaCV, MaBan = @MaBan
+                            WHERE MaTV = @MaTV";
+                    }
+                    else
+                    {
+                        query = @"INSERT INTO ThanhVien 
+                            (HoTen, Email, SDT, DiaChi, NgaySinh, GioiTinh, Lop, Khoa, VaiTro, TrangThai, MaCV, MaBan)
+                            VALUES 
+                            (@HoTen, @Email, @SDT, @DiaChi, @NgaySinh, @GioiTinh, @Lop, @Khoa, @VaiTro, @TrangThai, @MaCV, @MaBan)";
+                    }
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        if (maTV.HasValue)
+                            cmd.Parameters.AddWithValue("@MaTV", maTV.Value);
+
+                        cmd.Parameters.AddWithValue("@HoTen", txtHoTen.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Email", txtEmail.Text.Trim().ToLower());
+                        cmd.Parameters.AddWithValue("@SDT", string.IsNullOrWhiteSpace(txtSDT.Text) ? (object)DBNull.Value : txtSDT.Text.Trim());
+                        cmd.Parameters.AddWithValue("@DiaChi", string.IsNullOrWhiteSpace(txtDiaChi.Text) ? (object)DBNull.Value : txtDiaChi.Text.Trim());
+                        cmd.Parameters.AddWithValue("@NgaySinh", dtpNgaySinh.Value);
+                        cmd.Parameters.AddWithValue("@GioiTinh", cboGioiTinh.SelectedItem?.ToString() ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Lop", string.IsNullOrWhiteSpace(txtLop.Text) ? (object)DBNull.Value : txtLop.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Khoa", string.IsNullOrWhiteSpace(txtKhoa.Text) ? (object)DBNull.Value : txtKhoa.Text.Trim());
+                        cmd.Parameters.AddWithValue("@VaiTro", cboVaiTro.SelectedItem?.ToString() ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@TrangThai", cboTrangThai.SelectedItem?.ToString() ?? "Ho?t ??ng");
+                        cmd.Parameters.AddWithValue("@MaCV", cboChucVu.SelectedItem != null ? ((ComboBoxItem)cboChucVu.SelectedItem).Value : (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@MaBan", cboBan.SelectedItem != null ? ((ComboBoxItem)cboBan.SelectedItem).Value : (object)DBNull.Value);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                MessageBox.Show(
+                    maTV.HasValue ? "? C?p nh?t thành công!" : "? Thêm thành viên thành công!", 
+                    "Thành công", 
+                    MessageBoxButtons.OK, 
+                    MessageBoxIcon.Information);
+                
+                this.DialogResult = DialogResult.OK;
+            }
+            catch (SqlException sqlEx)
+            {
+                if (sqlEx.Number == 2627 || sqlEx.Number == 2601) // Duplicate key error
+                {
+                    MessageBox.Show("? Email ?ã t?n t?i trong h? th?ng!", "L?i", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else if (sqlEx.Number == 547) // Foreign key constraint
+                {
+                    MessageBox.Show("? D? li?u tham chi?u không h?p l?! Vui lòng ki?m tra l?i.", "L?i", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show($"? L?i SQL: {sqlEx.Message}", "L?i", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"? L?i khi l?u: {ex.Message}", "L?i", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        #endregion
+
+        #region Validation Methods
+
+        private ValidationResult ValidateAllFields()
+        {
+            // Validate H? tên
+            string hoTen = txtHoTen.Text.Trim();
+            if (string.IsNullOrWhiteSpace(hoTen))
+            {
+                txtHoTen.Focus();
+                return new ValidationResult(false, "? Vui lòng nh?p h? tên!");
+            }
+
+            if (!Regex.IsMatch(hoTen, @"^[\p{L}\s]+$"))
+            {
+                txtHoTen.Focus();
+                return new ValidationResult(false, "? H? tên ch? ???c ch?a ch? cái và kho?ng tr?ng!");
+            }
+
+            if (hoTen.Length < 2 || hoTen.Length > 150)
+            {
+                txtHoTen.Focus();
+                return new ValidationResult(false, "? H? tên ph?i có ?? dài t? 2 ??n 150 ký t?!");
+            }
+
+            // Validate Email
+            string email = txtEmail.Text.Trim();
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                txtEmail.Focus();
+                return new ValidationResult(false, "? Vui lòng nh?p email!");
+            }
+
+            if (!IsValidEmail(email))
+            {
+                txtEmail.Focus();
+                return new ValidationResult(false, "? Email không h?p l?! Vui lòng nh?p ?úng ??nh d?ng.");
+            }
+
+            // Validate S?T (n?u có nh?p)
+            string sdt = txtSDT.Text.Trim();
+            if (!string.IsNullOrWhiteSpace(sdt))
+            {
+                if (!Regex.IsMatch(sdt, @"^(0|\+84)[0-9]{9,10}$"))
+                {
+                    txtSDT.Focus();
+                    return new ValidationResult(false, "? S? ?i?n tho?i không h?p l?!\n??nh d?ng: 0xxxxxxxxx ho?c +84xxxxxxxxx");
+                }
+            }
+
+            // Validate Ngày sinh
+            int age = DateTime.Now.Year - dtpNgaySinh.Value.Year;
+            if (age < 15)
+            {
+                return new ValidationResult(false, "? Thành viên ph?i ít nh?t 15 tu?i!");
+            }
+
+            if (age > 100)
+            {
+                return new ValidationResult(false, "? Ngày sinh không h?p l?!");
+            }
+
+            return new ValidationResult(true, "");
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email && Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private bool IsEmailExists(string email)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = maTV.HasValue 
+                        ? "SELECT COUNT(*) FROM ThanhVien WHERE Email = @Email AND MaTV != @MaTV"
+                        : "SELECT COUNT(*) FROM ThanhVien WHERE Email = @Email";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Email", email.ToLower());
+                        if (maTV.HasValue)
+                            cmd.Parameters.AddWithValue("@MaTV", maTV.Value);
+
+                        int count = (int)cmd.ExecuteScalar();
+                        return count > 0;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Helper Classes
+
+        public class ComboBoxItem
+        {
+            public int Value { get; set; }
+            public string Text { get; set; }
+
+            public override string ToString()
+            {
+                return Text;
+            }
+        }
+
+        private class ValidationResult
+        {
+            public bool IsValid { get; set; }
+            public string ErrorMessage { get; set; }
+
+            public ValidationResult(bool isValid, string errorMessage)
+            {
+                IsValid = isValid;
+                ErrorMessage = errorMessage;
+            }
+        }
+
+        #endregion
+    }
+}

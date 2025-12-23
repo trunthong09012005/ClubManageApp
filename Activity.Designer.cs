@@ -128,7 +128,7 @@
             this.lblSearch.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.lblSearch.Location = new System.Drawing.Point(13, 10);
             this.lblSearch.Name = "lblSearch";
-            this.lblSearch.Size = new System.Drawing.Size(73, 20);
+            this.lblSearch.Size = new System.Drawing.Size(59, 15);
             this.lblSearch.TabIndex = 0;
             this.lblSearch.Text = "Tìm kiếm:";
             // 
@@ -163,7 +163,7 @@
             this.lblStatus.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.lblStatus.Location = new System.Drawing.Point(508, 10);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(78, 20);
+            this.lblStatus.Size = new System.Drawing.Size(62, 15);
             this.lblStatus.TabIndex = 3;
             this.lblStatus.Text = "Trạng thái:";
             // 
@@ -189,7 +189,7 @@
             this.lblSort.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.lblSort.Location = new System.Drawing.Point(18, 50);
             this.lblSort.Name = "lblSort";
-            this.lblSort.Size = new System.Drawing.Size(65, 20);
+            this.lblSort.Size = new System.Drawing.Size(51, 15);
             this.lblSort.TabIndex = 5;
             this.lblSort.Text = "Sắp xếp:";
             // 
@@ -319,9 +319,9 @@
             this.lblTitle.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
             this.lblTitle.ForeColor = System.Drawing.Color.White;
-            this.lblTitle.Location = new System.Drawing.Point(18, 39);
+            this.lblTitle.Location = new System.Drawing.Point(18, 35);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(285, 41);
+            this.lblTitle.Size = new System.Drawing.Size(231, 32);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "Quản lý Hoạt động";
             this.lblTitle.Click += new System.EventHandler(this.lblTitle_Click);
@@ -334,7 +334,7 @@
             this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(230)))), ((int)(((byte)(255)))));
             this.lblSubtitle.Location = new System.Drawing.Point(18, 16);
             this.lblSubtitle.Name = "lblSubtitle";
-            this.lblSubtitle.Size = new System.Drawing.Size(428, 23);
+            this.lblSubtitle.Size = new System.Drawing.Size(341, 19);
             this.lblSubtitle.TabIndex = 1;
             this.lblSubtitle.Text = "Tạo, chỉnh sửa, xóa và theo dõi các hoạt động của CLB";
             this.lblSubtitle.Click += new System.EventHandler(this.lblSubtitle_Click);

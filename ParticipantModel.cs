@@ -2,12 +2,12 @@ using System;
 
 namespace ClubManageApp
 {
-    // Move Participant model to its own file so other classes can reference it
-    public class Participant
+    /// <summary>
+    /// Data model for Participant (ThanhVien)
+    /// </summary>
+    public class ucParticipant
     {
         public int Id { get; set; }
-
-        // Columns from ThanhVien table
         public string HoTen { get; set; }
         public DateTime NgaySinh { get; set; }
         public string GioiTinh { get; set; }
@@ -20,7 +20,12 @@ namespace ClubManageApp
         public int MaCV { get; set; }
         public int? MaBan { get; set; }
 
-        // Backwards-compatible alias
-        public string Name { get => HoTen; set => HoTen = value; }
+        public ucParticipant()
+        {
+            // Default values
+            NgaySinh = DateTime.Now;
+            MaCV = 0;
+            MaBan = null;
+        }
     }
 }
