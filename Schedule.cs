@@ -15,8 +15,8 @@ namespace ClubManageApp
 {
     public partial class ucSchedule : UserControl
     {
-        // add connection string to enable direct DB loading
-        private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;Persist Security Info=True;User ID=sa;Password=912005;Encrypt=True;TrustServerCertificate=True";
+        // ✅ SỬ DỤNG ConnectionHelper thay vì hard-code
+        private string connectionString = ConnectionHelper.ConnectionString;
 
         private BindingList<Meeting> meetings = new BindingList<Meeting>();
         private BindingList<ucParticipant> participants = new BindingList<ucParticipant>();

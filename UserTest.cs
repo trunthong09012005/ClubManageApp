@@ -12,7 +12,8 @@ namespace ClubManageApp
     {
         #region Fields
 
-        private string connectionString = @"Data Source=DESKTOP-EJIGPN3;Initial Catalog=QL_APP_LSC;Persist Security Info=True;User ID=sa;Password=1234;Encrypt=True;TrustServerCertificate=True";
+        // ✅ SỬ DỤNG ConnectionHelper thay vì hard-code
+        private string connectionString = ConnectionHelper.ConnectionString;
         private string currentUserRole = "Thành viên"; // Mặc định
 
         // Controls for pnlThanhVien

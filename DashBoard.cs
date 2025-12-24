@@ -86,8 +86,8 @@ namespace ClubManageApp
             }
         }
 
-        // 🔗 Chuỗi kết nối SQL Server
-        private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;Persist Security Info=True;User ID=sa;Password=912005;Encrypt=True;TrustServerCertificate=True";
+        // ✅ SỬ DỤNG ConnectionHelper thay vì hard-code
+        private string connectionString = ConnectionHelper.ConnectionString;
         private readonly string role;
         private readonly string username;
         private readonly int maTV;

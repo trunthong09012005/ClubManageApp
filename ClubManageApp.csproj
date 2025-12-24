@@ -102,6 +102,7 @@
     <Compile Include="ChatbotPanel2.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="ConnectionHelper.cs" />
     <Compile Include="DashBoard.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -268,9 +269,11 @@
       <DependentUpon>UserTest.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="CHANGELOG_RoomSelection_v2.0.md" />
+    <None Include="CONNECTION_FIXED_SUMMARY.md" />
     <None Include="DEMO_RoomSelection.md" />
     <None Include="FEATURE_TimeSync.md" />
     <None Include="HUONG_DAN_SO_DO_PHONG.md" />
+    <None Include="MEETING_UI_FIX_GUIDE.md" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -347,6 +350,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\icons8-function-30.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="COMMIT_MESSAGE.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

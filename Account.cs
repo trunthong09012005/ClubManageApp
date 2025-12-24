@@ -8,8 +8,9 @@ namespace ClubManageApp
 {
     public partial class ucAccount : UserControl
     {
-
-        private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;Persist Security Info=True;User ID=sa;Password=912005;Encrypt=True;TrustServerCertificate=True";
+        // ✅ SỬ DỤNG ConnectionHelper thay vì hard-code
+        private string connectionString = ConnectionHelper.ConnectionString;
+        
         public ucAccount()
         {
             InitializeComponent();

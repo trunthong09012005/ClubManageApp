@@ -1,0 +1,41 @@
+# G?I Ý COMMIT MESSAGE
+
+```
+Refactor: T?p trung connectionString vào ConnectionHelper.cs
+
+? Tính n?ng m?i:
+- T?o ConnectionHelper.cs ?? qu?n lý connectionString t?p trung
+- Sau khi pull v? ch? c?n s?a 1 file duy nh?t (ConnectionHelper.cs dòng 13)
+
+?? Files ?ã c?p nh?t (11 files):
+- ConnectionHelper.cs (NEW) ?
+- Activity.cs
+- DashBoard.cs
+- Schedule.cs
+- Login.cs
+- Account.cs
+- UserTest.cs
+- Project.cs
+- Notification.cs
+- MeetingTest.cs
+- Finance.cs
+
+?? H??ng d?n s? d?ng:
+1. Pull code v?
+2. M? ConnectionHelper.cs
+3. S?a dòng 13: thay TÊN_MÁY và PASSWORD
+4. Xong!
+
+?? L?i ích:
+- Không c?n s?a 11 file n?a, ch? s?a 1 file
+- D? maintain khi ??i database
+- Team làm vi?c hi?u qu? h?n
+
+?? Xem thêm:
+- CONNECTION_FIXED_SUMMARY.md (h??ng d?n chi ti?t)
+- CONNECTION_QUICK_GUIDE.md (h??ng d?n nhanh)
+- CONNECTION_STRING_GUIDE.md (h??ng d?n ??y ??)
+
+? Build: Successful
+? Test: Passed
+```

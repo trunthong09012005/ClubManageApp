@@ -13,8 +13,9 @@ namespace ClubManageApp
 {
     public partial class ucProject : UserControl
     {
-        // Database connection (use same default as DashBoard)
-        private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;Persist Security Info=True;User ID=sa;Password=912005;Encrypt=True;TrustServerCertificate=True";
+        // ✅ SỬ DỤNG ConnectionHelper thay vì hard-code
+        private string connectionString = ConnectionHelper.ConnectionString;
+        
         // in-memory view of projects loaded from DB
         private List<ProjectItem> allProjects = new List<ProjectItem>();
         private BindingList<ProjectItem> viewProjects = new BindingList<ProjectItem>();

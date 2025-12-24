@@ -114,7 +114,7 @@
             this.guna2Panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.guna2Panel1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.guna2Panel1.Location = new System.Drawing.Point(0, 0);
-            this.guna2Panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.guna2Panel1.Margin = new System.Windows.Forms.Padding(2);
             this.guna2Panel1.Name = "guna2Panel1";
             this.guna2Panel1.ShadowDecoration.Depth = 10;
             this.guna2Panel1.ShadowDecoration.Enabled = true;
@@ -165,7 +165,7 @@
             // guna2Panel2
             // 
             this.guna2Panel2.Location = new System.Drawing.Point(2, 485);
-            this.guna2Panel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.guna2Panel2.Margin = new System.Windows.Forms.Padding(2);
             this.guna2Panel2.Name = "guna2Panel2";
             this.guna2Panel2.Size = new System.Drawing.Size(153, 46);
             this.guna2Panel2.TabIndex = 2;
@@ -177,7 +177,7 @@
             this.btnham.Image = global::ClubManageApp.Properties.Resources.menu;
             this.btnham.ImageRotate = 0F;
             this.btnham.Location = new System.Drawing.Point(11, 12);
-            this.btnham.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnham.Margin = new System.Windows.Forms.Padding(2);
             this.btnham.Name = "btnham";
             this.btnham.Size = new System.Drawing.Size(38, 32);
             this.btnham.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -199,7 +199,7 @@
             this.slidebar.Controls.Add(this.panel3);
             this.slidebar.Dock = System.Windows.Forms.DockStyle.Left;
             this.slidebar.Location = new System.Drawing.Point(0, 57);
-            this.slidebar.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.slidebar.Margin = new System.Windows.Forms.Padding(2);
             this.slidebar.Name = "slidebar";
             this.slidebar.Size = new System.Drawing.Size(165, 593);
             this.slidebar.TabIndex = 1;
@@ -208,7 +208,7 @@
             // 
             this.panel1.Controls.Add(this.btnDashBoard);
             this.panel1.Location = new System.Drawing.Point(2, 2);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(163, 49);
             this.panel1.TabIndex = 2;
@@ -233,7 +233,7 @@
             this.btnDashBoard.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnDashBoard.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnDashBoard.Location = new System.Drawing.Point(0, 0);
-            this.btnDashBoard.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnDashBoard.Margin = new System.Windows.Forms.Padding(2);
             this.btnDashBoard.Name = "btnDashBoard";
             this.btnDashBoard.Size = new System.Drawing.Size(163, 49);
             this.btnDashBoard.TabIndex = 1;
@@ -245,7 +245,7 @@
             // 
             this.panel2.Controls.Add(this.btnTaiKhoan);
             this.panel2.Location = new System.Drawing.Point(2, 55);
-            this.panel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(163, 49);
             this.panel2.TabIndex = 3;
@@ -270,7 +270,7 @@
             this.btnTaiKhoan.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnTaiKhoan.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnTaiKhoan.Location = new System.Drawing.Point(0, 0);
-            this.btnTaiKhoan.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnTaiKhoan.Margin = new System.Windows.Forms.Padding(2);
             this.btnTaiKhoan.Name = "btnTaiKhoan";
             this.btnTaiKhoan.Size = new System.Drawing.Size(163, 49);
             this.btnTaiKhoan.TabIndex = 1;
@@ -282,7 +282,7 @@
             // 
             this.panel7.Controls.Add(this.btnHoatDong);
             this.panel7.Location = new System.Drawing.Point(2, 108);
-            this.panel7.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel7.Margin = new System.Windows.Forms.Padding(2);
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(163, 49);
             this.panel7.TabIndex = 8;
@@ -307,7 +307,7 @@
             this.btnHoatDong.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnHoatDong.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnHoatDong.Location = new System.Drawing.Point(0, 0);
-            this.btnHoatDong.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnHoatDong.Margin = new System.Windows.Forms.Padding(2);
             this.btnHoatDong.Name = "btnHoatDong";
             this.btnHoatDong.Size = new System.Drawing.Size(163, 49);
             this.btnHoatDong.TabIndex = 1;
@@ -319,7 +319,7 @@
             // 
             this.panel8.Controls.Add(this.btnThongbao);
             this.panel8.Location = new System.Drawing.Point(2, 161);
-            this.panel8.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel8.Margin = new System.Windows.Forms.Padding(2);
             this.panel8.Name = "panel8";
             this.panel8.Size = new System.Drawing.Size(163, 49);
             this.panel8.TabIndex = 9;
@@ -344,7 +344,7 @@
             this.btnThongbao.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnThongbao.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnThongbao.Location = new System.Drawing.Point(0, 0);
-            this.btnThongbao.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnThongbao.Margin = new System.Windows.Forms.Padding(2);
             this.btnThongbao.Name = "btnThongbao";
             this.btnThongbao.Size = new System.Drawing.Size(163, 49);
             this.btnThongbao.TabIndex = 1;
@@ -356,7 +356,7 @@
             // 
             this.panel5.Controls.Add(this.btnTaiChinh);
             this.panel5.Location = new System.Drawing.Point(2, 214);
-            this.panel5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel5.Margin = new System.Windows.Forms.Padding(2);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(163, 49);
             this.panel5.TabIndex = 6;
@@ -381,7 +381,7 @@
             this.btnTaiChinh.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnTaiChinh.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnTaiChinh.Location = new System.Drawing.Point(0, 0);
-            this.btnTaiChinh.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnTaiChinh.Margin = new System.Windows.Forms.Padding(2);
             this.btnTaiChinh.Name = "btnTaiChinh";
             this.btnTaiChinh.Size = new System.Drawing.Size(163, 49);
             this.btnTaiChinh.TabIndex = 1;
@@ -393,7 +393,7 @@
             // 
             this.panel4.Controls.Add(this.btnDuAn);
             this.panel4.Location = new System.Drawing.Point(2, 267);
-            this.panel4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel4.Margin = new System.Windows.Forms.Padding(2);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(163, 49);
             this.panel4.TabIndex = 5;
@@ -418,7 +418,7 @@
             this.btnDuAn.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnDuAn.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnDuAn.Location = new System.Drawing.Point(0, 0);
-            this.btnDuAn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnDuAn.Margin = new System.Windows.Forms.Padding(2);
             this.btnDuAn.Name = "btnDuAn";
             this.btnDuAn.Size = new System.Drawing.Size(163, 49);
             this.btnDuAn.TabIndex = 1;
@@ -430,7 +430,7 @@
             // 
             this.panel6.Controls.Add(this.btnLichHop);
             this.panel6.Location = new System.Drawing.Point(2, 320);
-            this.panel6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel6.Margin = new System.Windows.Forms.Padding(2);
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(163, 49);
             this.panel6.TabIndex = 7;
@@ -455,7 +455,7 @@
             this.btnLichHop.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnLichHop.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnLichHop.Location = new System.Drawing.Point(0, 0);
-            this.btnLichHop.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnLichHop.Margin = new System.Windows.Forms.Padding(2);
             this.btnLichHop.Name = "btnLichHop";
             this.btnLichHop.Size = new System.Drawing.Size(163, 49);
             this.btnLichHop.TabIndex = 1;
@@ -467,7 +467,7 @@
             // 
             this.pndangxuat.Controls.Add(this.btnThanhVien);
             this.pndangxuat.Location = new System.Drawing.Point(2, 373);
-            this.pndangxuat.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pndangxuat.Margin = new System.Windows.Forms.Padding(2);
             this.pndangxuat.Name = "pndangxuat";
             this.pndangxuat.Size = new System.Drawing.Size(163, 49);
             this.pndangxuat.TabIndex = 8;
@@ -492,7 +492,7 @@
             this.btnThanhVien.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnThanhVien.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnThanhVien.Location = new System.Drawing.Point(0, 0);
-            this.btnThanhVien.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnThanhVien.Margin = new System.Windows.Forms.Padding(2);
             this.btnThanhVien.Name = "btnThanhVien";
             this.btnThanhVien.Size = new System.Drawing.Size(163, 49);
             this.btnThanhVien.TabIndex = 2;
@@ -504,7 +504,7 @@
             // 
             this.panel3.Controls.Add(this.btnDangxuat);
             this.panel3.Location = new System.Drawing.Point(2, 426);
-            this.panel3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(163, 49);
             this.panel3.TabIndex = 5;
@@ -527,7 +527,7 @@
             this.btnDangxuat.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnDangxuat.ImageOffset = new System.Drawing.Point(8, 0);
             this.btnDangxuat.Location = new System.Drawing.Point(0, 0);
-            this.btnDangxuat.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnDangxuat.Margin = new System.Windows.Forms.Padding(2);
             this.btnDangxuat.Name = "btnDangxuat";
             this.btnDangxuat.Size = new System.Drawing.Size(163, 49);
             this.btnDangxuat.TabIndex = 2;
@@ -549,7 +549,7 @@
             this.panelStats.Controls.Add(this.panelProject);
             this.panelStats.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelStats.Location = new System.Drawing.Point(165, 57);
-            this.panelStats.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panelStats.Margin = new System.Windows.Forms.Padding(2);
             this.panelStats.Name = "panelStats";
             this.panelStats.Padding = new System.Windows.Forms.Padding(15, 12, 15, 12);
             this.panelStats.Size = new System.Drawing.Size(885, 114);
@@ -563,7 +563,7 @@
             this.panelEvent.Controls.Add(this.pictureBox4);
             this.panelEvent.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(107)))), ((int)(((byte)(107)))));
             this.panelEvent.Location = new System.Drawing.Point(668, 16);
-            this.panelEvent.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panelEvent.Margin = new System.Windows.Forms.Padding(2);
             this.panelEvent.Name = "panelEvent";
             this.panelEvent.Radius = 12;
             this.panelEvent.ShadowColor = System.Drawing.Color.Black;
@@ -603,7 +603,7 @@
             this.pictureBox4.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox4.Image = global::ClubManageApp.Properties.Resources.icons8_schedule_30;
             this.pictureBox4.Location = new System.Drawing.Point(11, 20);
-            this.pictureBox4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pictureBox4.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox4.Name = "pictureBox4";
             this.pictureBox4.Size = new System.Drawing.Size(45, 49);
             this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -619,7 +619,7 @@
             this.panelMember.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(219)))), ((int)(((byte)(251)))));
             this.panelMember.ForeColor = System.Drawing.SystemColors.ControlText;
             this.panelMember.Location = new System.Drawing.Point(22, 16);
-            this.panelMember.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panelMember.Margin = new System.Windows.Forms.Padding(2);
             this.panelMember.Name = "panelMember";
             this.panelMember.Radius = 12;
             this.panelMember.ShadowColor = System.Drawing.Color.Black;
@@ -659,7 +659,7 @@
             this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox1.Image = global::ClubManageApp.Properties.Resources.icons8_member_24;
             this.pictureBox1.Location = new System.Drawing.Point(11, 20);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(45, 49);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -674,7 +674,7 @@
             this.panelPost.Controls.Add(this.pictureBox3);
             this.panelPost.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(177)))), ((int)(((byte)(160)))));
             this.panelPost.Location = new System.Drawing.Point(450, 16);
-            this.panelPost.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panelPost.Margin = new System.Windows.Forms.Padding(2);
             this.panelPost.Name = "panelPost";
             this.panelPost.Radius = 12;
             this.panelPost.ShadowColor = System.Drawing.Color.Black;
@@ -714,7 +714,7 @@
             this.pictureBox3.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox3.Image = global::ClubManageApp.Properties.Resources.icons8_announcement_30;
             this.pictureBox3.Location = new System.Drawing.Point(11, 20);
-            this.pictureBox3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pictureBox3.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox3.Name = "pictureBox3";
             this.pictureBox3.Size = new System.Drawing.Size(45, 49);
             this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -729,7 +729,7 @@
             this.panelProject.Controls.Add(this.pictureBox2);
             this.panelProject.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(237)))), ((int)(((byte)(159)))));
             this.panelProject.Location = new System.Drawing.Point(236, 16);
-            this.panelProject.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panelProject.Margin = new System.Windows.Forms.Padding(2);
             this.panelProject.Name = "panelProject";
             this.panelProject.Radius = 12;
             this.panelProject.ShadowColor = System.Drawing.Color.Black;
@@ -769,7 +769,7 @@
             this.pictureBox2.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox2.Image = global::ClubManageApp.Properties.Resources.icons8_project_24;
             this.pictureBox2.Location = new System.Drawing.Point(11, 20);
-            this.pictureBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(45, 49);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -797,7 +797,7 @@
             this.flowTimeline.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(247)))));
             this.flowTimeline.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowTimeline.Location = new System.Drawing.Point(0, 50);
-            this.flowTimeline.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.flowTimeline.Margin = new System.Windows.Forms.Padding(2);
             this.flowTimeline.Name = "flowTimeline";
             this.flowTimeline.Padding = new System.Windows.Forms.Padding(15, 16, 15, 16);
             this.flowTimeline.Size = new System.Drawing.Size(885, 429);
@@ -811,7 +811,7 @@
             this.contentPanel.Controls.Add(this.lblTimeline);
             this.contentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.contentPanel.Location = new System.Drawing.Point(165, 171);
-            this.contentPanel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.contentPanel.Margin = new System.Windows.Forms.Padding(2);
             this.contentPanel.Name = "contentPanel";
             this.contentPanel.Size = new System.Drawing.Size(885, 479);
             this.contentPanel.TabIndex = 5;
@@ -844,7 +844,7 @@
             this.Controls.Add(this.slidebar);
             this.Controls.Add(this.guna2Panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "DashBoard";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Dashboard - Quản lý CLB";
