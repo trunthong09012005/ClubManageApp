@@ -129,7 +129,7 @@
             this.lblRole.ForeColor = System.Drawing.Color.White;
             this.lblRole.Location = new System.Drawing.Point(1180, 38);
             this.lblRole.Name = "lblRole";
-            this.lblRole.Size = new System.Drawing.Size(43, 15);
+            this.lblRole.Size = new System.Drawing.Size(55, 20);
             this.lblRole.TabIndex = 1;
             this.lblRole.Text = "Vai trò:";
             // 
@@ -142,7 +142,7 @@
             this.lblUsername.ForeColor = System.Drawing.Color.White;
             this.lblUsername.Location = new System.Drawing.Point(1180, 15);
             this.lblUsername.Name = "lblUsername";
-            this.lblUsername.Size = new System.Drawing.Size(89, 19);
+            this.lblUsername.Size = new System.Drawing.Size(108, 23);
             this.lblUsername.TabIndex = 0;
             this.lblUsername.Text = "Người dùng";
             // 
@@ -154,7 +154,7 @@
             this.label1.ForeColor = System.Drawing.Color.White;
             this.label1.Location = new System.Drawing.Point(80, 20);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(394, 25);
+            this.label1.Size = new System.Drawing.Size(529, 32);
             this.label1.TabIndex = 1;
             this.label1.Text = "🎯 CLB KỸ NĂNG X LSC                                   ";
             // 
@@ -553,7 +553,7 @@
             this.lblEventCount.ForeColor = System.Drawing.Color.White;
             this.lblEventCount.Location = new System.Drawing.Point(90, 15);
             this.lblEventCount.Name = "lblEventCount";
-            this.lblEventCount.Size = new System.Drawing.Size(44, 51);
+            this.lblEventCount.Size = new System.Drawing.Size(54, 62);
             this.lblEventCount.TabIndex = 2;
             this.lblEventCount.Text = "0";
             // 
@@ -565,7 +565,7 @@
             this.lblEventTitle.ForeColor = System.Drawing.Color.White;
             this.lblEventTitle.Location = new System.Drawing.Point(95, 70);
             this.lblEventTitle.Name = "lblEventTitle";
-            this.lblEventTitle.Size = new System.Drawing.Size(107, 19);
+            this.lblEventTitle.Size = new System.Drawing.Size(130, 23);
             this.lblEventTitle.TabIndex = 1;
             this.lblEventTitle.Text = "Sự kiện sắp tới";
             // 
@@ -605,7 +605,7 @@
             this.lblMemberTitle.ForeColor = System.Drawing.Color.White;
             this.lblMemberTitle.Location = new System.Drawing.Point(95, 70);
             this.lblMemberTitle.Name = "lblMemberTitle";
-            this.lblMemberTitle.Size = new System.Drawing.Size(81, 19);
+            this.lblMemberTitle.Size = new System.Drawing.Size(97, 23);
             this.lblMemberTitle.TabIndex = 1;
             this.lblMemberTitle.Text = "Thành viên";
             // 
@@ -617,7 +617,7 @@
             this.lblMemberCount.ForeColor = System.Drawing.Color.White;
             this.lblMemberCount.Location = new System.Drawing.Point(90, 15);
             this.lblMemberCount.Name = "lblMemberCount";
-            this.lblMemberCount.Size = new System.Drawing.Size(44, 51);
+            this.lblMemberCount.Size = new System.Drawing.Size(54, 62);
             this.lblMemberCount.TabIndex = 0;
             this.lblMemberCount.Text = "0";
             // 
@@ -656,7 +656,7 @@
             this.lblPostCount.ForeColor = System.Drawing.Color.White;
             this.lblPostCount.Location = new System.Drawing.Point(90, 15);
             this.lblPostCount.Name = "lblPostCount";
-            this.lblPostCount.Size = new System.Drawing.Size(44, 51);
+            this.lblPostCount.Size = new System.Drawing.Size(54, 62);
             this.lblPostCount.TabIndex = 2;
             this.lblPostCount.Text = "0";
             // 
@@ -668,7 +668,7 @@
             this.lblPostTitle.ForeColor = System.Drawing.Color.White;
             this.lblPostTitle.Location = new System.Drawing.Point(95, 70);
             this.lblPostTitle.Name = "lblPostTitle";
-            this.lblPostTitle.Size = new System.Drawing.Size(68, 19);
+            this.lblPostTitle.Size = new System.Drawing.Size(81, 23);
             this.lblPostTitle.TabIndex = 1;
             this.lblPostTitle.Text = "Bài đăng";
             // 
@@ -707,7 +707,7 @@
             this.lblProjectCount.ForeColor = System.Drawing.Color.White;
             this.lblProjectCount.Location = new System.Drawing.Point(90, 15);
             this.lblProjectCount.Name = "lblProjectCount";
-            this.lblProjectCount.Size = new System.Drawing.Size(44, 51);
+            this.lblProjectCount.Size = new System.Drawing.Size(54, 62);
             this.lblProjectCount.TabIndex = 2;
             this.lblProjectCount.Text = "0";
             // 
@@ -719,7 +719,7 @@
             this.lblProjectTitle.ForeColor = System.Drawing.Color.White;
             this.lblProjectTitle.Location = new System.Drawing.Point(95, 70);
             this.lblProjectTitle.Name = "lblProjectTitle";
-            this.lblProjectTitle.Size = new System.Drawing.Size(48, 19);
+            this.lblProjectTitle.Size = new System.Drawing.Size(58, 23);
             this.lblProjectTitle.TabIndex = 1;
             this.lblProjectTitle.Text = "Dự án";
             // 
@@ -744,7 +744,7 @@
             this.lblTimeline.Location = new System.Drawing.Point(0, 0);
             this.lblTimeline.Name = "lblTimeline";
             this.lblTimeline.Padding = new System.Windows.Forms.Padding(30, 15, 0, 10);
-            this.lblTimeline.Size = new System.Drawing.Size(306, 55);
+            this.lblTimeline.Size = new System.Drawing.Size(369, 62);
             this.lblTimeline.TabIndex = 3;
             this.lblTimeline.Text = "📰 BẢNG TIN - TIMELINE";
             // 
@@ -753,10 +753,10 @@
             this.flowTimeline.AutoScroll = true;
             this.flowTimeline.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(247)))));
             this.flowTimeline.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowTimeline.Location = new System.Drawing.Point(0, 55);
+            this.flowTimeline.Location = new System.Drawing.Point(0, 62);
             this.flowTimeline.Name = "flowTimeline";
             this.flowTimeline.Padding = new System.Windows.Forms.Padding(20);
-            this.flowTimeline.Size = new System.Drawing.Size(1180, 535);
+            this.flowTimeline.Size = new System.Drawing.Size(1180, 528);
             this.flowTimeline.TabIndex = 4;
             this.flowTimeline.Paint += new System.Windows.Forms.PaintEventHandler(this.flowTimeline_Paint);
             // 
