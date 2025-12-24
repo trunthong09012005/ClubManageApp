@@ -10,6 +10,7 @@ namespace ClubManageApp
 {
     public partial class MemberDashboard : Form
     {
+        private bool isDrawingSidebar = false;
         private string role;
         private string username;
         private int maTV;
@@ -56,12 +57,19 @@ namespace ClubManageApp
             this.Resize += MemberDashboard_Resize;
             btnham.Click += btnham_Click;
             slidebarTransition.Tick += slidebarTransition_Tick;
-
             RegisterMenuEvents();
+
+
+
+
         }
+        // Thêm vào phương thức MemberDashboard_Load
+
 
         private void MemberDashboard_Load(object sender, EventArgs e)
         {
+
+
             try
             {
                 lblUsername.Text = username;
@@ -72,6 +80,10 @@ namespace ClubManageApp
                 LoadActivityTimeline();
 
                 InitializeChatbot();
+
+                // ✨ TỰ ĐỘNG CLICK VÀO DASHBOARD KHI FORM LOAD
+                HighlightButton(btnMemberDashBoard);
+                ShowDashboard();
             }
             catch (Exception ex)
             {
@@ -80,6 +92,123 @@ namespace ClubManageApp
             }
         }
 
+
+
+        // Cập nhật phương thức HighlightButton để có border màu đẹp hơn
+
+        private void HighlightButton(object selectedButton)
+        {
+            Color menuDefaultFill = Color.Transparent;
+            Color menuDefaultFore = Color.Black;
+            Color menuSelectedFill = Color.FromArgb(94, 148, 255);
+            Color menuSelectedFore = Color.White;
+            Color menuSelectedBorder = Color.FromArgb(59, 130, 246); // 🎨 Màu border xanh dương đẹp
+
+            object[] buttons = { btnMemberDashBoard, btnLichhop, btnDangXuat };
+
+            foreach (var btn in buttons)
+            {
+                if (btn is Guna.UI2.WinForms.Guna2Button gunaBtn)
+                {
+                    try
+                    {
+                        // Reset về trạng thái mặc định
+                        gunaBtn.FillColor = menuDefaultFill;
+                        gunaBtn.ForeColor = menuDefaultFore;
+                        gunaBtn.Font = new Font(gunaBtn.Font.FontFamily, gunaBtn.Font.Size, FontStyle.Regular);
+
+                        // Tắt border và shadow
+                        try { gunaBtn.BorderColor = Color.Transparent; } catch { }
+                        try { gunaBtn.CustomBorderColor = Color.Transparent; } catch { }
+                        try { gunaBtn.BorderThickness = 0; } catch { }
+                        try { if (gunaBtn.ShadowDecoration != null) gunaBtn.ShadowDecoration.Enabled = false; } catch { }
+
+                        // Reset hover state
+                        try { gunaBtn.HoverState.FillColor = menuDefaultFill; } catch { }
+                        try { gunaBtn.HoverState.ForeColor = menuDefaultFore; } catch { }
+                        try { gunaBtn.CheckedState.FillColor = menuDefaultFill; } catch { }
+                        try { gunaBtn.CheckedState.ForeColor = menuDefaultFore; } catch { }
+                    }
+                    catch { }
+                }
+                else if (btn is Button normalBtn)
+                {
+                    try
+                    {
+                        normalBtn.BackColor = menuDefaultFill;
+                        normalBtn.ForeColor = menuDefaultFore;
+                        normalBtn.Font = new Font(normalBtn.Font.FontFamily, normalBtn.Font.Size, FontStyle.Regular);
+                        try { normalBtn.FlatAppearance.BorderSize = 0; } catch { }
+                    }
+                    catch { }
+                }
+            }
+
+            // Highlight button được chọn với border màu đẹp
+            if (selectedButton is Guna.UI2.WinForms.Guna2Button selectedGunaBtn)
+            {
+                try
+                {
+                    selectedGunaBtn.FillColor = menuSelectedFill;
+                    selectedGunaBtn.ForeColor = menuSelectedFore;
+                    selectedGunaBtn.Font = new Font(selectedGunaBtn.Font.FontFamily, selectedGunaBtn.Font.Size, FontStyle.Bold);
+
+                    // ✨ THÊM BORDER MÀU ĐẸP
+                    try
+                    {
+                        selectedGunaBtn.BorderColor = menuSelectedBorder;
+                        selectedGunaBtn.BorderThickness = 3; // Border dày 3px
+                        selectedGunaBtn.BorderRadius = 8; // Bo góc đẹp
+                    }
+                    catch { }
+
+                    try
+                    {
+                        selectedGunaBtn.CustomBorderColor = menuSelectedBorder;
+                        selectedGunaBtn.CustomBorderThickness = new Padding(0, 0, 4, 0); // Border bên phải
+                    }
+                    catch { }
+
+                    // ✨ THÊM SHADOW ĐẸP
+                    try
+                    {
+                        if (selectedGunaBtn.ShadowDecoration != null)
+                        {
+                            selectedGunaBtn.ShadowDecoration.Enabled = true;
+                            selectedGunaBtn.ShadowDecoration.Color = menuSelectedBorder;
+                            selectedGunaBtn.ShadowDecoration.Depth = 10;
+                            selectedGunaBtn.ShadowDecoration.Shadow = new Padding(0, 0, 5, 5);
+                        }
+                    }
+                    catch { }
+
+                    // Hover state cho button được chọn
+                    try { selectedGunaBtn.HoverState.FillColor = Color.FromArgb(80, 130, 230); } catch { }
+                    try { selectedGunaBtn.HoverState.ForeColor = menuSelectedFore; } catch { }
+                    try { selectedGunaBtn.CheckedState.FillColor = menuSelectedFill; } catch { }
+                    try { selectedGunaBtn.CheckedState.ForeColor = menuSelectedFore; } catch { }
+                }
+                catch { }
+            }
+            else if (selectedButton is Button selectedNormalBtn)
+            {
+                try
+                {
+                    selectedNormalBtn.BackColor = menuSelectedFill;
+                    selectedNormalBtn.ForeColor = menuSelectedFore;
+                    selectedNormalBtn.Font = new Font(selectedNormalBtn.Font.FontFamily, selectedNormalBtn.Font.Size, FontStyle.Bold);
+
+                    // Border cho Button thường
+                    try
+                    {
+                        selectedNormalBtn.FlatAppearance.BorderSize = 3;
+                        selectedNormalBtn.FlatAppearance.BorderColor = menuSelectedBorder;
+                    }
+                    catch { }
+                }
+                catch { }
+            }
+        }
         private void InitializeChatbot()
         {
             chatbot = new ChatbotPanel(connectionString, maTV, username);
@@ -310,6 +439,8 @@ namespace ClubManageApp
             }
         }
 
+        // ===== THAY THẾ phương thức AddTimelineCard =====
+
         private void AddTimelineCard(string title, string content, DateTime eventDate, string eventType, string category)
         {
             Color leftBorderColor = Color.FromArgb(99, 102, 241);
@@ -320,6 +451,7 @@ namespace ClubManageApp
                 case "award": leftBorderColor = Color.FromArgb(52, 211, 153); break;
                 case "activity": leftBorderColor = Color.FromArgb(251, 191, 36); break;
                 case "project": leftBorderColor = Color.FromArgb(244, 63, 94); break;
+                case "notification": leftBorderColor = Color.FromArgb(99, 102, 241); break;
             }
 
             Panel cardPanel = new Panel()
@@ -327,8 +459,11 @@ namespace ClubManageApp
                 Width = flowTimeline.Width - 35,
                 Height = 140,
                 BackColor = bgColor,
-                Margin = new Padding(5, 5, 5, 10)
+                Margin = new Padding(5, 5, 5, 10),
+                Cursor = Cursors.Hand, // 👆 Thay đổi con trỏ thành tay
+                Tag = new { Title = title, Content = content, Date = eventDate, Type = eventType, Category = category }
             };
+
             cardPanel.Paint += (s, e) =>
             {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
@@ -390,13 +525,385 @@ namespace ClubManageApp
             };
             cardPanel.Controls.Add(lblCardContent);
 
+            // ✨ Thêm nhãn "Xem chi tiết"
+            Label lblViewDetail = new Label()
+            {
+                Text = "👁️ Xem chi tiết →",
+                Font = new Font("Segoe UI", 8, FontStyle.Italic),
+                ForeColor = leftBorderColor,
+                Location = new Point(cardPanel.Width - 120, cardPanel.Height - 25),
+                AutoSize = true,
+                BackColor = Color.Transparent,
+                Cursor = Cursors.Hand
+            };
+            cardPanel.Controls.Add(lblViewDetail);
+
             int totalHeight = lblCardContent.Bottom + 15;
             cardPanel.Height = Math.Max(totalHeight, 100);
 
-            cardPanel.MouseEnter += (s, e) => cardPanel.BackColor = Color.FromArgb(249, 250, 251);
-            cardPanel.MouseLeave += (s, e) => cardPanel.BackColor = bgColor;
+            // ✨ Sự kiện hover
+            cardPanel.MouseEnter += (s, e) => {
+                cardPanel.BackColor = Color.FromArgb(249, 250, 251);
+                lblViewDetail.ForeColor = Color.FromArgb(59, 130, 246);
+            };
+            cardPanel.MouseLeave += (s, e) => {
+                cardPanel.BackColor = bgColor;
+                lblViewDetail.ForeColor = leftBorderColor;
+            };
+
+            // ✨ Sự kiện click - Hiển thị chi tiết
+            cardPanel.Click += (s, e) => ShowActivityDetail(title, content, eventDate, eventType, category);
+            lblViewDetail.Click += (s, e) => ShowActivityDetail(title, content, eventDate, eventType, category);
 
             flowTimeline.Controls.Add(cardPanel);
+        }
+
+        // ===== THÊM phương thức MỚI để hiển thị chi tiết =====
+
+        private void ShowActivityDetail(string title, string content, DateTime eventDate, string eventType, string category)
+        {
+            // Tạo form chi tiết
+            Form detailForm = new Form()
+            {
+                Text = "Chi tiết " + eventType,
+                Size = new Size(700, 600),
+                StartPosition = FormStartPosition.CenterParent,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false,
+                MinimizeBox = false,
+                BackColor = Color.FromArgb(240, 242, 245)
+            };
+
+            // Panel chính
+            Panel mainPanel = new Panel()
+            {
+                Location = new Point(20, 20),
+                Size = new Size(640, 520),
+                BackColor = Color.White,
+                AutoScroll = true
+            };
+            detailForm.Controls.Add(mainPanel);
+
+            mainPanel.Paint += (s, e) => {
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                using (var path = CreateRoundedRectPath(0, 0, mainPanel.Width - 1, mainPanel.Height - 1, 12))
+                {
+                    using (var pen = new Pen(Color.FromArgb(229, 231, 235), 2))
+                        e.Graphics.DrawPath(pen, path);
+                }
+            };
+
+            // Màu sắc theo loại
+            Color accentColor = Color.FromArgb(99, 102, 241);
+            string icon = "📋";
+
+            switch (category)
+            {
+                case "award":
+                    accentColor = Color.FromArgb(52, 211, 153);
+                    icon = "🎉";
+                    break;
+                case "activity":
+                    accentColor = Color.FromArgb(251, 191, 36);
+                    icon = "📅";
+                    break;
+                case "project":
+                    accentColor = Color.FromArgb(244, 63, 94);
+                    icon = "📋";
+                    break;
+                case "notification":
+                    accentColor = Color.FromArgb(99, 102, 241);
+                    icon = "🔔";
+                    break;
+            }
+
+            // Header với gradient
+            Panel headerPanel = new Panel()
+            {
+                Location = new Point(0, 0),
+                Size = new Size(640, 80),
+                BackColor = accentColor
+            };
+            mainPanel.Controls.Add(headerPanel);
+
+            headerPanel.Paint += (s, e) => {
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                using (var brush = new LinearGradientBrush(
+                    new Rectangle(0, 0, headerPanel.Width, headerPanel.Height),
+                    accentColor,
+                    Color.FromArgb(Math.Max(0, accentColor.R - 30),
+                                  Math.Max(0, accentColor.G - 30),
+                                  Math.Max(0, accentColor.B - 30)),
+                    LinearGradientMode.Horizontal))
+                {
+                    e.Graphics.FillRectangle(brush, 0, 0, headerPanel.Width, headerPanel.Height);
+                }
+            };
+
+            // Icon lớn
+            Label lblIcon = new Label()
+            {
+                Text = icon,
+                Font = new Font("Segoe UI", 32),
+                Location = new Point(20, 15),
+                Size = new Size(60, 60),
+                BackColor = Color.Transparent
+            };
+            headerPanel.Controls.Add(lblIcon);
+
+            // Tiêu đề
+            Label lblDetailTitle = new Label()
+            {
+                Text = title.Length > 60 ? title.Substring(0, 60) + "..." : title,
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                ForeColor = Color.White,
+                Location = new Point(90, 15),
+                Size = new Size(530, 30),
+                BackColor = Color.Transparent
+            };
+            headerPanel.Controls.Add(lblDetailTitle);
+
+            // Loại sự kiện
+            Label lblDetailType = new Label()
+            {
+                Text = "🏷️ " + eventType,
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.White,
+                Location = new Point(90, 48),
+                AutoSize = true,
+                BackColor = Color.Transparent
+            };
+            headerPanel.Controls.Add(lblDetailType);
+
+            int yPos = 100;
+
+            // Thời gian
+            AddDetailRow(mainPanel, ref yPos, "📅 Thời gian:", eventDate.ToString("dddd, dd/MM/yyyy HH:mm"), accentColor);
+
+            // Trạng thái
+            string status = eventDate > DateTime.Now ? "⏳ Sắp diễn ra" : "✅ Đã diễn ra";
+            AddDetailRow(mainPanel, ref yPos, "📊 Trạng thái:", status, accentColor);
+
+            // Nội dung chi tiết
+            yPos += 10;
+            Label lblContentTitle = new Label()
+            {
+                Text = "📝 Nội dung chi tiết:",
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                ForeColor = accentColor,
+                Location = new Point(20, yPos),
+                AutoSize = true,
+                BackColor = Color.Transparent
+            };
+            mainPanel.Controls.Add(lblContentTitle);
+
+            yPos += 35;
+            Panel contentBox = new Panel()
+            {
+                Location = new Point(20, yPos),
+                Size = new Size(590, 200),
+                BackColor = Color.FromArgb(249, 250, 251),
+                AutoScroll = true
+            };
+            mainPanel.Controls.Add(contentBox);
+
+            contentBox.Paint += (s, e) => {
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                using (var path = CreateRoundedRectPath(0, 0, contentBox.Width - 1, contentBox.Height - 1, 8))
+                {
+                    using (var pen = new Pen(Color.FromArgb(229, 231, 235), 1))
+                        e.Graphics.DrawPath(pen, path);
+                }
+            };
+
+            Label lblContent = new Label()
+            {
+                Text = string.IsNullOrEmpty(content) ? "Không có mô tả chi tiết." : content,
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.FromArgb(55, 65, 81),
+                Location = new Point(15, 15),
+                Size = new Size(560, 170),
+                BackColor = Color.Transparent
+            };
+            contentBox.Controls.Add(lblContent);
+
+            yPos += 220;
+
+            // Load thêm thông tin từ database theo category
+            LoadAdditionalDetails(mainPanel, ref yPos, category, title, accentColor);
+
+            // Button đóng
+            Button btnClose = new Button()
+            {
+                Text = "✖ Đóng",
+                Location = new Point(520, yPos + 20),
+                Size = new Size(100, 40),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.FromArgb(239, 68, 68),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnClose.FlatAppearance.BorderSize = 0;
+            btnClose.Click += (s, e) => detailForm.Close();
+            mainPanel.Controls.Add(btnClose);
+
+            detailForm.ShowDialog();
+        }
+
+        // ===== Phương thức helper để thêm dòng thông tin =====
+
+        private void AddDetailRow(Panel parent, ref int yPos, string label, string value, Color accentColor)
+        {
+            Label lblLabel = new Label()
+            {
+                Text = label,
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                ForeColor = accentColor,
+                Location = new Point(20, yPos),
+                Size = new Size(150, 25),
+                BackColor = Color.Transparent
+            };
+            parent.Controls.Add(lblLabel);
+
+            Label lblValue = new Label()
+            {
+                Text = value,
+                Font = new Font("Segoe UI", 11),
+                ForeColor = Color.FromArgb(55, 65, 81),
+                Location = new Point(180, yPos),
+                Size = new Size(440, 25),
+                BackColor = Color.Transparent
+            };
+            parent.Controls.Add(lblValue);
+
+            yPos += 35;
+        }
+
+        // ===== Load thông tin bổ sung từ database =====
+
+        private void LoadAdditionalDetails(Panel parent, ref int yPos, string category, string title, Color accentColor)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    if (category == "activity")
+                    {
+                        // Load thông tin hoạt động
+                        string query = @"
+                    SELECT HD.DiaDiem, HD.SoLuongThamGia, HD.TrangThai, 
+                           TG.DiemDanh, TG.GhiChu
+                    FROM HoatDong HD
+                    LEFT JOIN ThamGia TG ON HD.MaHD = TG.MaHD AND TG.MaTV = @maTV
+                    WHERE HD.TenHD = @tenHD";
+
+                        using (SqlCommand cmd = new SqlCommand(query, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@maTV", maTV);
+                            cmd.Parameters.AddWithValue("@tenHD", title.Replace("📅 ", ""));
+
+                            SqlDataReader reader = cmd.ExecuteReader();
+                            if (reader.Read())
+                            {
+                                AddDetailRow(parent, ref yPos, "📍 Địa điểm:",
+                                    reader["DiaDiem"] != DBNull.Value ? reader["DiaDiem"].ToString() : "Chưa cập nhật",
+                                    accentColor);
+
+                                AddDetailRow(parent, ref yPos, "👥 Số lượng:",
+                                    reader["SoLuongThamGia"] != DBNull.Value ? reader["SoLuongThamGia"].ToString() + " người" : "Chưa cập nhật",
+                                    accentColor);
+
+                                if (reader["DiemDanh"] != DBNull.Value && Convert.ToBoolean(reader["DiemDanh"]))
+                                {
+                                    AddDetailRow(parent, ref yPos, "✅ Điểm danh:", "Đã điểm danh", accentColor);
+                                }
+
+                                if (reader["GhiChu"] != DBNull.Value && !string.IsNullOrEmpty(reader["GhiChu"].ToString()))
+                                {
+                                    AddDetailRow(parent, ref yPos, "📌 Ghi chú:", reader["GhiChu"].ToString(), accentColor);
+                                }
+                            }
+                        }
+                    }
+                    else if (category == "project")
+                    {
+                        // Load thông tin dự án
+                        string query = @"
+                    SELECT DA.TrangThai, DA.NgayKetThuc, PC.VaiTro
+                    FROM DuAn DA
+                    INNER JOIN PhanCong PC ON DA.MaDA = PC.MaDA
+                    WHERE PC.MaTV = @maTV AND DA.TenDuAn = @tenDA";
+
+                        using (SqlCommand cmd = new SqlCommand(query, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@maTV", maTV);
+                            cmd.Parameters.AddWithValue("@tenDA", title.Replace("📋 Dự án: ", ""));
+
+                            SqlDataReader reader = cmd.ExecuteReader();
+                            if (reader.Read())
+                            {
+                                AddDetailRow(parent, ref yPos, "📊 Trạng thái:",
+                                    reader["TrangThai"] != DBNull.Value ? reader["TrangThai"].ToString() : "Chưa cập nhật",
+                                    accentColor);
+
+                                if (reader["NgayKetThuc"] != DBNull.Value)
+                                {
+                                    DateTime ngayKetThuc = Convert.ToDateTime(reader["NgayKetThuc"]);
+                                    AddDetailRow(parent, ref yPos, "📅 Ngày kết thúc:", ngayKetThuc.ToString("dd/MM/yyyy"), accentColor);
+                                }
+
+                                AddDetailRow(parent, ref yPos, "👤 Vai trò:",
+                                    reader["VaiTro"] != DBNull.Value ? reader["VaiTro"].ToString() : "Thành viên",
+                                    accentColor);
+                            }
+                        }
+                    }
+                    else if (category == "award")
+                    {
+                        // Load thông tin khen thưởng
+                        string query = @"
+                    SELECT HinhThuc, GiaiThuong, NguoiKy
+                    FROM KhenThuong
+                    WHERE MaTV = @maTV AND LyDo = @lyDo";
+
+                        using (SqlCommand cmd = new SqlCommand(query, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@maTV", maTV);
+                            cmd.Parameters.AddWithValue("@lyDo", title.Replace("🎉 Khen thưởng: ", ""));
+
+                            SqlDataReader reader = cmd.ExecuteReader();
+                            if (reader.Read())
+                            {
+                                AddDetailRow(parent, ref yPos, "🏆 Giải thưởng:",
+                                    reader["GiaiThuong"] != DBNull.Value ? reader["GiaiThuong"].ToString() : "Không có",
+                                    accentColor);
+
+                                AddDetailRow(parent, ref yPos, "✍️ Người ký:",
+                                    reader["NguoiKy"] != DBNull.Value ? reader["NguoiKy"].ToString() : "Chưa cập nhật",
+                                    accentColor);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Nếu có lỗi, chỉ hiển thị thông tin cơ bản
+                Label lblError = new Label()
+                {
+                    Text = "⚠️ Không thể load thêm thông tin chi tiết",
+                    Font = new Font("Segoe UI", 9, FontStyle.Italic),
+                    ForeColor = Color.Gray,
+                    Location = new Point(20, yPos),
+                    AutoSize = true,
+                    BackColor = Color.Transparent
+                };
+                parent.Controls.Add(lblError);
+                yPos += 30;
+            }
         }
 
         private GraphicsPath CreateRoundedRectPath(int x, int y, int w, int h, int r)
@@ -487,7 +994,7 @@ namespace ClubManageApp
                 ShowDashboard();
             };
 
-       ;
+            ;
 
             btnLichhop.Click += (s, e) => {
                 HighlightButton(btnLichhop);
@@ -496,85 +1003,10 @@ namespace ClubManageApp
 
             btnDangXuat.Click += BtnDangXuat_Click;
 
-         
+
         }
 
-        private void HighlightButton(object selectedButton)
-        {
-            Color menuDefaultFill = Color.Transparent;
-            Color menuDefaultFore = Color.Black;
-            Color menuSelectedFill = Color.FromArgb(94, 148, 255);
-            Color menuSelectedFore = Color.White;
 
-            object[] buttons = { btnMemberDashBoard, btnLichhop };
-
-            foreach (var btn in buttons)
-            {
-                if (btn is Guna.UI2.WinForms.Guna2Button gunaBtn)
-                {
-                    try
-                    {
-                        gunaBtn.FillColor = menuDefaultFill;
-                        gunaBtn.ForeColor = menuDefaultFore;
-                        gunaBtn.Font = new Font(gunaBtn.Font.FontFamily, gunaBtn.Font.Size, FontStyle.Regular);
-
-                        try { gunaBtn.BorderColor = Color.Transparent; } catch { }
-                        try { gunaBtn.CustomBorderColor = Color.Transparent; } catch { }
-                        try { gunaBtn.BorderThickness = 0; } catch { }
-                        try { if (gunaBtn.ShadowDecoration != null) gunaBtn.ShadowDecoration.Enabled = false; } catch { }
-
-                        try { gunaBtn.HoverState.FillColor = menuDefaultFill; } catch { }
-                        try { gunaBtn.HoverState.ForeColor = menuDefaultFore; } catch { }
-                        try { gunaBtn.CheckedState.FillColor = menuDefaultFill; } catch { }
-                        try { gunaBtn.CheckedState.ForeColor = menuDefaultFore; } catch { }
-                    }
-                    catch { }
-                }
-                else if (btn is Button normalBtn)
-                {
-                    try
-                    {
-                        normalBtn.BackColor = menuDefaultFill;
-                        normalBtn.ForeColor = menuDefaultFore;
-                        normalBtn.Font = new Font(normalBtn.Font.FontFamily, normalBtn.Font.Size, FontStyle.Regular);
-                        try { normalBtn.FlatAppearance.BorderSize = 0; } catch { }
-                    }
-                    catch { }
-                }
-            }
-
-            if (selectedButton is Guna.UI2.WinForms.Guna2Button selectedGunaBtn)
-            {
-                try
-                {
-                    selectedGunaBtn.FillColor = menuSelectedFill;
-                    selectedGunaBtn.ForeColor = menuSelectedFore;
-                    selectedGunaBtn.Font = new Font(selectedGunaBtn.Font.FontFamily, selectedGunaBtn.Font.Size, FontStyle.Bold);
-
-                    try { selectedGunaBtn.BorderColor = Color.FromArgb(60, 100, 200); } catch { }
-                    try { selectedGunaBtn.CustomBorderColor = Color.FromArgb(60, 100, 200); } catch { }
-                    try { selectedGunaBtn.BorderThickness = 1; } catch { }
-                    try { if (selectedGunaBtn.ShadowDecoration != null) selectedGunaBtn.ShadowDecoration.Enabled = true; } catch { }
-
-                    try { selectedGunaBtn.HoverState.FillColor = menuSelectedFill; } catch { }
-                    try { selectedGunaBtn.HoverState.ForeColor = menuSelectedFore; } catch { }
-                    try { selectedGunaBtn.CheckedState.FillColor = menuSelectedFill; } catch { }
-                    try { selectedGunaBtn.CheckedState.ForeColor = menuSelectedFore; } catch { }
-                }
-                catch { }
-            }
-            else if (selectedButton is Button selectedNormalBtn)
-            {
-                try
-                {
-                    selectedNormalBtn.BackColor = menuSelectedFill;
-                    selectedNormalBtn.ForeColor = menuSelectedFore;
-                    selectedNormalBtn.Font = new Font(selectedNormalBtn.Font.FontFamily, selectedNormalBtn.Font.Size, FontStyle.Bold);
-                    try { selectedNormalBtn.FlatAppearance.BorderSize = 0; } catch { }
-                }
-                catch { }
-            }
-        }
 
         private void ShowDashboard()
         {
@@ -1363,7 +1795,7 @@ namespace ClubManageApp
                     // Close edit panel and return to dashboard
                     try { if (pnlEditProfile != null) { this.Controls.Remove(pnlEditProfile); pnlEditProfile.Dispose(); pnlEditProfile = null; } } catch { }
                     ShowDashboard();
-                    HighlightButton(btnMemberDashBoard);
+
                 };
                 rightPanel.Controls.Add(btnCancelEdit);
             }
@@ -1545,7 +1977,7 @@ namespace ClubManageApp
                             try { if (pnlEditProfile != null) { this.Controls.Remove(pnlEditProfile); pnlEditProfile.Dispose(); pnlEditProfile = null; } } catch { }
 
                             ShowDashboard();
-                            HighlightButton(btnMemberDashBoard);
+
                         }
                         else
                         {
