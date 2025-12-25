@@ -235,6 +235,250 @@ namespace ClubManageApp
             participants.Add(new ucParticipant { Id = 3, HoTen = "Lê Quốc Bảo", Email = "bao@student.hcmute.edu.vn", Lop = "DHKTPM17B", VaiTro = "Thành viên" });
         }
 
+        // ✅ THÊM: Kiểm tra định dạng thời gian
+        private bool ValidateTime(string timeStr)
+        {
+            if (string.IsNullOrWhiteSpace(timeStr))
+            {
+                return false;
+            }
+
+            // Định dạng HH:mm
+            string pattern = @"^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$";
+            if (!Regex.IsMatch(timeStr, pattern))
+            {
+                return false;
+            }
+
+            // Parse để đảm bảo
+            try
+            {
+                var parts = timeStr.Split(':');
+                int hours = int.Parse(parts[0]);
+                int minutes = int.Parse(parts[1]);
+                return hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // ✅ THÊM: Kiểm tra thời gian bắt đầu phải trước thời gian kết thúc
+        private bool ValidateTimeRange(string startTime, string endTime, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (!ValidateTime(startTime))
+            {
+                errorMessage = $"Giờ bắt đầu không hợp lệ!\n\nĐịnh dạng yêu cầu: HH:mm (ví dụ: 08:00, 14:30)";
+                return false;
+            }
+
+            if (!ValidateTime(endTime))
+            {
+                errorMessage = $"Giờ kết thúc không hợp lệ!\n\nĐịnh dạng yêu cầu: HH:mm (ví dụ: 10:00, 16:30)";
+                return false;
+            }
+
+            try
+            {
+                var startParts = startTime.Split(':');
+                var endParts = endTime.Split(':');
+
+                int startHour = int.Parse(startParts[0]);
+                int startMin = int.Parse(startParts[1]);
+                int endHour = int.Parse(endParts[0]);
+                int endMin = int.Parse(endParts[1]);
+
+                int startMinutes = startHour * 60 + startMin;
+                int endMinutes = endHour * 60 + endMin;
+
+                // ✅ KIỂM TRA: Giờ bắt đầu phải từ 7:00 (420 phút)
+                int minStartMinutes = 7 * 60; // 7:00 = 420 phút
+                if (startMinutes < minStartMinutes)
+                {
+                    errorMessage = $"Giờ bắt đầu phải từ 7:00 sáng trở đi!\n\n" +
+                                 $"Giờ bắt đầu hiện tại: {startTime}\n" +
+                                 $"Giờ sớm nhất cho phép: 07:00";
+                    return false;
+                }
+
+                // ✅ KIỂM TRA: Giờ kết thúc không được quá 21:00 (1260 phút)
+                int maxEndMinutes = 21 * 60; // 21:00 = 1260 phút
+                if (endMinutes > maxEndMinutes)
+                {
+                    errorMessage = $"Giờ kết thúc không được quá 21:00 tối!\n\n" +
+                                 $"Giờ kết thúc hiện tại: {endTime}\n" +
+                                 $"Giờ muộn nhất cho phép: 21:00";
+                    return false;
+                }
+
+                // ✅ KIỂM TRA: Giờ bắt đầu cũng không được quá 21:00
+                if (startMinutes > maxEndMinutes)
+                {
+                    errorMessage = $"Giờ bắt đầu không được quá 21:00 tối!\n\n" +
+                                 $"Giờ bắt đầu hiện tại: {startTime}\n" +
+                                 $"Khung giờ cho phép: 07:00 - 21:00";
+                    return false;
+                }
+
+                if (endMinutes <= startMinutes)
+                {
+                    errorMessage = $"Giờ kết thúc phải sau giờ bắt đầu!\n\n" +
+                                 $"Giờ bắt đầu: {startTime}\n" +
+                                 $"Giờ kết thúc: {endTime}";
+                    return false;
+                }
+
+                // Kiểm tra thời lượng tối thiểu (15 phút)
+                int duration = endMinutes - startMinutes;
+                if (duration < 15)
+                {
+                    errorMessage = $"Sự kiện phải có thời lượng tối thiểu 15 phút!\n\n" +
+                                 $"Thời lượng hiện tại: {duration} phút";
+                    return false;
+                }
+
+                // Kiểm tra thời lượng tối đa (14 giờ - từ 7h đến 21h)
+                int maxDuration = 14 * 60; // 14 giờ
+                if (duration > maxDuration)
+                {
+                    errorMessage = $"Sự kiện không được vượt quá 14 giờ!\n\n" +
+                                 $"Thời lượng hiện tại: {duration / 60} giờ {duration % 60} phút\n" +
+                                 $"Thời lượng tối đa: 14 giờ (07:00 - 21:00)";
+                    return false;
+                }
+
+                return true;
+            }
+            catch
+            {
+                errorMessage = "Lỗi khi xử lý thời gian!";
+                return false;
+            }
+        }
+
+        // ✅ THÊM: Kiểm tra xung đột thời gian sự kiện
+        private EventInfo CheckEventConflict(DateTime date, string startTime, string endTime, int? excludeEventId = null)
+        {
+            try
+            {
+                var existingEvents = events.Where(e => 
+                    e.Date.Date == date.Date && 
+                    (!excludeEventId.HasValue || e.Id != excludeEventId.Value)
+                ).ToList();
+
+                if (existingEvents.Count == 0)
+                    return null;
+
+                int newStartMinutes = TimeToMinutes(startTime);
+                int newEndMinutes = TimeToMinutes(endTime);
+
+                foreach (var evt in existingEvents)
+                {
+                    int existingStartMinutes = TimeToMinutes(evt.StartTime);
+                    int existingEndMinutes = TimeToMinutes(evt.EndTime);
+
+                    // Kiểm tra trùng thời gian
+                    bool isOverlap = (newStartMinutes >= existingStartMinutes && newStartMinutes < existingEndMinutes) ||
+                                     (newEndMinutes > existingStartMinutes && newEndMinutes <= existingEndMinutes) ||
+                                     (newStartMinutes <= existingStartMinutes && newEndMinutes >= existingEndMinutes);
+
+                    if (isOverlap)
+                    {
+                        return evt;
+                    }
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        // ✅ THÊM: Chuyển đổi thời gian thành phút
+        private int TimeToMinutes(string time)
+        {
+            try
+            {
+                var parts = time.Split(':');
+                int hours = int.Parse(parts[0]);
+                int minutes = int.Parse(parts[1]);
+                return hours * 60 + minutes;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        // ✅ CẢI THIỆN: Validate tiêu đề sự kiện
+        private bool ValidateEventTitle(string title, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                errorMessage = "Tiêu đề sự kiện không được để trống!";
+                return false;
+            }
+
+            title = title.Trim();
+
+            if (title.Length < 3)
+            {
+                errorMessage = $"Tiêu đề sự kiện phải có ít nhất 3 ký tự!\n\nĐộ dài hiện tại: {title.Length} ký tự";
+                return false;
+            }
+
+            if (title.Length > 255)
+            {
+                errorMessage = $"Tiêu đề sự kiện không được vượt quá 255 ký tự!\n\nĐộ dài hiện tại: {title.Length} ký tự";
+                return false;
+            }
+
+            // Kiểm tra ký tự đặc biệt không hợp lệ
+            string invalidChars = @"<>|""*?\/";
+            if (title.Any(c => invalidChars.Contains(c)))
+            {
+                errorMessage = $"Tiêu đề không được chứa các ký tự đặc biệt: {invalidChars}";
+                return false;
+            }
+
+            return true;
+        }
+
+        // ✅ CẢI THIỆN: Validate địa điểm
+        private bool ValidateLocation(string location, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(location))
+            {
+                errorMessage = "Địa điểm không được để trống!";
+                return false;
+            }
+
+            location = location.Trim();
+
+            if (location.Length < 2)
+            {
+                errorMessage = $"Địa điểm phải có ít nhất 2 ký tự!\n\nĐộ dài hiện tại: {location.Length} ký tự";
+                return false;
+            }
+
+            if (location.Length > 255)
+            {
+                errorMessage = $"Địa điểm không được vượt quá 255 ký tự!\n\nĐộ dài hiện tại: {location.Length} ký tự";
+                return false;
+            }
+
+            return true;
+        }
+
         // Kiểm tra email hợp lệ
         private bool IsValidEmail(string email)
         {
@@ -314,7 +558,7 @@ namespace ClubManageApp
                 var subject = dlg.Subject;
                 var bodyTemplate = dlg.Body;
 
-                // Validate email người gửi
+                // ✅ Validate email người gửi
                 if (!IsValidEmail(from))
                 {
                     MessageBox.Show(
@@ -324,6 +568,75 @@ namespace ClubManageApp
                         "Email không hợp lệ",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
+                    return;
+                }
+
+                // ✅ Validate mật khẩu
+                if (string.IsNullOrWhiteSpace(password))
+                {
+                    MessageBox.Show(
+                        "Vui lòng nhập mật khẩu email!",
+                        "Thông tin thiếu",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // ✅ Validate SMTP host
+                if (string.IsNullOrWhiteSpace(smtpHost))
+                {
+                    MessageBox.Show(
+                        "Vui lòng nhập SMTP host!",
+                        "Thông tin thiếu",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // ✅ Validate port
+                if (port < 1 || port > 65535)
+                {
+                    MessageBox.Show(
+                        $"Port không hợp lệ!\n\n" +
+                        $"Port phải trong khoảng 1-65535.\n" +
+                        $"Port hiện tại: {port}",
+                        "Port không hợp lệ",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // ✅ Validate tiêu đề email
+                if (string.IsNullOrWhiteSpace(subject))
+                {
+                    MessageBox.Show(
+                        "Vui lòng nhập tiêu đề email!",
+                        "Thông tin thiếu",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (subject.Length > 255)
+                {
+                    MessageBox.Show(
+                        $"Tiêu đề email quá dài!\n\n" +
+                        $"Độ dài tối đa: 255 ký tự\n" +
+                        $"Độ dài hiện tại: {subject.Length} ký tự",
+                        "Tiêu đề quá dài",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // ✅ Validate nội dung email
+                if (string.IsNullOrWhiteSpace(bodyTemplate))
+                {
+                    MessageBox.Show(
+                        "Vui lòng nhập nội dung email!",
+                        "Thông tin thiếu",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -421,10 +734,15 @@ namespace ClubManageApp
                                 {
                                     client.EnableSsl = enableSsl;
                                     client.Credentials = new NetworkCredential(from, password);
+                                    client.Timeout = 30000; // 30 seconds timeout
                                     client.Send(msg);
                                 }
                             }
                             succeeded++;
+                        }
+                        catch (SmtpException smtpEx)
+                        {
+                            errors.Add($"{recipient.HoTen} <{recipient.Email}>: Lỗi SMTP - {smtpEx.Message}");
                         }
                         catch (Exception ex)
                         {
@@ -445,7 +763,8 @@ namespace ClubManageApp
                 {
                     msgSum += "\n\nChi tiết lỗi (tối đa 5):\n" + string.Join("\n", errors.Take(5));
                 }
-                MessageBox.Show(msgSum, "Kết quả gửi email", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(msgSum, "Kết quả gửi email", MessageBoxButtons.OK, 
+                    errors.Count == 0 ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
             }
         }
 
@@ -852,9 +1171,21 @@ namespace ClubManageApp
 
                 txtMoTa.Text = sb.ToString();
                 
-                // Kích hoạt các nút chức năng
-                btnSuaSuKien.Enabled = true;
+                // ✅ Kiểm tra xem sự kiện có trong quá khứ không
+                bool isPastEvent = selectedEvent.Date.Date < DateTime.Now.Date;
+                
+                // Vô hiệu hóa nút Sửa nếu sự kiện trong quá khứ
+                btnSuaSuKien.Enabled = !isPastEvent;
+                
+                // Luôn cho phép xóa (có thể xóa cả sự kiện trong quá khứ)
                 btnXoaSuKien.Enabled = true;
+                
+                // ✅ Thêm tooltip để giải thích tại sao không sửa được
+                if (isPastEvent)
+                {
+                    ToolTip tooltip = new ToolTip();
+                    tooltip.SetToolTip(btnSuaSuKien, "Không thể sửa sự kiện trong quá khứ");
+                }
             }
             else
             {
@@ -919,10 +1250,55 @@ namespace ClubManageApp
             frmAddEditEvent frm = new frmAddEditEvent(dateForNewEvent, events);
             if (frm.ShowDialog() == DialogResult.OK)
             {
-                // Validate lại ngày sau khi người dùng có thể đã thay đổi
+                // ✅ Validate lại ngày sau khi người dùng có thể đã thay đổi
                 if (!ValidateEventDate(frm.Event.Date, "thêm"))
                 {
                     return;
+                }
+
+                // ✅ Validate tiêu đề
+                if (!ValidateEventTitle(frm.Event.Title, out string titleError))
+                {
+                    MessageBox.Show(titleError, "Lỗi tiêu đề", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // ✅ Validate thời gian
+                if (!ValidateTimeRange(frm.Event.StartTime, frm.Event.EndTime, out string timeError))
+                {
+                    MessageBox.Show(timeError, "Lỗi thời gian", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // ✅ Kiểm tra xung đột sự kiện
+                var conflictEvent = CheckEventConflict(frm.Event.Date, frm.Event.StartTime, frm.Event.EndTime);
+                if (conflictEvent != null)
+                {
+                    DialogResult result = MessageBox.Show(
+                        $"⚠️ Phát hiện xung đột thời gian!\n\n" +
+                        $"Sự kiện trùng: {conflictEvent.Title}\n" +
+                        $"Ngày: {conflictEvent.Date:dd/MM/yyyy}\n" +
+                        $"Thời gian: {conflictEvent.StartTime} - {conflictEvent.EndTime}\n\n" +
+                        $"Bạn có chắc chắn muốn thêm sự kiện này không?",
+                        "Xung đột sự kiện",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning);
+
+                    if (result != DialogResult.Yes)
+                        return;
+                }
+
+                // ✅ Validate địa điểm (nếu có)
+                if (!string.IsNullOrWhiteSpace(frm.Event.Location))
+                {
+                    if (!ValidateLocation(frm.Event.Location, out string locationError))
+                    {
+                        MessageBox.Show(locationError, "Lỗi địa điểm", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
                 }
 
                 // Lưu vào database trước
@@ -958,57 +1334,102 @@ namespace ClubManageApp
         // Xử lý nút Sửa sự kiện
         private void btnSuaSuKien_Click(object sender, EventArgs e)
         {
-            if (selectedEvent != null)
-            {
-                // Cho phép sửa sự kiện trong quá khứ nhưng không cho đổi ngày về quá khứ
-                frmAddEditEvent frm = new frmAddEditEvent(selectedEvent.Date, events, selectedEvent);
-                if (frm.ShowDialog() == DialogResult.OK)
-                {
-                    // Nếu ngày sự kiện bị thay đổi, validate ngày mới
-                    if (frm.Event.Date.Date != selectedEvent.Date.Date)
-                    {
-                        if (!ValidateEventDate(frm.Event.Date, "sửa"))
-                        {
-                            return;
-                        }
-                    }
-                    // Nếu sự kiện đã qua và người dùng đang cố sửa về quá khứ xa hơn
-                    else if (selectedEvent.Date.Date < DateTime.Now.Date && frm.Event.Date.Date < DateTime.Now.Date)
-                    {
-                        DialogResult result = MessageBox.Show(
-                            "Sự kiện này đã diễn ra trong quá khứ.\n\n" +
-                            "Bạn có chắc chắn muốn cập nhật thông tin không?",
-                            "Cảnh báo",
-                            MessageBoxButtons.YesNo,
-                            MessageBoxIcon.Warning);
-                        
-                        if (result != DialogResult.Yes)
-                            return;
-                    }
-
-                    // Cập nhật trong database
-                    if (UpdateEventInDatabase(frm.Event))
-                    {
-                        // Cập nhật sự kiện trong danh sách
-                        int index = events.FindIndex(ev => ev.Id == selectedEvent.Id);
-                        if (index >= 0)
-                        {
-                            events[index] = frm.Event;
-                            events[index].Id = selectedEvent.Id;
-                        }
-                        
-                        LoadCalendar();
-                        DisplayEventsForDate(selectedDate);
-                        
-                        MessageBox.Show("Đã cập nhật sự kiện thành công!", "Thông báo",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                }
-            }
-            else
+            if (selectedEvent == null)
             {
                 MessageBox.Show("Vui lòng chọn một sự kiện để sửa!", "Thông báo",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // ✅ KIỂM TRA: Không cho phép sửa sự kiện trong quá khứ
+            if (selectedEvent.Date.Date < DateTime.Now.Date)
+            {
+                MessageBox.Show(
+                    $"❌ Không thể sửa sự kiện trong quá khứ!\n\n" +
+                    $"Sự kiện: {selectedEvent.Title}\n" +
+                    $"Ngày diễn ra: {selectedEvent.Date:dd/MM/yyyy}\n" +
+                    $"Ngày hiện tại: {DateTime.Now:dd/MM/yyyy}\n\n" +
+                    $"Lý do: Sự kiện đã kết thúc, không thể chỉnh sửa.",
+                    "Không thể sửa sự kiện",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            frmAddEditEvent frm = new frmAddEditEvent(selectedEvent.Date, events, selectedEvent);
+            if (frm.ShowDialog() == DialogResult.OK)
+            {
+                // ✅ Validate ngày mới (nếu thay đổi)
+                if (frm.Event.Date.Date != selectedEvent.Date.Date)
+                {
+                    if (!ValidateEventDate(frm.Event.Date, "sửa"))
+                    {
+                        return;
+                    }
+                }
+
+                // ✅ Validate tiêu đề
+                if (!ValidateEventTitle(frm.Event.Title, out string titleError))
+                {
+                    MessageBox.Show(titleError, "Lỗi tiêu đề", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // ✅ Validate thời gian
+                if (!ValidateTimeRange(frm.Event.StartTime, frm.Event.EndTime, out string timeError))
+                {
+                    MessageBox.Show(timeError, "Lỗi thời gian", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // ✅ Kiểm tra xung đột sự kiện (loại trừ sự kiện hiện tại)
+                var conflictEvent = CheckEventConflict(frm.Event.Date, frm.Event.StartTime, frm.Event.EndTime, selectedEvent.Id);
+                if (conflictEvent != null)
+                {
+                    DialogResult result = MessageBox.Show(
+                        $"⚠️ Phát hiện xung đột thời gian!\n\n" +
+                        $"Sự kiện trùng: {conflictEvent.Title}\n" +
+                        $"Ngày: {conflictEvent.Date:dd/MM/yyyy}\n" +
+                        $"Thời gian: {conflictEvent.StartTime} - {conflictEvent.EndTime}\n\n" +
+                        $"Bạn có chắc chắn muốn cập nhật sự kiện này không?",
+                        "Xung đột sự kiện",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning);
+
+                    if (result != DialogResult.Yes)
+                        return;
+                }
+
+                // ✅ Validate địa điểm (nếu có)
+                if (!string.IsNullOrWhiteSpace(frm.Event.Location))
+                {
+                    if (!ValidateLocation(frm.Event.Location, out string locationError))
+                    {
+                        MessageBox.Show(locationError, "Lỗi địa điểm", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+
+                // Cập nhật trong database
+                if (UpdateEventInDatabase(frm.Event))
+                {
+                    // Cập nhật sự kiện trong danh sách
+                    int index = events.FindIndex(ev => ev.Id == selectedEvent.Id);
+                    if (index >= 0)
+                    {
+                        events[index] = frm.Event;
+                        events[index].Id = selectedEvent.Id;
+                    }
+                    
+                    LoadCalendar();
+                    DisplayEventsForDate(selectedDate);
+                    
+                    MessageBox.Show("Đã cập nhật sự kiện thành công!", "Thông báo",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
         }
 

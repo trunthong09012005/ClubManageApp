@@ -78,6 +78,12 @@
     <Compile Include="Account.Designer.cs">
       <DependentUpon>Account.cs</DependentUpon>
     </Compile>
+    <Compile Include="AccountTest.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AccountTest.Designer.cs">
+      <DependentUpon>AccountTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Activity.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -207,6 +213,9 @@
     <EmbeddedResource Include="Account.resx">
       <DependentUpon>Account.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AccountTest.resx">
+      <DependentUpon>AccountTest.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Activity.resx">
       <DependentUpon>Activity.cs</DependentUpon>
     </EmbeddedResource>
@@ -274,6 +283,7 @@
     <None Include="FEATURE_TimeSync.md" />
     <None Include="HUONG_DAN_SO_DO_PHONG.md" />
     <None Include="MEETING_UI_FIX_GUIDE.md" />
+    <None Include="NO_EDIT_PAST_EVENTS.md" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -284,6 +294,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="VALIDATION_IMPROVEMENTS.md" />
+    <None Include="WORK_HOURS_UPDATE.md" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

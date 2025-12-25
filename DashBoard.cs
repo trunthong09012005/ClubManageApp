@@ -546,12 +546,19 @@ namespace ClubManageApp
                 if (this.lblTimeline != null) this.lblTimeline.Visible = false;
                 if (this.flowTimeline != null) this.flowTimeline.Visible = false;
 
-                var acct = new ucAccount();
-                acct.Dock = DockStyle.Fill;
+                //var acct = new ucAccount();
+                //acct.Dock = DockStyle.Fill;
+
+                //this.contentPanel.Controls.Clear();
+                //this.contentPanel.Controls.Add(acct);
+                //acct.BringToFront();
+
+                var acc = new ucAccountTest();
+                acc.Dock = DockStyle.Fill;
 
                 this.contentPanel.Controls.Clear();
-                this.contentPanel.Controls.Add(acct);
-                acct.BringToFront();
+                this.contentPanel.Controls.Add(acc);
+                acc.BringToFront();
             }
             catch (Exception ex)
             {
