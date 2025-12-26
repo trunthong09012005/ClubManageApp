@@ -293,7 +293,8 @@ namespace ClubManageApp
             if (chatForm == null || chatForm.IsDisposed)
             {
                 chatForm = new ChatForm2(connectionString, maTV, username);
-                // ensure toggle resets when form gets hidden or closed
+
+                // Reset toggle khi form bị ẩn hoặc đóng
                 chatForm.VisibleChanged += (s, args) =>
                 {
                     if (!chatForm.Visible)
@@ -301,12 +302,22 @@ namespace ClubManageApp
                         btnToggle.Text = "💬";
                         btnToggle.Invalidate();
                     }
+                    else
+                    {
+                        // ===== THÊM DÒNG NÀY: Clear badge khi mở chat =====
+                        unreadCount = 0;
+                        UpdateBadge();
+                        btnToggle.Text = "✕";
+                        btnToggle.Invalidate();
+                    }
                 };
+
                 chatForm.FormClosed += (s, args) =>
                 {
                     btnToggle.Text = "💬";
                     btnToggle.Invalidate();
                 };
+
                 chatForm.OnMessagesRead += () =>
                 {
                     unreadCount = 0;
@@ -325,6 +336,11 @@ namespace ClubManageApp
                 chatForm.Location = new Point(screenPos.X - chatForm.Width - 10, screenPos.Y - chatForm.Height - 10);
                 chatForm.Show();
                 chatForm.Activate();
+
+                // ===== THÊM 2 DÒNG NÀY: Clear badge ngay khi click mở =====
+                unreadCount = 0;
+                UpdateBadge();
+
                 btnToggle.Text = "✕";
             }
             btnToggle.Invalidate();
@@ -762,10 +778,10 @@ namespace ClubManageApp
                     conn.Open();
                     SqlCommand cmd = new SqlCommand(
                         @"SELECT MaTN, MaNguoiGui, NoiDung, NgayGui, TrangThai 
-                          FROM TinNhan 
-                          WHERE (MaNguoiGui = @me AND MaNguoiNhan = @them) 
-                             OR (MaNguoiGui = @them AND MaNguoiNhan = @me)
-                          ORDER BY NgayGui ASC", conn);
+                  FROM TinNhan 
+                  WHERE (MaNguoiGui = @me AND MaNguoiNhan = @them) 
+                     OR (MaNguoiGui = @them AND MaNguoiNhan = @me)
+                  ORDER BY NgayGui ASC", conn);
                     cmd.Parameters.AddWithValue("@me", maTV);
                     cmd.Parameters.AddWithValue("@them", memberChatID);
 
@@ -789,6 +805,22 @@ namespace ClubManageApp
                         int msgID = Convert.ToInt32(r["MaTN"]);
                         if (msgID > lastMessageID) lastMessageID = msgID;
                     }
+
+                    // ===== ĐÓNG READER TRƯỚC KHI CHẠY COMMAND MỚI =====
+                    r.Close();
+
+                    // ===== ĐÁNH DẤU TIN NHẮN LÀ ĐÃ ĐỌC =====
+                    SqlCommand markRead = new SqlCommand(
+                        @"UPDATE TinNhan SET TrangThai = N'Đã đọc' 
+                  WHERE MaNguoiGui = @them 
+                    AND MaNguoiNhan = @me 
+                    AND TrangThai = N'Chưa đọc'", conn);
+                    markRead.Parameters.AddWithValue("@me", maTV);
+                    markRead.Parameters.AddWithValue("@them", memberChatID);
+                    markRead.ExecuteNonQuery();
+
+                    // ===== TRIGGER EVENT ĐỂ CLEAR BADGE =====
+                    OnMessagesRead?.Invoke();
                 }
             }
             catch { }

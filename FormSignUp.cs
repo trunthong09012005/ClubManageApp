@@ -9,6 +9,7 @@ namespace ClubManageApp
     {
         // Chuỗi kết nối database
         private string connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;Persist Security Info=True;User ID=sa;Password=912005;Encrypt=True;TrustServerCertificate=True";
+
         public FormSignUp()
         {
             InitializeComponent();
@@ -88,6 +89,54 @@ namespace ClubManageApp
             }
         }
 
+        // THÊM MỚI: Kiểm tra họ tên đã tồn tại (không phân biệt hoa thường)
+        private bool CheckHoTenExists(string hoTen)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    // Sử dụng COLLATE để không phân biệt hoa thường khi so sánh
+                    string query = "SELECT COUNT(*) FROM ThanhVien WHERE HoTen COLLATE Latin1_General_CI_AS = @HoTen COLLATE Latin1_General_CI_AS";
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@HoTen", hoTen.Trim());
+
+                    int count = (int)cmd.ExecuteScalar();
+                    return count > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi kiểm tra họ tên: " + ex.Message);
+                return true;
+            }
+        }
+
+        // THÊM MỚI: Kiểm tra tên đăng nhập đã tồn tại (PHÂN BIỆT hoa thường)
+        private bool CheckTenDangNhapExists(string tenDangNhap)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    // Sử dụng COLLATE để PHÂN BIỆT hoa thường khi so sánh
+                    string query = "SELECT COUNT(*) FROM TaiKhoan WHERE TenDangNhap COLLATE Latin1_General_CS_AS = @TenDangNhap COLLATE Latin1_General_CS_AS";
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@TenDangNhap", tenDangNhap.Trim());
+
+                    int count = (int)cmd.ExecuteScalar();
+                    return count > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi kiểm tra tên đăng nhập: " + ex.Message);
+                return true;
+            }
+        }
+
         // Nút Đăng ký
         private void btnDangKy_Click(object sender, EventArgs e)
         {
@@ -104,6 +153,19 @@ namespace ClubManageApp
             {
                 MessageBox.Show("Họ tên phải có ít nhất 2 ký tự!", "Thông báo",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtHoTen.Focus();
+                return;
+            }
+
+            // THÊM MỚI: Kiểm tra họ tên đã tồn tại
+            if (CheckHoTenExists(txtHoTen.Text.Trim()))
+            {
+                MessageBox.Show("Họ tên này đã tồn tại trong hệ thống!\n\n" +
+                    "Vui lòng sử dụng họ tên khác hoặc thêm thông tin phân biệt\n" +
+                    "(Ví dụ: Nguyễn Văn A - K21, Nguyễn Văn A - CNTT)",
+                    "Cảnh báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
                 txtHoTen.Focus();
                 return;
             }
@@ -246,7 +308,7 @@ namespace ClubManageApp
                         this.Hide();
 
                         // Mở form SignIn để tạo tài khoản
-                        SignUp  formSignIn = new SignUp (maTV, hoTen, email);
+                        SignUp formSignIn = new SignUp(maTV, hoTen, email);
 
                         if (formSignIn.ShowDialog() == DialogResult.OK)
                         {
@@ -306,7 +368,7 @@ namespace ClubManageApp
             {
                 if (sqlEx.Number == 2627 || sqlEx.Number == 2601) // Lỗi duplicate key
                 {
-                    MessageBox.Show("Email này đã được đăng ký trong hệ thống!",
+                    MessageBox.Show("Dữ liệu này đã tồn tại trong hệ thống!",
                         "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
@@ -375,6 +437,40 @@ namespace ClubManageApp
         private void FormSignUp_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnQuayLai_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // If there's an owner form set, return to it.
+                if (this.Owner != null)
+                {
+                    this.Owner.Show();
+                    this.Close();
+                    return;
+                }
+
+                // Otherwise try to find any other open form and show it.
+                foreach (Form openForm in Application.OpenForms)
+                {
+                    if (openForm != this)
+                    {
+                        openForm.Show();
+                        openForm.BringToFront();
+                        this.Close();
+                        return;
+                    }
+                }
+
+                // If no other form is available, just close this form.
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi quay lại: " + ex.Message, "Lỗi",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

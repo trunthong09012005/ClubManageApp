@@ -16,6 +16,9 @@ namespace ClubManageApp
         private readonly Color menuSelectedFill = Color.FromArgb(94, 148, 255);
         private readonly Color menuSelectedFore = Color.White;
 
+        // 🔧 FLAG để ngăn auto-click khi resize slidebar
+        private bool isSlidebarAnimating = false;
+
         // mark given button as selected and reset others
         private void SelectMenuButton(Guna2Button btn)
         {
@@ -57,7 +60,7 @@ namespace ClubManageApp
             {
                 try
                 {
-                    // Make selected button visually prominent (full fill + white text + subtle border + shadow)
+                    // Make selected button visually prominent
                     btn.FillColor = menuSelectedFill;
                     btn.ForeColor = menuSelectedFore;
                     btn.Font = new Font(btn.Font.FontFamily, btn.Font.Size, FontStyle.Bold);
@@ -86,7 +89,6 @@ namespace ClubManageApp
             }
         }
 
-        // ✅ SỬ DỤNG ConnectionHelper thay vì hard-code
         private string connectionString = ConnectionHelper.ConnectionString;
         private readonly string role;
         private readonly string username;
@@ -94,12 +96,10 @@ namespace ClubManageApp
         private bool slidebarExpanded = true;
         private ChatbotPanel2 chatPanel;
 
-        // ✅ Constructor chính - bắt buộc các tham số
         public DashBoard(string role, string username, int maTV)
         {
             InitializeComponent();
 
-            // Validate input
             if (string.IsNullOrWhiteSpace(role))
                 throw new ArgumentException("Role không được rỗng", nameof(role));
             if (string.IsNullOrWhiteSpace(username))
@@ -115,36 +115,27 @@ namespace ClubManageApp
             this.FormClosing += DashBoard_FormClosing;
         }
 
-        // 🔵 Constructor mặc định (chỉ dùng cho Designer)
         public DashBoard()
         {
             InitializeComponent();
-
-            // Giá trị mặc định cho test
             this.role = "Test";
             this.username = "TestUser";
             this.maTV = 1;
-
             this.Load += DashBoard_Load;
             this.FormClosing += DashBoard_FormClosing;
         }
 
-        // ================================
-        // 🎬 FORM LOAD
-        // ================================
         private void DashBoard_Load(object sender, EventArgs e)
         {
             try
             {
-                // Hiển thị thông tin user trước
                 DisplayUserInfo();
-
-                // Load dữ liệu
                 LoadStats();
                 LoadTimeline();
-
-                // Khởi tạo chatbot
                 InitializeChatbot();
+
+                // 🔧 Chọn Dashboard làm trang mặc định khi load
+                SelectMenuButton(btnDashBoard);
             }
             catch (SqlException sqlEx)
             {
@@ -164,9 +155,6 @@ namespace ClubManageApp
             }
         }
 
-        // ================================
-        // 👤 HIỂN THỊ THÔNG TIN USER
-        // ================================
         private void DisplayUserInfo()
         {
             if (lblUsername != null)
@@ -176,22 +164,14 @@ namespace ClubManageApp
                 lblRole.Text = $"Vai trò: {role}";
         }
 
-        // ================================
-        // 💬 KHỞI TẠO CHATBOT
-        // ================================
         private void InitializeChatbot()
         {
             try
             {
                 chatPanel = new ChatbotPanel2(connectionString, maTV, username);
-
-                // Đặt vị trí góc dưới phải
                 PositionChatbot();
-
                 this.Controls.Add(chatPanel);
                 chatPanel.BringToFront();
-
-                // Cập nhật vị trí khi resize form
                 this.Resize += DashBoard_Resize;
             }
             catch (Exception ex)
@@ -225,12 +205,8 @@ namespace ClubManageApp
             }
         }
 
-        // ================================
-        // 📊 LOAD SỐ LIỆU THỐNG KÊ
-        // ================================
         private void LoadStats()
         {
-            // Cập nhật các label với null check
             if (lblMemberCount != null)
                 lblMemberCount.Text = GetCount("SELECT COUNT(*) FROM ThanhVien").ToString();
 
@@ -280,14 +256,11 @@ namespace ClubManageApp
             }
         }
 
-        // ================================
-        // 📰 LOAD TIMELINE
-        // ================================
         private void LoadTimeline()
         {
             if (flowTimeline == null) return;
 
-            flowTimeline.SuspendLayout(); // Tạm dừng vẽ lại UI
+            flowTimeline.SuspendLayout();
             flowTimeline.Controls.Clear();
 
             string query = @"
@@ -353,13 +326,12 @@ namespace ClubManageApp
             }
             finally
             {
-                flowTimeline.ResumeLayout(); // Tiếp tục vẽ lại UI
+                flowTimeline.ResumeLayout();
             }
         }
 
         private void AddTimelineItem(DateTime date, string title, string content, string recipient, string typeEvent)
         {
-            // Tạo panel chính
             Panel postPanel = new Panel
             {
                 Width = flowTimeline.Width - 40,
@@ -373,7 +345,6 @@ namespace ClubManageApp
                 BorderStyle = BorderStyle.FixedSingle
             };
 
-            // Tiêu đề
             Label lblTitle = new Label
             {
                 Text = title,
@@ -383,7 +354,6 @@ namespace ClubManageApp
                 Padding = new Padding(0, 0, 0, 5)
             };
 
-            // Ngày
             Label lblDate = new Label
             {
                 Text = date.ToString("dd/MM/yyyy HH:mm"),
@@ -394,7 +364,6 @@ namespace ClubManageApp
                 Padding = new Padding(0, 0, 0, 3)
             };
 
-            // Người nhận
             Label lblRecipient = new Label
             {
                 Text = $"🎯 {recipient}",
@@ -405,7 +374,6 @@ namespace ClubManageApp
                 Padding = new Padding(0, 0, 0, 5)
             };
 
-            // Nội dung
             Label lblContent = new Label
             {
                 Text = content.Length > 150 ? content.Substring(0, 150) + "..." : content,
@@ -415,7 +383,6 @@ namespace ClubManageApp
                 Dock = DockStyle.Top
             };
 
-            // Thêm controls theo thứ tự (từ dưới lên trên do Dock.Top)
             postPanel.Controls.Add(lblContent);
             postPanel.Controls.Add(lblRecipient);
             postPanel.Controls.Add(lblDate);
@@ -425,7 +392,7 @@ namespace ClubManageApp
         }
 
         // ================================
-        // 🎞️ SLIDEBAR ANIMATION
+        // 🔧 SLIDEBAR ANIMATION - FIXED
         // ================================
         private void slidebarTransition_Tick(object sender, EventArgs e)
         {
@@ -441,6 +408,9 @@ namespace ClubManageApp
                     slidebar.Width = minWidth;
                     slidebarExpanded = false;
                     slidebarTransition.Stop();
+
+                    // 🔧 Kết thúc animation
+                    isSlidebarAnimating = false;
                 }
             }
             else
@@ -451,6 +421,9 @@ namespace ClubManageApp
                     slidebar.Width = maxWidth;
                     slidebarExpanded = true;
                     slidebarTransition.Stop();
+
+                    // 🔧 Kết thúc animation
+                    isSlidebarAnimating = false;
                 }
             }
         }
@@ -458,17 +431,18 @@ namespace ClubManageApp
         private void btnham_Click(object sender, EventArgs e)
         {
             if (!slidebarTransition.Enabled)
+            {
+                // 🔧 Đánh dấu đang animation
+                isSlidebarAnimating = true;
                 slidebarTransition.Start();
+            }
         }
 
-
-        // Helper: show placeholder content in contentPanel for modules that are not implemented yet
         private void ShowModulePlaceholder(string moduleName)
         {
             if (this.contentPanel == null) return;
             try
             {
-                // Hide top dashboard panels/labels when showing a module placeholder
                 if (this.panelStats != null) this.panelStats.Visible = false;
                 if (this.lblTimeline != null) this.lblTimeline.Visible = false;
                 if (this.flowTimeline != null) this.flowTimeline.Visible = false;
@@ -501,21 +475,20 @@ namespace ClubManageApp
             }
         }
 
-
         // ================================
-        // Khôi làm sidebar từ đây
+        // 🔧 SIDEBAR CLICK HANDLERS - FIXED
         // ================================
         private void btnDashBoard_Click(object sender, EventArgs e)
         {
+            // 🔧 Bỏ qua click khi đang animation
+            if (isSlidebarAnimating) return;
+
             SelectMenuButton(btnDashBoard);
-            // Restore dashboard main content
             try
             {
-                // Make sure the top stats and timeline label are visible
                 if (this.panelStats != null) this.panelStats.Visible = true;
                 if (this.lblTimeline != null) this.lblTimeline.Visible = true;
 
-                // Clear contentPanel and ensure the flowTimeline control is present and visible
                 contentPanel.Controls.Clear();
 
                 if (this.flowTimeline != null)
@@ -536,22 +509,16 @@ namespace ClubManageApp
 
         private void btnTaiKhoan_Click(object sender, EventArgs e)
         {
+            if (isSlidebarAnimating) return;
+
             SelectMenuButton(btnTaiKhoan);
             try
             {
                 if (this.contentPanel == null) return;
 
-                // Hide dashboard top stats/timeline when switching to account
                 if (this.panelStats != null) this.panelStats.Visible = false;
                 if (this.lblTimeline != null) this.lblTimeline.Visible = false;
                 if (this.flowTimeline != null) this.flowTimeline.Visible = false;
-
-                //var acct = new ucAccount();
-                //acct.Dock = DockStyle.Fill;
-
-                //this.contentPanel.Controls.Clear();
-                //this.contentPanel.Controls.Add(acct);
-                //acct.BringToFront();
 
                 var acc = new ucAccountTest();
                 acc.Dock = DockStyle.Fill;
@@ -562,19 +529,19 @@ namespace ClubManageApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lõi khi mở Tài khoản: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lỗi khi mở Tài khoản: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
         }
 
         private void btnHoatDong_Click(object sender, EventArgs e)
         {
+            if (isSlidebarAnimating) return;
+
             SelectMenuButton(btnHoatDong);
             try
             {
                 if (this.contentPanel == null) return;
 
-                // Hide dashboard top stats/timeline when switching to activity
                 if (this.panelStats != null) this.panelStats.Visible = false;
                 if (this.lblTimeline != null) this.lblTimeline.Visible = false;
                 if (this.flowTimeline != null) this.flowTimeline.Visible = false;
@@ -594,25 +561,22 @@ namespace ClubManageApp
 
         private void btnThongbao_Click(object sender, EventArgs e)
         {
+            if (isSlidebarAnimating) return;
+
             SelectMenuButton(btnThongbao);
             try
             {
                 if (this.contentPanel == null) return;
 
-                // Hide dashboard top stats/timeline when switching to notifications
                 if (this.panelStats != null) this.panelStats.Visible = false;
                 if (this.lblTimeline != null) this.lblTimeline.Visible = false;
                 if (this.flowTimeline != null) this.flowTimeline.Visible = false;
 
                 var notificationControl = new Notification();
-
-                // Make sure it fills the available content area precisely
                 notificationControl.Dock = DockStyle.Fill;
                 notificationControl.Margin = new Padding(0);
                 notificationControl.Location = new Point(0, 0);
-                // Do not set Size or Anchor manually; let Dock=Fill handle sizing
 
-                // Remove padding inside contentPanel so child can occupy full area
                 try { this.contentPanel.Padding = new Padding(0); } catch { }
                 try { this.contentPanel.Margin = new Padding(0); } catch { }
 
@@ -620,11 +584,9 @@ namespace ClubManageApp
                 this.contentPanel.Controls.Add(notificationControl);
                 notificationControl.BringToFront();
 
-                // Ensure it resizes when contentPanel changes
                 this.contentPanel.Resize -= ContentPanel_Resize_AdjustChild;
                 this.contentPanel.Resize += ContentPanel_Resize_AdjustChild;
 
-                // Force layout refresh
                 this.contentPanel.PerformLayout();
                 this.contentPanel.Invalidate();
             }
@@ -649,12 +611,13 @@ namespace ClubManageApp
 
         private void btnTaiChinh_Click(object sender, EventArgs e)
         {
+            if (isSlidebarAnimating) return;
+
             SelectMenuButton(btnTaiChinh);
             try
             {
                 if (this.contentPanel == null) return;
 
-                // Hide dashboard top stats/timeline when switching to finance
                 if (this.panelStats != null) this.panelStats.Visible = false;
                 if (this.lblTimeline != null) this.lblTimeline.Visible = false;
                 if (this.flowTimeline != null) this.flowTimeline.Visible = false;
@@ -674,12 +637,13 @@ namespace ClubManageApp
 
         private void btnDuAn_Click(object sender, EventArgs e)
         {
+            if (isSlidebarAnimating) return;
+
             SelectMenuButton(btnDuAn);
             try
             {
                 if (this.contentPanel == null) return;
 
-                // Hide dashboard top stats/timeline when switching to projects
                 if (this.panelStats != null) this.panelStats.Visible = false;
                 if (this.lblTimeline != null) this.lblTimeline.Visible = false;
                 if (this.flowTimeline != null) this.flowTimeline.Visible = false;
@@ -699,12 +663,13 @@ namespace ClubManageApp
 
         private void btnLichHop_Click(object sender, EventArgs e)
         {
+            if (isSlidebarAnimating) return;
+
             SelectMenuButton(btnLichHop);
             try
             {
                 if (this.contentPanel == null) return;
 
-                // Hide dashboard top stats/timeline when switching to schedule
                 if (this.panelStats != null) this.panelStats.Visible = false;
                 if (this.lblTimeline != null) this.lblTimeline.Visible = false;
                 if (this.flowTimeline != null) this.flowTimeline.Visible = false;
@@ -724,17 +689,17 @@ namespace ClubManageApp
 
         private void btnThanhVien_Click(object sender, EventArgs e)
         {
+            if (isSlidebarAnimating) return;
+
             SelectMenuButton(btnThanhVien);
             try
             {
                 if (this.contentPanel == null) return;
 
-                // Hide dashboard top stats/timeline when switching to members
                 if (this.panelStats != null) this.panelStats.Visible = false;
                 if (this.lblTimeline != null) this.lblTimeline.Visible = false;
                 if (this.flowTimeline != null) this.flowTimeline.Visible = false;
 
-                // Truyền role của user hiện tại vào ucUserTest
                 var test = new ucUserTest(this.role);
                 test.Dock = DockStyle.Fill;
 
@@ -748,10 +713,6 @@ namespace ClubManageApp
             }
         }
 
-
-        // ================================
-        // 🚪 ĐĂNG XUẤT
-        // ================================
         private void btnDangxuat_Click(object sender, EventArgs e)
         {
             DialogResult result = MessageBox.Show(
@@ -762,7 +723,6 @@ namespace ClubManageApp
 
             if (result == DialogResult.Yes)
             {
-                // reset selection on logout
                 SelectMenuButton(null);
                 this.Hide();
 
@@ -772,25 +732,19 @@ namespace ClubManageApp
             }
         }
 
-        // ================================
-        // 🧹 CLEANUP
-        // ================================
         private void DashBoard_FormClosing(object sender, FormClosingEventArgs e)
         {
             try
             {
-                // Dọn dẹp chatbot
                 if (chatPanel != null && !chatPanel.IsDisposed)
                 {
                     chatPanel.Dispose();
                 }
 
-                // Hủy đăng ký sự kiện
                 this.Resize -= DashBoard_Resize;
             }
             catch (Exception ex)
             {
-                // Log lỗi nhưng không hiển thị cho user khi đóng form
                 System.Diagnostics.Debug.WriteLine($"Error during cleanup: {ex.Message}");
             }
         }

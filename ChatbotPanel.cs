@@ -19,6 +19,7 @@ namespace ClubManageApp
         private int maTV;
         private string username;
         private int unreadCount = 0;
+        private bool isAnimating = false;
 
         public ChatbotPanel(string connString, int memberID, string user)
         {
@@ -103,6 +104,7 @@ namespace ClubManageApp
                             if (count > unreadCount && unreadCount >= 0)
                             {
                                 SystemSounds.Asterisk.Play();
+                                AnimateBadge();
                             }
                             unreadCount = count;
                             UpdateBadge();
@@ -113,8 +115,63 @@ namespace ClubManageApp
             catch { }
         }
 
+        private void AnimateBadge()
+        {
+            if (isAnimating || lblBadge == null) return;
+
+            isAnimating = true;
+            int originalSize = 22;
+            int pulseSize = 28;
+            int step = 0;
+
+            Timer animTimer = new Timer() { Interval = 50 };
+            animTimer.Tick += (s, e) =>
+            {
+                step++;
+                if (step <= 3)
+                {
+                    // Phóng to
+                    int newSize = originalSize + (step * 2);
+                    lblBadge.Size = new Size(newSize, newSize);
+                    lblBadge.Location = new Point(40 - (newSize - originalSize) / 2, 0 - (newSize - originalSize) / 2);
+                }
+                else if (step <= 6)
+                {
+                    // Thu nhỏ
+                    int newSize = pulseSize - ((step - 3) * 2);
+                    lblBadge.Size = new Size(newSize, newSize);
+                    lblBadge.Location = new Point(40 - (newSize - originalSize) / 2, 0 - (newSize - originalSize) / 2);
+                }
+                else
+                {
+                    // Kết thúc
+                    lblBadge.Size = new Size(originalSize, originalSize);
+                    lblBadge.Location = new Point(40, 0);
+
+                    var badgePathFinal = new GraphicsPath();
+                    badgePathFinal.AddEllipse(0, 0, lblBadge.Width, lblBadge.Height);
+                    lblBadge.Region = new Region(badgePathFinal);
+
+                    ((Timer)s).Stop();
+                    ((Timer)s).Dispose();
+                    isAnimating = false;
+                }
+
+                var badgePathAnim = new GraphicsPath();
+                badgePathAnim.AddEllipse(0, 0, lblBadge.Width, lblBadge.Height);
+                lblBadge.Region = new Region(badgePathAnim);
+            };
+            animTimer.Start();
+        }
+
         private void UpdateBadge()
         {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(UpdateBadge));
+                return;
+            }
+
             if (unreadCount > 0)
             {
                 lblBadge.Text = unreadCount > 99 ? "99+" : unreadCount.ToString();
@@ -148,14 +205,15 @@ namespace ClubManageApp
                         {
                             btnToggle.Text = "✕";
                             btnToggle.BackColor = Color.FromArgb(220, 53, 69);
+                            // Clear badge khi mở chat
+                            ClearBadge();
                         }
                     }
                     catch { }
                 };
 
                 chatForm.OnMessagesRead += () => {
-                    unreadCount = 0;
-                    UpdateBadge();
+                    ClearBadge();
                 };
             }
 
@@ -173,7 +231,16 @@ namespace ClubManageApp
                 chatForm.Activate();
                 btnToggle.Text = "✕";
                 btnToggle.BackColor = Color.FromArgb(220, 53, 69);
+
+                // Clear badge ngay khi mở
+                ClearBadge();
             }
+        }
+
+        private void ClearBadge()
+        {
+            unreadCount = 0;
+            UpdateBadge();
         }
 
         protected override void OnHandleDestroyed(EventArgs e)
