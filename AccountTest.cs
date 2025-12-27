@@ -14,6 +14,85 @@ namespace ClubManageApp
         {
             InitializeComponent();
             InitializeLogTable();
+            
+            // Add event handler to txtMaTV to display member info when MaTV is entered
+            txtMaTV.TextChanged += TxtMaTV_TextChanged;
+        }
+
+        private void TxtMaTV_TextChanged(object sender, EventArgs e)
+        {
+            string maTVText = txtMaTV.Text.Trim();
+            
+            // Clear textboxes if empty
+            if (string.IsNullOrEmpty(maTVText))
+            {
+                txtHoTen.Clear();
+                txtSDT.Clear();
+                txtHoTen.ForeColor = System.Drawing.Color.Black;
+                txtSDT.ForeColor = System.Drawing.Color.Black;
+                return;
+            }
+
+            // Try to parse MaTV
+            if (int.TryParse(maTVText, out int maTV))
+            {
+                // Get member info from database
+                var memberInfo = GetMemberInfo(maTV);
+                if (memberInfo != null)
+                {
+                    // Member exists - auto-fill information
+                    txtHoTen.Text = memberInfo.HoTen;
+                    txtSDT.Text = memberInfo.SDT;
+                    txtHoTen.ForeColor = System.Drawing.Color.DarkGreen;
+                    txtSDT.ForeColor = System.Drawing.Color.DarkBlue;
+                }
+                else
+                {
+                    // Member doesn't exist - clear fields for manual input
+                    txtHoTen.Clear();
+                    txtSDT.Clear();
+                    txtHoTen.ForeColor = System.Drawing.Color.Black;
+                    txtSDT.ForeColor = System.Drawing.Color.Black;
+                }
+            }
+            else
+            {
+                txtHoTen.Clear();
+                txtSDT.Clear();
+                txtHoTen.ForeColor = System.Drawing.Color.Black;
+                txtSDT.ForeColor = System.Drawing.Color.Black;
+            }
+        }
+
+        private AccountMemberInfo GetMemberInfo(int maTV)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(connectionString))
+                using (var cmd = new SqlCommand("SELECT HoTen, SDT FROM ThanhVien WHERE MaTV = @MaTV", conn))
+                {
+                    cmd.Parameters.AddWithValue("@MaTV", maTV);
+                    conn.Open();
+                    
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new AccountMemberInfo
+                            {
+                                HoTen = reader["HoTen"]?.ToString() ?? "",
+                                SDT = reader["SDT"]?.ToString() ?? ""
+                            };
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error getting member info: {ex.Message}");
+            }
+            
+            return null;
         }
 
         private void InitializeLogTable()
@@ -81,7 +160,7 @@ namespace ClubManageApp
                 {
                     cmd.Connection = conn;
 
-                    string sql = @"SELECT TK.MaTK, TK.TenDN, TK.MatKhau, TK.MaTV, TV.HoTen, 
+                    string sql = @"SELECT TK.MaTK, TK.TenDN, TK.MatKhau, TK.MaTV, TV.HoTen, TV.SDT,
                                    TK.QuyenHan, TK.NgayTao, TK.LanDangNhapCuoi, TK.TrangThai 
                                    FROM TaiKhoan TK
                                    LEFT JOIN ThanhVien TV ON TK.MaTV = TV.MaTV";
@@ -113,6 +192,7 @@ namespace ClubManageApp
                         }
                         if (dgvTaiKhoan.Columns.Contains("MaTV")) dgvTaiKhoan.Columns["MaTV"].HeaderText = "Mã TV";
                         if (dgvTaiKhoan.Columns.Contains("HoTen")) dgvTaiKhoan.Columns["HoTen"].HeaderText = "Họ tên";
+                        if (dgvTaiKhoan.Columns.Contains("SDT")) dgvTaiKhoan.Columns["SDT"].HeaderText = "Số điện thoại";
                         if (dgvTaiKhoan.Columns.Contains("QuyenHan")) dgvTaiKhoan.Columns["QuyenHan"].HeaderText = "Quyền hạn";
                         if (dgvTaiKhoan.Columns.Contains("NgayTao")) 
                         {
@@ -211,24 +291,44 @@ namespace ClubManageApp
                 if (string.IsNullOrEmpty(tenDN))
                 {
                     MessageBox.Show("Tên đăng nhập không được để trống", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtTenDN.Focus();
                     return;
                 }
 
                 if (string.IsNullOrEmpty(matKhau))
                 {
                     MessageBox.Show("Mật khẩu không được để trống", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtMatKhau.Focus();
                     return;
                 }
 
                 if (string.IsNullOrEmpty(maTVText))
                 {
                     MessageBox.Show("Mã thành viên không được để trống", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtMaTV.Focus();
                     return;
                 }
 
                 if (!int.TryParse(maTVText, out int maTV))
                 {
                     MessageBox.Show("Mã thành viên phải là số", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtMaTV.Focus();
+                    return;
+                }
+
+                // ✅ VALIDATE: Check if MaTV exists in ThanhVien table
+                var memberInfo = GetMemberInfo(maTV);
+                if (memberInfo == null)
+                {
+                    MessageBox.Show(
+                        $"❌ Mã thành viên {maTV} không tồn tại trong hệ thống!\n\n" +
+                        $"Vui lòng:\n" +
+                        $"1. Kiểm tra lại mã thành viên\n" +
+                        $"2. Hoặc tạo thành viên mới trước trong module 'Quản lý thành viên'",
+                        "Lỗi - Thành viên không tồn tại", 
+                        MessageBoxButtons.OK, 
+                        MessageBoxIcon.Error);
+                    txtMaTV.Focus();
                     return;
                 }
 
@@ -242,9 +342,11 @@ namespace ClubManageApp
                     trangThai = "Chờ kích hoạt";
                 }
 
+                // ✅ INSERT vào bảng TaiKhoan
                 using (var conn = new SqlConnection(connectionString))
-                using (var cmd = new SqlCommand(@"INSERT INTO TaiKhoan(TenDN, MatKhau, MaTV, QuyenHan, TrangThai, NgayTao) 
-                                                 VALUES(@tendn, @matkhau, @matv, @quyenhan, @trangthai, GETDATE())", conn))
+                using (var cmd = new SqlCommand(@"
+                    INSERT INTO TaiKhoan(TenDN, MatKhau, MaTV, QuyenHan, TrangThai, NgayTao) 
+                    VALUES(@tendn, @matkhau, @matv, @quyenhan, @trangthai, GETDATE())", conn))
                 {
                     cmd.Parameters.AddWithValue("@tendn", tenDN);
                     cmd.Parameters.AddWithValue("@matkhau", matKhau); // In production, should hash password
@@ -258,8 +360,17 @@ namespace ClubManageApp
                         int r = cmd.ExecuteNonQuery();
                         if (r > 0)
                         {
-                            MessageBox.Show("Thêm tài khoản thành công", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            AddLog($"Thêm tài khoản: {tenDN} - {quyenHan}");
+                            MessageBox.Show(
+                                $"✅ Thêm tài khoản thành công!\n\n" +
+                                $"👤 Họ tên: {memberInfo.HoTen}\n" +
+                                $"📱 SĐT: {memberInfo.SDT}\n" +
+                                $"🔑 Tài khoản: {tenDN}\n" +
+                                $"⚡ Quyền hạn: {quyenHan}\n" +
+                                $"📊 Trạng thái: {trangThai}", 
+                                "Thành công", 
+                                MessageBoxButtons.OK, 
+                                MessageBoxIcon.Information);
+                            AddLog($"Thêm tài khoản: {tenDN} - {quyenHan} cho {memberInfo.HoTen}");
                             ClearFields();
                             LoadTaiKhoan();
                         }
@@ -268,11 +379,23 @@ namespace ClubManageApp
                     {
                         if (sex.Number == 2627 || sex.Number == 2601) // Unique constraint violation
                         {
-                            MessageBox.Show("Tên đăng nhập hoặc Mã thành viên đã tồn tại", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(
+                                $"❌ Tên đăng nhập '{tenDN}' hoặc Mã thành viên {maTV} đã được sử dụng!\n\n" +
+                                "Vui lòng:\n" +
+                                "• Chọn tên đăng nhập khác\n" +
+                                "• Hoặc kiểm tra mã thành viên", 
+                                "Lỗi - Trùng lặp dữ liệu", 
+                                MessageBoxButtons.OK, 
+                                MessageBoxIcon.Error);
                         }
                         else if (sex.Number == 547) // Foreign key constraint violation
                         {
-                            MessageBox.Show("Mã thành viên không tồn tại trong hệ thống", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(
+                                $"❌ Mã thành viên {maTV} không tồn tại trong hệ thống!\n\n" +
+                                "Vui lòng tạo thành viên trước trong module 'Quản lý thành viên'", 
+                                "Lỗi - Foreign Key", 
+                                MessageBoxButtons.OK, 
+                                MessageBoxIcon.Error);
                         }
                         else
                         {
@@ -285,7 +408,7 @@ namespace ClubManageApp
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi thêm tài khoản: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                AddLog("LỖI: Thêm tài khoản - " + ex.Message);
+                AddLog("LỎI: Thêm tài khoản - " + ex.Message);
             }
         }
 
@@ -310,24 +433,42 @@ namespace ClubManageApp
                 if (string.IsNullOrEmpty(tenDN))
                 {
                     MessageBox.Show("Tên đăng nhập không được để trống", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtTenDN.Focus();
                     return;
                 }
 
                 if (string.IsNullOrEmpty(matKhau))
                 {
                     MessageBox.Show("Mật khẩu không được để trống", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtMatKhau.Focus();
                     return;
                 }
 
                 if (string.IsNullOrEmpty(maTVText))
                 {
                     MessageBox.Show("Mã thành viên không được để trống", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtMaTV.Focus();
                     return;
                 }
 
                 if (!int.TryParse(maTVText, out int maTV))
                 {
                     MessageBox.Show("Mã thành viên phải là số", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtMaTV.Focus();
+                    return;
+                }
+
+                // ✅ VALIDATE: Check if MaTV exists in ThanhVien table
+                var memberInfo = GetMemberInfo(maTV);
+                if (memberInfo == null)
+                {
+                    MessageBox.Show(
+                        $"Mã thành viên {maTV} không tồn tại trong hệ thống!\n\n" +
+                        "Vui lòng kiểm tra lại mã thành viên.",
+                        "Lỗi", 
+                        MessageBoxButtons.OK, 
+                        MessageBoxIcon.Error);
+                    txtMaTV.Focus();
                     return;
                 }
 
@@ -350,8 +491,14 @@ namespace ClubManageApp
                         int r = cmd.ExecuteNonQuery();
                         if (r > 0)
                         {
-                            MessageBox.Show("Cập nhật tài khoản thành công", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            AddLog($"Cập nhật tài khoản: {tenDN} - {quyenHan}");
+                            MessageBox.Show(
+                                $"Cập nhật tài khoản thành công!\n\n" +
+                                $"Họ tên: {memberInfo.HoTen}\n" +
+                                $"SĐT: {memberInfo.SDT}",
+                                "Thành công", 
+                                MessageBoxButtons.OK, 
+                                MessageBoxIcon.Information);
+                            AddLog($"Cập nhật tài khoản: {tenDN} - {quyenHan} cho {memberInfo.HoTen}");
                             ClearFields();
                             LoadTaiKhoan();
                         }
@@ -377,7 +524,7 @@ namespace ClubManageApp
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi cập nhật: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                AddLog("LỖI: Cập nhật tài khoản - " + ex.Message);
+                AddLog("LỎI: Cập nhật tài khoản - " + ex.Message);
             }
         }
 
@@ -461,6 +608,10 @@ namespace ClubManageApp
                 txtMatKhau.Text = row.Cells["MatKhau"].Value?.ToString();
                 txtMaTV.Text = row.Cells["MaTV"].Value?.ToString();
 
+                // Set HoTen and SDT from grid
+                txtHoTen.Text = row.Cells["HoTen"].Value?.ToString() ?? "";
+                txtSDT.Text = row.Cells["SDT"].Value?.ToString() ?? "";
+
                 var quyenHan = row.Cells["QuyenHan"].Value?.ToString();
                 if (!string.IsNullOrEmpty(quyenHan) && cboQuyenHan.Items.Contains(quyenHan))
                     cboQuyenHan.SelectedItem = quyenHan;
@@ -502,6 +653,8 @@ namespace ClubManageApp
             txtTenDN.Clear();
             txtMatKhau.Clear();
             txtMaTV.Clear();
+            txtHoTen.Clear();
+            txtSDT.Clear();
             cboQuyenHan.SelectedIndex = -1;
             cboTrangThai.SelectedIndex = -1;
             dtpNgayTao.Value = DateTime.Now;
@@ -513,5 +666,12 @@ namespace ClubManageApp
         {
 
         }
+    }
+
+    // Helper class to hold member information for Account module
+    internal class AccountMemberInfo
+    {
+        public string HoTen { get; set; }
+        public string SDT { get; set; }
     }
 }

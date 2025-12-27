@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -13,7 +13,7 @@ namespace ClubManageApp
 
         private string connectionString;
         private int? maTV; // null for add, value for edit
-        private string currentUserRole; // Role c?a ng??i ??ng nh?p
+        private string currentUserRole; // Role của người đăng nhập
         
         private TextBox txtHoTen, txtEmail, txtSDT, txtDiaChi, txtLop, txtKhoa;
         private DateTimePicker dtpNgaySinh;
@@ -41,7 +41,7 @@ namespace ClubManageApp
 
         private void InitializeForm()
         {
-            this.Text = maTV.HasValue ? "S?a th�ng tin th�nh vi�n" : "Th�m th�nh vi�n m?i";
+            this.Text = maTV.HasValue ? "Sửa thông tin thành viên" : "Thêm thành viên mới";
             this.Size = new Size(600, 700);
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -51,13 +51,13 @@ namespace ClubManageApp
 
             int yPos = 20;
 
-            AddFormField("H? t�n (*)", ref txtHoTen, ref yPos);
+            AddFormField("Họ tên (*)", ref txtHoTen, ref yPos);
             AddFormField("Email (*)", ref txtEmail, ref yPos);
-            AddFormField("S?T", ref txtSDT, ref yPos);
+            AddFormField("SĐT", ref txtSDT, ref yPos);
             
             Label lblNgaySinh = new Label 
             { 
-                Text = "Ng�y sinh:", 
+                Text = "Ngày sinh:", 
                 Location = new Point(20, yPos), 
                 AutoSize = true,
                 Font = new Font("Segoe UI", 10)
@@ -68,24 +68,24 @@ namespace ClubManageApp
                 Size = new Size(400, 25),
                 Font = new Font("Segoe UI", 10),
                 Format = DateTimePickerFormat.Short,
-                MaxDate = DateTime.Now.AddYears(-15), // �t nh?t 15 tu?i
+                MaxDate = DateTime.Now.AddYears(-15), // Ít nhất 15 tuổi
                 MinDate = DateTime.Now.AddYears(-100)
             };
             this.Controls.Add(lblNgaySinh);
             this.Controls.Add(dtpNgaySinh);
             yPos += 40;
 
-            AddComboField("Gi?i t�nh", ref cboGioiTinh, new[] { "Nam", "N?", "Kh�c" }, ref yPos);
-            AddFormField("L?p", ref txtLop, ref yPos);
+            AddComboField("Giới tính", ref cboGioiTinh, new[] { "Nam", "Nữ", "Khác" }, ref yPos);
+            AddFormField("Lớp", ref txtLop, ref yPos);
             AddFormField("Khoa", ref txtKhoa, ref yPos);
-            AddFormField("??a ch?", ref txtDiaChi, ref yPos);
+            AddFormField("Địa chỉ", ref txtDiaChi, ref yPos);
             
-            LoadAndAddComboField("Vai tr�", ref cboVaiTro, "SELECT DISTINCT VaiTro FROM ThanhVien WHERE VaiTro IS NOT NULL", ref yPos);
+            LoadAndAddComboField("Vai trò", ref cboVaiTro, "SELECT DISTINCT VaiTro FROM ThanhVien WHERE VaiTro IS NOT NULL", ref yPos);
             
-            // ?? Ch? Admin m?i th?y Admin trong dropdown
+            // Chỉ Admin mới thấy Admin trong dropdown
             if (cboVaiTro != null && !string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
             {
-                // X�a "Admin" kh?i combobox n?u kh�ng ph?i Admin
+                // Xóa "Admin" khỏi combobox nếu không phải Admin
                 for (int i = cboVaiTro.Items.Count - 1; i >= 0; i--)
                 {
                     if (string.Equals(cboVaiTro.Items[i]?.ToString(), "Admin", StringComparison.OrdinalIgnoreCase))
@@ -95,8 +95,8 @@ namespace ClubManageApp
                 }
             }
             
-            AddComboField("Tr?ng th�i", ref cboTrangThai, new[] { "Ho?t ??ng", "T?m ng?ng", "Ngh?" }, ref yPos);
-            LoadAndAddComboField("Ch?c v?", ref cboChucVu, "SELECT MaCV, TenCV FROM ChucVu", ref yPos, true);
+            AddComboField("Trạng thái", ref cboTrangThai, new[] { "Hoạt động", "Tạm ngừng", "Nghỉ" }, ref yPos);
+            LoadAndAddComboField("Chức vụ", ref cboChucVu, "SELECT MaCV, TenCV FROM ChucVu", ref yPos, true);
             LoadAndAddComboField("Ban", ref cboBan, "SELECT MaBan, TenBan FROM BanChuyenMon", ref yPos, true);
 
             // Buttons
@@ -109,7 +109,7 @@ namespace ClubManageApp
 
             btnSave = new Button
             {
-                Text = "?? L?u",
+                Text = "💾 Lưu",  
                 Location = new Point(170, 10),
                 Size = new Size(120, 40),
                 BackColor = Color.FromArgb(76, 175, 80),
@@ -123,7 +123,7 @@ namespace ClubManageApp
 
             btnCancel = new Button
             {
-                Text = "? H?y",
+                Text = "❌ Hủy",
                 Location = new Point(310, 10),
                 Size = new Size(120, 40),
                 BackColor = Color.FromArgb(244, 67, 54),
@@ -233,7 +233,7 @@ namespace ClubManageApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"L?i khi t?i d? li?u ComboBox: {ex.Message}", "L?i", 
+                MessageBox.Show($"Lỗi khi tải dữ liệu ComboBox: {ex.Message}", "Lỗi", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
@@ -283,23 +283,23 @@ namespace ClubManageApp
                                 
                                 cboGioiTinh.SelectedItem = reader["GioiTinh"]?.ToString();
                                 
-                                // Load vai tr� - n?u l� Admin v� user kh�ng ph?i Admin th� th�m v�o ?? hi?n th? nh?ng disable
+                                // Load vai trò - nếu là Admin và user không phải Admin thì thêm vào để hiển thị nhưng disable
                                 string vaiTro = reader["VaiTro"]?.ToString();
                                 if (!string.IsNullOrEmpty(vaiTro))
                                 {
                                     if (string.Equals(vaiTro, "Admin", StringComparison.OrdinalIgnoreCase) && 
                                         !string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
                                     {
-                                        // Th�m "Admin" v�o combobox ?? hi?n th? (read-only)
+                                        // Thêm "Admin" vào combobox để hiển thị (read-only)
                                         if (!cboVaiTro.Items.Contains(vaiTro))
                                             cboVaiTro.Items.Add(vaiTro);
                                         cboVaiTro.SelectedItem = vaiTro;
-                                        cboVaiTro.Enabled = false; // Kh�ng cho ph�p thay ??i
+                                        cboVaiTro.Enabled = false; // Không cho phép thay đổi
                                         
-                                        // Hi?n th? th�ng b�o
+                                        // Hiển thị thông báo
                                         Label lblWarning = new Label
                                         {
-                                            Text = "?? Ch? Admin m?i c� quy?n thay ??i vai tr� Admin",
+                                            Text = "⚠️ Chỉ Admin mới có quyền thay đổi vai trò Admin",
                                             Location = new Point(150, cboVaiTro.Location.Y + 30),
                                             AutoSize = true,
                                             ForeColor = Color.Red,
@@ -347,7 +347,7 @@ namespace ClubManageApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"L?i khi t?i d? li?u: {ex.Message}", "L?i", 
+                MessageBox.Show($"Lỗi khi tải dữ liệu: {ex.Message}", "Lỗi", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -365,21 +365,21 @@ namespace ClubManageApp
                 return;
             }
 
-            // Ki?m tra t�n ch? ch?a ch? c�i v� kho?ng tr?ng
+            // Kiểm tra tên chỉ chứa chữ cái và khoảng trắng
             if (!Regex.IsMatch(hoTen, @"^[\p{L}\s]+$"))
             {
                 txtHoTen.BackColor = Color.FromArgb(255, 230, 230);
-                MessageBox.Show("H? t�n ch? ???c ch?a ch? c�i v� kho?ng tr?ng!", "C?nh b�o", 
+                MessageBox.Show("Họ tên chỉ được chứa chữ cái và khoảng trống!", "Cảnh báo", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtHoTen.Focus();
                 return;
             }
 
-            // Ki?m tra ?? d�i
+            // Kiểm tra độ dài
             if (hoTen.Length < 2 || hoTen.Length > 150)
             {
                 txtHoTen.BackColor = Color.FromArgb(255, 230, 230);
-                MessageBox.Show("H? t�n ph?i c� ?? d�i t? 2 ??n 150 k� t?!", "C?nh b�o", 
+                MessageBox.Show("Họ tên phải có độ dài từ 2 đến 150 ký tự!", "Cảnh báo", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtHoTen.Focus();
                 return;
@@ -400,17 +400,17 @@ namespace ClubManageApp
             if (!IsValidEmail(email))
             {
                 txtEmail.BackColor = Color.FromArgb(255, 230, 230);
-                MessageBox.Show("Email kh�ng h?p l?! Vui l�ng nh?p ?�ng ??nh d?ng email.", "C?nh b�o", 
+                MessageBox.Show("Email không hợp lệ! Vui lòng nhập đúng định dạng email.", "Cảnh báo", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtEmail.Focus();
                 return;
             }
 
-            // Ki?m tra email ?� t?n t?i (n?u l� th�m m?i ho?c email kh�c v?i email c?)
+            // Kiểm tra email đã tồn tại (nếu là thêm mới hoặc email khác với email cũ)
             if (IsEmailExists(email))
             {
                 txtEmail.BackColor = Color.FromArgb(255, 230, 230);
-                MessageBox.Show("Email n�y ?� ???c s? d?ng b?i th�nh vi�n kh�c!", "C?nh b�o", 
+                MessageBox.Show("Email này đã được sử dụng bởi thành viên khác!", "Cảnh báo", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtEmail.Focus();
                 return;
@@ -421,7 +421,7 @@ namespace ClubManageApp
 
         private void TxtSDT_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Ch? cho ph�p nh?p s? v� c�c ph�m ?i?u khi?n
+            // Chỉ cho phép nhập số và các phím điều khiển
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
             {
                 e.Handled = true;
@@ -437,11 +437,11 @@ namespace ClubManageApp
                 return;
             }
 
-            // Ki?m tra ??nh d?ng s? ?i?n tho?i Vi?t Nam
+            // Kiểm tra định dạng số điện thoại Việt Nam
             if (!Regex.IsMatch(sdt, @"^(0|\+84)[0-9]{9,10}$"))
             {
                 txtSDT.BackColor = Color.FromArgb(255, 230, 230);
-                MessageBox.Show("S? ?i?n tho?i kh�ng h?p l?!\n??nh d?ng: 0xxxxxxxxx ho?c +84xxxxxxxxx", "C?nh b�o", 
+                MessageBox.Show("Số điện thoại không hợp lệ!\nĐịnh dạng: 0xxxxxxxxx hoặc +84xxxxxxxxx", "Cảnh báo", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtSDT.Focus();
                 return;
@@ -460,19 +460,19 @@ namespace ClubManageApp
             var validationResult = ValidateAllFields();
             if (!validationResult.IsValid)
             {
-                MessageBox.Show(validationResult.ErrorMessage, "L?i Validation", 
+                MessageBox.Show(validationResult.ErrorMessage, "Lỗi Validation", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // ?? Ki?m tra quy?n ch?nh s?a vai tr� Admin
+            // Kiểm tra quyền chỉnh sửa vai trò Admin
             string selectedRole = cboVaiTro.SelectedItem?.ToString();
             if (!string.IsNullOrEmpty(selectedRole) && 
                 string.Equals(selectedRole, "Admin", StringComparison.OrdinalIgnoreCase) &&
                 !string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
             {
-                MessageBox.Show("? Ch? c� Admin m?i ???c ph�p ??t vai tr� Admin cho ng??i kh�c!", 
-                    "Kh�ng c� quy?n", 
+                MessageBox.Show("⛔ Chỉ có Admin mới được phép đặt vai trò Admin cho người khác!", 
+                    "Không có quyền", 
                     MessageBoxButtons.OK, 
                     MessageBoxIcon.Error);
                 return;
@@ -515,7 +515,7 @@ namespace ClubManageApp
                         cmd.Parameters.AddWithValue("@Lop", string.IsNullOrWhiteSpace(txtLop.Text) ? (object)DBNull.Value : txtLop.Text.Trim());
                         cmd.Parameters.AddWithValue("@Khoa", string.IsNullOrWhiteSpace(txtKhoa.Text) ? (object)DBNull.Value : txtKhoa.Text.Trim());
                         cmd.Parameters.AddWithValue("@VaiTro", cboVaiTro.SelectedItem?.ToString() ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@TrangThai", cboTrangThai.SelectedItem?.ToString() ?? "Ho?t ??ng");
+                        cmd.Parameters.AddWithValue("@TrangThai", cboTrangThai.SelectedItem?.ToString() ?? "Hoạt động");
                         cmd.Parameters.AddWithValue("@MaCV", cboChucVu.SelectedItem != null ? ((ComboBoxItem)cboChucVu.SelectedItem).Value : (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@MaBan", cboBan.SelectedItem != null ? ((ComboBoxItem)cboBan.SelectedItem).Value : (object)DBNull.Value);
 
@@ -524,8 +524,8 @@ namespace ClubManageApp
                 }
 
                 MessageBox.Show(
-                    maTV.HasValue ? "? C?p nh?t th�nh c�ng!" : "? Th�m th�nh vi�n th�nh c�ng!", 
-                    "Th�nh c�ng", 
+                    maTV.HasValue ? "✅ Cập nhật thành công!" : "✅ Thêm thành viên thành công!", 
+                    "Thành công", 
                     MessageBoxButtons.OK, 
                     MessageBoxIcon.Information);
                 
@@ -535,23 +535,23 @@ namespace ClubManageApp
             {
                 if (sqlEx.Number == 2627 || sqlEx.Number == 2601) // Duplicate key error
                 {
-                    MessageBox.Show("? Email ?� t?n t?i trong h? th?ng!", "L?i", 
+                    MessageBox.Show("❌ Email đã tồn tại trong hệ thống!", "Lỗi", 
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else if (sqlEx.Number == 547) // Foreign key constraint
                 {
-                    MessageBox.Show("? D? li?u tham chi?u kh�ng h?p l?! Vui l�ng ki?m tra l?i.", "L?i", 
+                    MessageBox.Show("❌ Dữ liệu tham chiếu không hợp lệ! Vui lòng kiểm tra lại.", "Lỗi", 
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
                 {
-                    MessageBox.Show($"? L?i SQL: {sqlEx.Message}", "L?i", 
+                    MessageBox.Show($"❌ Lỗi SQL: {sqlEx.Message}", "Lỗi", 
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"? L?i khi l?u: {ex.Message}", "L?i", 
+                MessageBox.Show($"❌ Lỗi khi lưu: {ex.Message}", "Lỗi", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -562,24 +562,24 @@ namespace ClubManageApp
 
         private ValidationResult ValidateAllFields()
         {
-            // Validate H? t�n
+            // Validate Họ tên
             string hoTen = txtHoTen.Text.Trim();
             if (string.IsNullOrWhiteSpace(hoTen))
             {
                 txtHoTen.Focus();
-                return new ValidationResult(false, "? Vui l�ng nh?p h? t�n!");
+                return new ValidationResult(false, "❌ Vui lòng nhập họ tên!");
             }
 
             if (!Regex.IsMatch(hoTen, @"^[\p{L}\s]+$"))
             {
                 txtHoTen.Focus();
-                return new ValidationResult(false, "? H? t�n ch? ???c ch?a ch? c�i v� kho?ng tr?ng!");
+                return new ValidationResult(false, "❌ Họ tên chỉ được chứa chữ cái và khoảng trắng!");
             }
 
             if (hoTen.Length < 2 || hoTen.Length > 150)
             {
                 txtHoTen.Focus();
-                return new ValidationResult(false, "? H? t�n ph?i c� ?? d�i t? 2 ??n 150 k� t?!");
+                return new ValidationResult(false, "❌ Họ tên phải có độ dài từ 2 đến 150 ký tự!");
             }
 
             // Validate Email
@@ -587,36 +587,36 @@ namespace ClubManageApp
             if (string.IsNullOrWhiteSpace(email))
             {
                 txtEmail.Focus();
-                return new ValidationResult(false, "? Vui l�ng nh?p email!");
+                return new ValidationResult(false, "❌ Vui lòng nhập email!");
             }
 
             if (!IsValidEmail(email))
             {
                 txtEmail.Focus();
-                return new ValidationResult(false, "? Email kh�ng h?p l?! Vui l�ng nh?p ?�ng ??nh d?ng.");
+                return new ValidationResult(false, "❌ Email không hợp lệ! Vui lòng nhập đúng định dạng.");
             }
 
-            // Validate S?T (n?u c� nh?p)
+            // Validate SĐT (nếu có nhập)
             string sdt = txtSDT.Text.Trim();
             if (!string.IsNullOrWhiteSpace(sdt))
             {
                 if (!Regex.IsMatch(sdt, @"^(0|\+84)[0-9]{9,10}$"))
                 {
                     txtSDT.Focus();
-                    return new ValidationResult(false, "? S? ?i?n tho?i kh�ng h?p l?!\n??nh d?ng: 0xxxxxxxxx ho?c +84xxxxxxxxx");
+                    return new ValidationResult(false, "❌ Số điện thoại không hợp lệ!\nĐịnh dạng: 0xxxxxxxxx hoặc +84xxxxxxxxx");
                 }
             }
 
-            // Validate Ng�y sinh
+            // Validate Ngày sinh
             int age = DateTime.Now.Year - dtpNgaySinh.Value.Year;
             if (age < 15)
             {
-                return new ValidationResult(false, "? Th�nh vi�n ph?i �t nh?t 15 tu?i!");
+                return new ValidationResult(false, "❌ Thành viên phải ít nhất 15 tuổi!");
             }
 
             if (age > 100)
             {
-                return new ValidationResult(false, "? Ng�y sinh kh�ng h?p l?!");
+                return new ValidationResult(false, "❌ Ngày sinh không hợp lệ!");
             }
 
             return new ValidationResult(true, "");
