@@ -25,6 +25,7 @@ namespace ClubManageApp
         private List<EventInfo> events;
         private DateTime selectedDate;
         private List<ucParticipant> participants;
+        private bool isInitialized = false; // ✅ THÊM: Flag để kiểm tra đã khởi tạo chưa
         
         // ✅ SỬ DỤNG ConnectionHelper thay vì hard-code
         private string connectionString = ConnectionHelper.ConnectionString;
@@ -44,9 +45,52 @@ namespace ClubManageApp
                 AddSampleEvents();
             }
             
-            LoadCalendar();
+            // ✅ THAY ĐỔI: Không load lịch ngay trong constructor
+            // LoadCalendar();
             InitializeMonthYearSelector();
             ClearEventInfo();
+            
+            // ✅ THÊM: Đăng ký sự kiện Load để load lịch sau khi control đã được render
+            this.Load += UcMeeting_Load;
+            
+            // ✅ THÊM: Đăng ký sự kiện Resize để cập nhật lịch khi thay đổi kích thước
+            this.Resize += UcMeeting_Resize;
+        }
+
+        // ✅ THÊM: Xử lý sự kiện Load
+        private void UcMeeting_Load(object sender, EventArgs e)
+        {
+            if (!isInitialized)
+            {
+                // Đợi một chút để đảm bảo control đã được render hoàn toàn
+                System.Threading.Tasks.Task.Delay(10).ContinueWith(t =>
+                {
+                    if (this.InvokeRequired)
+                    {
+                        this.Invoke(new Action(() => LoadCalendar()));
+                    }
+                    else
+                    {
+                        LoadCalendar();
+                    }
+                    isInitialized = true;
+                });
+            }
+        }
+
+        // ✅ THÊM: Xử lý sự kiện Resize
+        private void UcMeeting_Resize(object sender, EventArgs e)
+        {
+            if (isInitialized)
+            {
+                // Reload lại lịch khi thay đổi kích thước để đảm bảo hiển thị đúng
+                LoadCalendar();
+                // Hiển thị lại sự kiện của ngày đã chọn (nếu có)
+                if (selectedDate != default(DateTime))
+                {
+                    DisplayEventsForDate(selectedDate);
+                }
+            }
         }
 
         // Load sự kiện từ database

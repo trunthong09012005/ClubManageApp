@@ -47,6 +47,7 @@
             this.txtDiaChi = new System.Windows.Forms.TextBox();
             this.cboVaiTro = new System.Windows.Forms.ComboBox();
             this.cboTrangThai = new System.Windows.Forms.ComboBox();
+            this.btnViewScore = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMembers)).BeginInit();
             this.SuspendLayout();
             // 
@@ -258,10 +259,26 @@
             this.cboTrangThai.Size = new System.Drawing.Size(306, 28);
             this.cboTrangThai.TabIndex = 18;
             // 
+            // btnViewScore
+            // 
+            this.btnViewScore.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.btnViewScore.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnViewScore.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnViewScore.ForeColor = System.Drawing.Color.White;
+            this.btnViewScore.Location = new System.Drawing.Point(564, 116);
+            this.btnViewScore.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnViewScore.Name = "btnViewScore";
+            this.btnViewScore.Size = new System.Drawing.Size(190, 48);
+            this.btnViewScore.TabIndex = 19;
+            this.btnViewScore.Text = "📊 Xem điểm rèn luyện";
+            this.btnViewScore.UseVisualStyleBackColor = false;
+            this.btnViewScore.Click += new System.EventHandler(this.btnViewScore_Click);
+            // 
             // ucAccount
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.btnViewScore);
             this.Controls.Add(this.cboTrangThai);
             this.Controls.Add(this.lblTrangThai);
             this.Controls.Add(this.cboVaiTro);
@@ -304,7 +321,6 @@
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.Button btnSearch;
-        // New controls declarations
         private System.Windows.Forms.Label lblSDT;
         private System.Windows.Forms.Label lblDiaChi;
         private System.Windows.Forms.Label lblVaiTro;
@@ -313,5 +329,6 @@
         private System.Windows.Forms.TextBox txtDiaChi;
         private System.Windows.Forms.ComboBox cboVaiTro;
         private System.Windows.Forms.ComboBox cboTrangThai;
+        private System.Windows.Forms.Button btnViewScore;
     }
 }

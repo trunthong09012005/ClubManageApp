@@ -25,6 +25,7 @@ namespace ClubManageApp
         private Button btnDelete;
         private Button btnRefresh;
         private Button btnExport;
+        private Button btnViewScore; // ✨ Nút mới
         private ComboBox cboFilter;
         private Label lblTotalMembers;
 
@@ -118,30 +119,190 @@ namespace ClubManageApp
                 return;
             }
 
-            DialogResult result = MessageBox.Show("Bạn có chắc chắn muốn xóa thành viên này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (result == DialogResult.Yes)
+            try
             {
-                try
+                int maTV = Convert.ToInt32(dgvMembers.SelectedRows[0].Cells["Mã TV"].Value);
+                string hoTen = dgvMembers.SelectedRows[0].Cells["Họ tên"].Value?.ToString() ?? "thành viên này";
+                string vaiTro = dgvMembers.SelectedRows[0].Cells["Vai trò"].Value?.ToString() ?? "";
+
+                // ✅ KIỂM TRA: Không được xóa Admin duy nhất
+                if (string.Equals(vaiTro, "Admin", StringComparison.OrdinalIgnoreCase))
                 {
-                    int maTV = Convert.ToInt32(dgvMembers.SelectedRows[0].Cells["Mã TV"].Value);
+                    // Đếm số lượng Admin
+                    int adminCount = GetAdminCount();
+                    
+                    if (adminCount <= 1)
+                    {
+                        MessageBox.Show(
+                            "🚫 KHÔNG THỂ XÓA ADMIN DUY NHẤT!\n\n" +
+                            "Đây là Admin duy nhất trong hệ thống.\n" +
+                            "Việc xóa Admin này sẽ khiến hệ thống mất quyền quản trị.\n\n" +
+                            "Để xóa Admin này, bạn cần:\n" +
+                            "1. Tạo một Admin mới trước\n" +
+                            "2. Hoặc chuyển vai trò của Admin này sang vai trò khác\n" +
+                            "3. Sau đó mới có thể xóa",
+                            "Không thể xóa",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                        return;
+                    }
+                    
+                    // Nếu có nhiều hơn 1 Admin, cảnh báo nghiêm trọng
+                    DialogResult confirmAdmin = MessageBox.Show(
+                        $"⚠️ CẢNH BÁO: BẠN ĐANG XÓA MỘT ADMIN!\n\n" +
+                        $"Thành viên: {hoTen}\n" +
+                        $"Vai trò: {vaiTro}\n\n" +
+                        $"Đây là một hành động nghiêm trọng và không thể hoàn tác!\n\n" +
+                        $"Bạn có CHẮC CHẮN muốn xóa Admin này không?",
+                        "Cảnh báo xóa Admin",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning);
+                    
+                    if (confirmAdmin != DialogResult.Yes)
+                        return;
+                }
+
+                // ✅ KIỂM TRA: Không cho phép người dùng không phải Admin xóa Admin
+                if (string.Equals(vaiTro, "Admin", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    MessageBox.Show(
+                        "⛔ KHÔNG CÓ QUYỀN!\n\n" +
+                        "Chỉ có Admin mới được phép xóa Admin khác.\n" +
+                        "Vai trò hiện tại của bạn: " + currentUserRole,
+                        "Không có quyền",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+
+                // ✅ XÁC NHẬN XÓA THÔNG THƯỜNG
+                DialogResult result = MessageBox.Show(
+                    $"Bạn có chắc chắn muốn xóa thành viên:\n\n" +
+                    $"• Họ tên: {hoTen}\n" +
+                    $"• Vai trò: {vaiTro}\n\n" +
+                    "Hành động này KHÔNG THỂ HOÀN TÁC!", 
+                    "Xác nhận xóa", 
+                    MessageBoxButtons.YesNo, 
+                    MessageBoxIcon.Question);
+                
+                if (result == DialogResult.Yes)
+                {
                     using (SqlConnection conn = new SqlConnection(connectionString))
                     {
                         conn.Open();
-                        string query = "DELETE FROM ThanhVien WHERE MaTV = @MaTV";
-                        using (SqlCommand cmd = new SqlCommand(query, conn))
+                        
+                        // ✅ Double-check lại trước khi xóa (trong transaction)
+                        using (SqlTransaction transaction = conn.BeginTransaction())
                         {
-                            cmd.Parameters.AddWithValue("@MaTV", maTV);
-                            cmd.ExecuteNonQuery();
+                            try
+                            {
+                                // Kiểm tra lại vai trò và số Admin
+                                string checkQuery = "SELECT VaiTro FROM ThanhVien WHERE MaTV = @MaTV";
+                                using (SqlCommand checkCmd = new SqlCommand(checkQuery, conn, transaction))
+                                {
+                                    checkCmd.Parameters.AddWithValue("@MaTV", maTV);
+                                    string currentRole = checkCmd.ExecuteScalar()?.ToString() ?? "";
+                                    
+                                    if (string.Equals(currentRole, "Admin", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        string countQuery = "SELECT COUNT(*) FROM ThanhVien WHERE VaiTro = N'Admin'";
+                                        using (SqlCommand countCmd = new SqlCommand(countQuery, conn, transaction))
+                                        {
+                                            int count = (int)countCmd.ExecuteScalar();
+                                            if (count <= 1)
+                                            {
+                                                transaction.Rollback();
+                                                MessageBox.Show(
+                                                    "Không thể xóa Admin duy nhất trong hệ thống!",
+                                                    "Lỗi",
+                                                    MessageBoxButtons.OK,
+                                                    MessageBoxIcon.Error);
+                                                return;
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                // Thực hiện xóa
+                                string deleteQuery = "DELETE FROM ThanhVien WHERE MaTV = @MaTV";
+                                using (SqlCommand cmd = new SqlCommand(deleteQuery, conn, transaction))
+                                {
+                                    cmd.Parameters.AddWithValue("@MaTV", maTV);
+                                    int rowsAffected = cmd.ExecuteNonQuery();
+                                    
+                                    if (rowsAffected > 0)
+                                    {
+                                        transaction.Commit();
+                                        MessageBox.Show("✅ Xóa thành viên thành công!", "Thông báo", 
+                                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        LoadMemberData();
+                                        LoadStatistics();
+                                    }
+                                    else
+                                    {
+                                        transaction.Rollback();
+                                        MessageBox.Show("Không tìm thấy thành viên để xóa!", "Lỗi", 
+                                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                transaction.Rollback();
+                                throw;
+                            }
                         }
                     }
-                    MessageBox.Show("Xóa thành viên thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadMemberData();
-                    LoadStatistics();
                 }
-                catch (Exception ex)
+            }
+            catch (SqlException sqlEx)
+            {
+                if (sqlEx.Number == 547) // Foreign key constraint
                 {
-                    MessageBox.Show($"Lỗi khi xóa: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        "❌ Không thể xóa thành viên này!\n\n" +
+                        "Thành viên này đang có dữ liệu liên quan trong hệ thống:\n" +
+                        "• Tham gia hoạt động\n" +
+                        "• Có điểm rèn luyện\n" +
+                        "• Thuộc ban chuyên môn\n" +
+                        "• Hoặc các dữ liệu khác\n\n" +
+                        "Vui lòng xóa các dữ liệu liên quan trước hoặc đổi trạng thái thành 'Nghỉ'.",
+                        "Không thể xóa",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
                 }
+                else
+                {
+                    MessageBox.Show($"❌ Lỗi SQL khi xóa: {sqlEx.Message}", "Lỗi", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"❌ Lỗi khi xóa: {ex.Message}", "Lỗi", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // ✅ THÊM: Helper method để đếm số Admin
+        private int GetAdminCount()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "SELECT COUNT(*) FROM ThanhVien WHERE VaiTro = N'Admin'";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        return (int)cmd.ExecuteScalar();
+                    }
+                }
+            }
+            catch
+            {
+                return 0;
             }
         }
 
@@ -193,6 +354,32 @@ namespace ClubManageApp
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi khi xuất file: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // ✨ THÊM MỚI: Xử lý nút "Xem điểm rèn luyện"
+        private void BtnViewScore_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (dgvMembers.SelectedRows.Count == 0)
+                {
+                    MessageBox.Show("Vui lòng chọn thành viên để xem điểm rèn luyện!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                int maTV = Convert.ToInt32(dgvMembers.SelectedRows[0].Cells["Mã TV"].Value);
+                string hoTen = dgvMembers.SelectedRows[0].Cells["Họ tên"].Value?.ToString() ?? "Thành viên";
+
+                // Mở form xem điểm rèn luyện
+                using (var scoreForm = new MemberScoreForm(connectionString, maTV, hoTen))
+                {
+                    scoreForm.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi xem điểm rèn luyện: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -354,7 +541,11 @@ namespace ClubManageApp
             btnExport = CreateActionButton("📥 Xuất Excel", 500, Color.FromArgb(156, 39, 176));
             btnExport.Click += BtnExport_Click;
 
-            pnlActions.Controls.AddRange(new Control[] { btnAdd, btnEdit, btnDelete, btnRefresh, btnExport });
+            // ✨ THÊM MỚI: Nút "Xem điểm rèn luyện"
+            btnViewScore = CreateActionButton("📊 Điểm RL", 620, Color.FromArgb(0, 150, 136));
+            btnViewScore.Click += BtnViewScore_Click;
+
+            pnlActions.Controls.AddRange(new Control[] { btnAdd, btnEdit, btnDelete, btnRefresh, btnExport, btnViewScore });
 
             return pnlActions;
         }

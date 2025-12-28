@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace ClubManageApp
 {
@@ -328,6 +329,43 @@ namespace ClubManageApp
                     cboTrangThai.SelectedItem = status;
                 }
                 else cboTrangThai.SelectedIndex = -1;
+            }
+        }
+
+        // ✨ THÊM MỚI: Xử lý nút "Xem điểm rèn luyện"
+        private void btnViewScore_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var txtMaTV = GetControl<TextBox>("txtMaTV");
+                var txtHoTen = GetControl<TextBox>("txtHoTen");
+
+                if (txtMaTV == null || string.IsNullOrWhiteSpace(txtMaTV.Text))
+                {
+                    MessageBox.Show(
+                        "Vui lòng chọn một thành viên từ danh sách!",
+                        "Thông báo",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
+                int maTV = int.Parse(txtMaTV.Text);
+                string hoTen = txtHoTen?.Text ?? "Thành viên";
+
+                // Mở form xem điểm rèn luyện
+                using (var scoreForm = new MemberScoreForm(connectionString, maTV, hoTen))
+                {
+                    scoreForm.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Lỗi khi xem điểm rèn luyện: " + ex.Message,
+                    "Lỗi",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 
