@@ -16,14 +16,6 @@ namespace ClubManageApp
         private string connectionString = ConnectionHelper.ConnectionString;
         private string currentUserRole = "Thành viên"; // Mặc định
 
-        // ✅ PHÂN TRANG: Các biến quản lý phân trang
-        private int currentPage = 1;
-        private int pageSize = 20;
-        private int totalRecords = 0;
-        private int totalPages = 0;
-        private string currentSearchText = "";
-        private string currentFilterStatus = "Tất cả";
-
         // Controls for pnlThanhVien
         private DataGridView dgvMembers;
         private TextBox txtSearch;
@@ -35,13 +27,6 @@ namespace ClubManageApp
         private Button btnExport;
         private ComboBox cboFilter;
         private Label lblTotalMembers;
-
-        // ✅ PHÂN TRANG: Controls phân trang
-        private Panel pnlPagination;
-        private Button btnPreviousPage;
-        private Button btnNextPage;
-        private Label lblPageInfo;
-        private ComboBox cboPageSize;
 
         // Controls for pnlThongKe
         private Chart chartMembersByRole;
@@ -88,19 +73,14 @@ namespace ClubManageApp
 
         private void BtnSearch_Click(object sender, EventArgs e)
         {
-            // ✅ Lưu tham số tìm kiếm
-            currentSearchText = txtSearch.Text.Trim();
-            currentFilterStatus = cboFilter.SelectedItem?.ToString() ?? "Tất cả";
-            currentPage = 1; // Reset về trang 1 khi tìm kiếm mới
-            LoadMemberData(currentSearchText, currentFilterStatus);
+            string status = cboFilter.SelectedItem?.ToString() ?? "Tất cả";
+            LoadMemberData(txtSearch.Text.Trim(), status);
         }
 
         private void CboFilter_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // ✅ Lưu tham số lọc
-            currentFilterStatus = cboFilter.SelectedItem?.ToString() ?? "Tất cả";
-            currentPage = 1; // Reset về trang 1 khi lọc mới
-            LoadMemberData(currentSearchText, currentFilterStatus);
+            string status = cboFilter.SelectedItem?.ToString() ?? "Tất cả";
+            LoadMemberData(txtSearch.Text.Trim(), status);
         }
 
         private void BtnAdd_Click(object sender, EventArgs e)
@@ -169,9 +149,6 @@ namespace ClubManageApp
         {
             txtSearch.Clear();
             cboFilter.SelectedIndex = 0;
-            currentPage = 1; // ✅ Reset về trang 1
-            currentSearchText = "";
-            currentFilterStatus = "Tất cả";
             LoadMemberData();
             LoadStatistics();
         }
@@ -227,31 +204,6 @@ namespace ClubManageApp
             }
         }
 
-        private void BtnPreviousPage_Click(object sender, EventArgs e)
-        {
-            if (currentPage > 1)
-            {
-                currentPage--;
-                LoadMemberData(currentSearchText, currentFilterStatus);
-            }
-        }
-
-        private void BtnNextPage_Click(object sender, EventArgs e)
-        {
-            if (currentPage < totalPages)
-            {
-                currentPage++;
-                LoadMemberData(currentSearchText, currentFilterStatus);
-            }
-        }
-
-        private void CboPageSize_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            pageSize = Convert.ToInt32(cboPageSize.SelectedItem);
-            currentPage = 1; // Reset về trang 1
-            LoadMemberData(currentSearchText, currentFilterStatus);
-        }
-
         #endregion
 
         #region Member Panel Initialization
@@ -273,11 +225,7 @@ namespace ClubManageApp
             // DataGridView
             dgvMembers = CreateMembersDataGridView();
 
-            // ✅ THÊM: Tạo controls phân trang
-            CreatePaginationControls();
-
             pnlThanhVien.Controls.Add(dgvMembers);
-            pnlThanhVien.Controls.Add(pnlPagination); // Thêm panel phân trang
             pnlThanhVien.Controls.Add(pnlActions);
             pnlThanhVien.Controls.Add(pnlSearchFilter);
             pnlThanhVien.Controls.Add(pnlHeader);
@@ -456,77 +404,6 @@ namespace ClubManageApp
             return dgv;
         }
 
-        private void CreatePaginationControls()
-        {
-            pnlPagination = new Panel
-            {
-                Dock = DockStyle.Bottom,
-                Height = 50,
-                BackColor = Color.White,
-                Padding = new Padding(20, 10, 20, 10)
-            };
-
-            btnPreviousPage = new Button
-            {
-                Text = "« Trang trước",
-                Location = new Point(20, 10),
-                Size = new Size(120, 35),
-                Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                BackColor = System.Drawing.Color.FromArgb(189, 195, 199), // ✅ Mặc định màu xám khi disabled
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand,
-                Enabled = false // ✅ Mặc định disabled
-            };
-            btnPreviousPage.FlatAppearance.BorderSize = 0;
-            btnPreviousPage.Click += BtnPreviousPage_Click;
-
-            lblPageInfo = new Label
-            {
-                Text = $"Trang {currentPage} / {totalPages} (Tổng: {totalRecords} thành viên)",
-                Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                ForeColor = Color.Gray,
-                AutoSize = true,
-                Location = new Point(150, 15)
-            };
-
-            btnNextPage = new Button
-            {
-                Text = "Trang tiếp »",
-                Location = new Point(480, 10), // ✅ Điều chỉnh vị trí cho cân đối
-                Size = new Size(120, 35),
-                Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                BackColor = System.Drawing.Color.FromArgb(189, 195, 199), // ✅ Mặc định màu xám khi disabled
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand,
-                Enabled = false // ✅ Mặc định disabled
-            };
-            btnNextPage.FlatAppearance.BorderSize = 0;
-            btnNextPage.Click += BtnNextPage_Click;
-
-            Label lblPageSize = new Label
-            {
-                Text = "Số bản ghi/trang:",
-                Font = new Font("Segoe UI", 10, FontStyle.Regular),
-                AutoSize = true,
-                Location = new Point(620, 15)
-            };
-
-            cboPageSize = new ComboBox
-            {
-                Location = new Point(750, 12),
-                Size = new Size(80, 35),
-                Font = new Font("Segoe UI", 10),
-                DropDownStyle = ComboBoxStyle.DropDownList
-            };
-            cboPageSize.Items.AddRange(new object[] { 10, 20, 50, 100 });
-            cboPageSize.SelectedIndex = 1; // ✅ Mặc định 20
-            cboPageSize.SelectedIndexChanged += CboPageSize_SelectedIndexChanged;
-
-            pnlPagination.Controls.AddRange(new Control[] { btnPreviousPage, lblPageInfo, btnNextPage, lblPageSize, cboPageSize });
-        }
-
         #endregion
 
         #region Data Loading
@@ -535,46 +412,9 @@ namespace ClubManageApp
         {
             try
             {
-                // ✅ Lưu tham số tìm kiếm hiện tại
-                currentSearchText = searchText;
-                currentFilterStatus = filterStatus;
-
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-
-                    // ✅ BỔ SUNG: Đếm tổng số bản ghi trước
-                    string countQuery = @"
-                        SELECT COUNT(*) 
-                        FROM ThanhVien
-                        WHERE 1=1";
-
-                    if (!string.IsNullOrWhiteSpace(searchText))
-                    {
-                        countQuery += " AND (HoTen LIKE @search OR Email LIKE @search OR SDT LIKE @search OR Lop LIKE @search)";
-                    }
-
-                    if (filterStatus != "Tất cả")
-                    {
-                        countQuery += " AND TrangThai = @status";
-                    }
-
-                    using (SqlCommand countCmd = new SqlCommand(countQuery, conn))
-                    {
-                        if (!string.IsNullOrWhiteSpace(searchText))
-                        {
-                            countCmd.Parameters.AddWithValue("@search", "%" + searchText + "%");
-                        }
-                        if (filterStatus != "Tất cả")
-                        {
-                            countCmd.Parameters.AddWithValue("@status", filterStatus);
-                        }
-
-                        totalRecords = (int)countCmd.ExecuteScalar();
-                        totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
-                    }
-
-                    // ✅ Query lấy dữ liệu phân trang
                     string query = @"
                         SELECT 
                             MaTV AS [Mã TV],
@@ -601,14 +441,10 @@ namespace ClubManageApp
                         query += " AND TrangThai = @status";
                     }
 
-                    // Phân trang
-                    query += " ORDER BY MaTV DESC OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+                    query += " ORDER BY MaTV DESC";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("@Offset", (currentPage - 1) * pageSize);
-                        cmd.Parameters.AddWithValue("@PageSize", pageSize);
-
                         if (!string.IsNullOrWhiteSpace(searchText))
                         {
                             cmd.Parameters.AddWithValue("@search", "%" + searchText + "%");
@@ -623,45 +459,13 @@ namespace ClubManageApp
                         adapter.Fill(dt);
 
                         dgvMembers.DataSource = dt;
-                        
-                        // ✅ Hiển thị tổng số thực tế
-                        lblTotalMembers.Text = $"Tổng số: {totalRecords} thành viên";
-
-                        // ✅ Cập nhật UI phân trang (không gọi lại LoadMemberData)
-                        UpdatePaginationUI();
+                        lblTotalMembers.Text = $"Tổng số: {dt.Rows.Count} thành viên";
                     }
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi khi tải dữ liệu: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        // ✅ THAY ĐỔI: Đổi tên và logic để tránh vòng lặp
-        private void UpdatePaginationUI()
-        {
-            if (lblPageInfo != null)
-            {
-                lblPageInfo.Text = $"Trang {currentPage} / {totalPages} (Tổng: {totalRecords} thành viên)";
-            }
-
-            if (btnPreviousPage != null)
-            {
-                btnPreviousPage.Enabled = currentPage > 1;
-                // ✅ Đổi màu nút khi disabled giống AccountTest
-                btnPreviousPage.BackColor = btnPreviousPage.Enabled 
-                    ? System.Drawing.Color.FromArgb(76, 175, 80)  // Xanh lá khi enabled
-                    : System.Drawing.Color.FromArgb(189, 195, 199); // Xám khi disabled
-            }
-
-            if (btnNextPage != null)
-            {
-                btnNextPage.Enabled = currentPage < totalPages;
-                // ✅ Đổi màu nút khi disabled giống AccountTest
-                btnNextPage.BackColor = btnNextPage.Enabled 
-                    ? System.Drawing.Color.FromArgb(76, 175, 80)  // Xanh lá khi enabled
-                    : System.Drawing.Color.FromArgb(189, 195, 199); // Xám khi disabled
             }
         }
 
