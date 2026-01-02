@@ -33,6 +33,7 @@ namespace ClubManageApp
         private Button btnDelete;
         private Button btnRefresh;
         private Button btnExport;
+        private Button btnViewScore; // ✅ THÊM nút xem điểm
         private ComboBox cboFilter;
         private Label lblTotalMembers;
 
@@ -216,6 +217,30 @@ namespace ClubManageApp
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi khi xuất file: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // ✅ THÊM PHƯƠNG THỨC XEM ĐIỂM RÈN LUYỆN
+        private void BtnViewScore_Click(object sender, EventArgs e)
+        {
+            if (dgvMembers.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Vui lòng chọn thành viên cần xem điểm!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                int maTV = Convert.ToInt32(dgvMembers.SelectedRows[0].Cells["Mã TV"].Value);
+                string hoTen = dgvMembers.SelectedRows[0].Cells["Họ tên"].Value.ToString();
+
+                // Mở form xem điểm
+                MemberScoreForm scoreForm = new MemberScoreForm(connectionString, maTV, hoTen);
+                scoreForm.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi mở form điểm: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -406,7 +431,11 @@ namespace ClubManageApp
             btnExport = CreateActionButton("📥 Xuất Excel", 500, Color.FromArgb(156, 39, 176));
             btnExport.Click += BtnExport_Click;
 
-            pnlActions.Controls.AddRange(new Control[] { btnAdd, btnEdit, btnDelete, btnRefresh, btnExport });
+            // ✅ THÊM NÚT XEM ĐIỂM
+            btnViewScore = CreateActionButton("📊 Điểm RL", 620, Color.FromArgb(0, 150, 136));
+            btnViewScore.Click += BtnViewScore_Click;
+
+            pnlActions.Controls.AddRange(new Control[] { btnAdd, btnEdit, btnDelete, btnRefresh, btnExport, btnViewScore });
 
             return pnlActions;
         }
