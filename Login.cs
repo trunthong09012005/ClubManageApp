@@ -596,11 +596,44 @@ namespace ClubManageApp
                                 return;
                             }
 
+                            // ✅ KIỂM TRA TRẠNG THÁI TÀI KHOẢN
+                            if (status.Equals("Khóa", StringComparison.OrdinalIgnoreCase))
+                            {
+                                HideLoading();
+                                MessageBox.Show(
+                                    "❌ TÀI KHOẢN ĐÃ BỊ KHÓA!\n\n" +
+                                    "Tài khoản của bạn đã bị khóa bởi quản trị viên.\n" +
+                                    "Vui lòng liên hệ Ban quản lý để được hỗ trợ.",
+                                    "Tài khoản bị khóa",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+                                return;
+                            }
+
+                            if (status.Equals("Chờ kích hoạt", StringComparison.OrdinalIgnoreCase))
+                            {
+                                HideLoading();
+                                MessageBox.Show(
+                                    "⏳ TÀI KHOẢN ĐANG CHỜ KÍCH HOẠT!\n\n" +
+                                    "Tài khoản của bạn đang chờ được kích hoạt bởi quản trị viên.\n" +
+                                    "Vui lòng liên hệ Ban quản lý để được hỗ trợ.",
+                                    "Tài khoản chờ kích hoạt",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Warning);
+                                return;
+                            }
+
                             if (!status.Equals("Hoạt động", StringComparison.OrdinalIgnoreCase))
                             {
                                 HideLoading();
-                                MessageBox.Show("Tài khoản của bạn đang bị khóa!", "Thông báo",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                MessageBox.Show(
+                                    $"❌ KHÔNG THỂ ĐĂNG NHẬP!\n\n" +
+                                    $"Trạng thái tài khoản: {status}\n" +
+                                    $"Chỉ tài khoản có trạng thái 'Hoạt động' mới có thể đăng nhập.\n\n" +
+                                    $"Vui lòng liên hệ Ban quản lý để được hỗ trợ.",
+                                    "Lỗi trạng thái tài khoản",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
                                 return;
                             }
 

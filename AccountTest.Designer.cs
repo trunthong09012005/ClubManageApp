@@ -584,7 +584,7 @@
             this.lblChoKichHoat.ForeColor = System.Drawing.Color.White;
             this.lblChoKichHoat.Location = new System.Drawing.Point(20, 419);
             this.lblChoKichHoat.Name = "lblChoKichHoat";
-            this.lblChoKichHoat.Size = new System.Drawing.Size(300, 35);
+            this.lblChoKichHoat.Size = new System.Drawing.Size(429, 35);
             this.lblChoKichHoat.TabIndex = 10;
             this.lblChoKichHoat.Text = "Chờ kích hoạt: 0";
             this.lblChoKichHoat.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -596,7 +596,7 @@
             this.lblKhoa.ForeColor = System.Drawing.Color.White;
             this.lblKhoa.Location = new System.Drawing.Point(20, 379);
             this.lblKhoa.Name = "lblKhoa";
-            this.lblKhoa.Size = new System.Drawing.Size(300, 35);
+            this.lblKhoa.Size = new System.Drawing.Size(429, 35);
             this.lblKhoa.TabIndex = 9;
             this.lblKhoa.Text = "Khóa: 0";
             this.lblKhoa.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -608,7 +608,7 @@
             this.lblHoatDong.ForeColor = System.Drawing.Color.White;
             this.lblHoatDong.Location = new System.Drawing.Point(20, 339);
             this.lblHoatDong.Name = "lblHoatDong";
-            this.lblHoatDong.Size = new System.Drawing.Size(300, 35);
+            this.lblHoatDong.Size = new System.Drawing.Size(429, 35);
             this.lblHoatDong.TabIndex = 8;
             this.lblHoatDong.Text = "Hoạt động: 0";
             this.lblHoatDong.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -630,7 +630,7 @@
             this.lblThanhVien.ForeColor = System.Drawing.Color.White;
             this.lblThanhVien.Location = new System.Drawing.Point(20, 249);
             this.lblThanhVien.Name = "lblThanhVien";
-            this.lblThanhVien.Size = new System.Drawing.Size(300, 35);
+            this.lblThanhVien.Size = new System.Drawing.Size(429, 35);
             this.lblThanhVien.TabIndex = 6;
             this.lblThanhVien.Text = "Thành viên: 0";
             this.lblThanhVien.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -642,7 +642,7 @@
             this.lblQuanTriVien.ForeColor = System.Drawing.Color.White;
             this.lblQuanTriVien.Location = new System.Drawing.Point(20, 209);
             this.lblQuanTriVien.Name = "lblQuanTriVien";
-            this.lblQuanTriVien.Size = new System.Drawing.Size(300, 35);
+            this.lblQuanTriVien.Size = new System.Drawing.Size(429, 35);
             this.lblQuanTriVien.TabIndex = 5;
             this.lblQuanTriVien.Text = "Quản trị viên: 0";
             this.lblQuanTriVien.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -654,7 +654,7 @@
             this.lblAdmin.ForeColor = System.Drawing.Color.White;
             this.lblAdmin.Location = new System.Drawing.Point(20, 169);
             this.lblAdmin.Name = "lblAdmin";
-            this.lblAdmin.Size = new System.Drawing.Size(300, 35);
+            this.lblAdmin.Size = new System.Drawing.Size(429, 35);
             this.lblAdmin.TabIndex = 4;
             this.lblAdmin.Text = "Admin: 0";
             this.lblAdmin.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -673,7 +673,7 @@
             // 
             this.lblTongTaiKhoan.Font = new System.Drawing.Font("Segoe UI", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTongTaiKhoan.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
-            this.lblTongTaiKhoan.Location = new System.Drawing.Point(179, 80);
+            this.lblTongTaiKhoan.Location = new System.Drawing.Point(80, 80);
             this.lblTongTaiKhoan.Name = "lblTongTaiKhoan";
             this.lblTongTaiKhoan.Size = new System.Drawing.Size(130, 37);
             this.lblTongTaiKhoan.TabIndex = 2;
