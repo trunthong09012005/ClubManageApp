@@ -43,6 +43,7 @@
             this.txtTimKiem = new System.Windows.Forms.TextBox();
             this.btnTimKiem = new System.Windows.Forms.Button();
             this.btnGuiEmail = new System.Windows.Forms.Button();
+            this.btnGuiEmailRieng = new System.Windows.Forms.Button();
             this.btnXuatFile = new System.Windows.Forms.Button();
             this.btnThemSuKien = new System.Windows.Forms.Button();
             this.btnXoaSuKien = new System.Windows.Forms.Button();
@@ -210,6 +211,7 @@
             this.pnlChucNang.Controls.Add(this.txtTimKiem);
             this.pnlChucNang.Controls.Add(this.btnTimKiem);
             this.pnlChucNang.Controls.Add(this.btnGuiEmail);
+            this.pnlChucNang.Controls.Add(this.btnGuiEmailRieng);
             this.pnlChucNang.Controls.Add(this.btnXuatFile);
             this.pnlChucNang.Controls.Add(this.btnThemSuKien);
             this.pnlChucNang.Controls.Add(this.btnXoaSuKien);
@@ -279,9 +281,28 @@
             this.btnGuiEmail.Name = "btnGuiEmail";
             this.btnGuiEmail.Size = new System.Drawing.Size(145, 37);
             this.btnGuiEmail.TabIndex = 7;
-            this.btnGuiEmail.Text = "📧 Gửi email";
+            this.btnGuiEmail.Text = "📧 Gửi tất cả";
             this.btnGuiEmail.UseVisualStyleBackColor = false;
             this.btnGuiEmail.Click += new System.EventHandler(this.btnGuiEmail_Click);
+            // 
+            // btnGuiEmailRieng
+            // 
+            this.btnGuiEmailRieng.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnGuiEmailRieng.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
+            this.btnGuiEmailRieng.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnGuiEmailRieng.FlatAppearance.BorderSize = 0;
+            this.btnGuiEmailRieng.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnGuiEmailRieng.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnGuiEmailRieng.ForeColor = System.Drawing.Color.White;
+            this.btnGuiEmailRieng.Location = new System.Drawing.Point(14, 301);
+            this.btnGuiEmailRieng.Margin = new System.Windows.Forms.Padding(2);
+            this.btnGuiEmailRieng.Name = "btnGuiEmailRieng";
+            this.btnGuiEmailRieng.Size = new System.Drawing.Size(303, 37);
+            this.btnGuiEmailRieng.TabIndex = 8;
+            this.btnGuiEmailRieng.Text = "✉️ Gửi email riêng";
+            this.btnGuiEmailRieng.UseVisualStyleBackColor = false;
+            this.btnGuiEmailRieng.Click += new System.EventHandler(this.btnGuiEmailRieng_Click);
             // 
             // btnXuatFile
             // 
@@ -293,10 +314,10 @@
             this.btnXuatFile.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnXuatFile.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.btnXuatFile.ForeColor = System.Drawing.Color.White;
-            this.btnXuatFile.Location = new System.Drawing.Point(14, 301);
+            this.btnXuatFile.Location = new System.Drawing.Point(14, 344);
             this.btnXuatFile.Margin = new System.Windows.Forms.Padding(2);
             this.btnXuatFile.Name = "btnXuatFile";
-            this.btnXuatFile.Size = new System.Drawing.Size(303, 41);
+            this.btnXuatFile.Size = new System.Drawing.Size(303, 37);
             this.btnXuatFile.TabIndex = 3;
             this.btnXuatFile.Text = "📄 Xuất file Excel";
             this.btnXuatFile.UseVisualStyleBackColor = false;
@@ -493,6 +514,7 @@
         private System.Windows.Forms.TextBox txtTimKiem;
         private System.Windows.Forms.Button btnTimKiem;
         private System.Windows.Forms.Button btnGuiEmail;
+        private System.Windows.Forms.Button btnGuiEmailRieng;
         private System.Windows.Forms.Button btnXuatFile;
         private System.Windows.Forms.Button btnSuaSuKien;
         private System.Windows.Forms.Button btnXoaSuKien;

@@ -812,6 +812,167 @@ namespace ClubManageApp
             }
         }
 
+        // ✅ THÊM MỚI: Xử lý nút Gửi email riêng
+        private async void btnGuiEmailRieng_Click(object sender, EventArgs e)
+        {
+            if (selectedEvent == null)
+            {
+                MessageBox.Show("Vui lòng chọn một sự kiện để gửi thông báo!", "Thông báo",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Mở form chọn thành viên
+            using (var selectForm = new SelectMembersForm(participants))
+            {
+                if (selectForm.ShowDialog() != DialogResult.OK) return;
+
+                var selectedMembers = selectForm.SelectedMembers;
+                if (selectedMembers.Count == 0)
+                {
+                    MessageBox.Show("Vui lòng chọn ít nhất một thành viên!", "Thông báo",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Mở dialog để nhập thông tin email
+                using (var dlg = new SendAllEventsForm(selectedEvent))
+                {
+                    if (dlg.ShowDialog() != DialogResult.OK) return;
+
+                    var from = dlg.SenderEmail;
+                    var password = dlg.Password;
+                    var smtpHost = dlg.SmtpHost;
+                    var port = dlg.Port;
+                    var enableSsl = dlg.EnableSsl;
+                    var subject = dlg.Subject;
+                    var bodyTemplate = dlg.Body;
+
+                    // Validate các thông tin cơ bản
+                    if (!IsValidEmail(from))
+                    {
+                        MessageBox.Show("Email người gửi không hợp lệ!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(password))
+                    {
+                        MessageBox.Show("Vui lòng nhập mật khẩu email!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Lọc email hợp lệ
+                    var validRecipients = new List<ucParticipant>();
+                    var invalidEmails = new List<string>();
+
+                    foreach (var member in selectedMembers)
+                    {
+                        if (string.IsNullOrWhiteSpace(member.Email))
+                        {
+                            invalidEmails.Add($"{member.HoTen} (Không có email)");
+                            continue;
+                        }
+
+                        if (IsValidEmail(member.Email))
+                        {
+                            validRecipients.Add(member);
+                        }
+                        else
+                        {
+                            invalidEmails.Add($"{member.HoTen} ({member.Email})");
+                        }
+                    }
+
+                    if (invalidEmails.Count > 0)
+                    {
+                        string message = $"Phát hiện {invalidEmails.Count} email không hợp lệ:\n\n";
+                        message += string.Join("\n", invalidEmails.Take(5));
+                        if (invalidEmails.Count > 5)
+                            message += $"\n... và {invalidEmails.Count - 5} email khác";
+                        message += "\n\nCác email này sẽ bị bỏ qua.";
+                        MessageBox.Show(message, "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+
+                    if (validRecipients.Count == 0)
+                    {
+                        MessageBox.Show("Không có thành viên nào có email hợp lệ!", "Thông báo",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+
+                    // Xác nhận
+                    DialogResult confirmResult = MessageBox.Show(
+                        $"Bạn sắp gửi email đến {validRecipients.Count} thành viên.\n\n" +
+                        $"Tiêu đề: {subject}\n" +
+                        $"Người gửi: {from}\n\n" +
+                        $"Bạn có chắc chắn muốn tiếp tục?",
+                        "Xác nhận gửi email",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (confirmResult != DialogResult.Yes)
+                        return;
+
+                    var errors = new List<string>();
+                    var succeeded = 0;
+
+                    // Hiển thị progress
+                    btnGuiEmail.Enabled = false;
+                    btnGuiEmail.Text = "⏳ Đang gửi...";
+
+                    // Gửi email
+                    await Task.Run(() =>
+                    {
+                        foreach (var recipient in validRecipients)
+                        {
+                            try
+                            {
+                                using (var msg = new MailMessage())
+                                {
+                                    msg.From = new MailAddress(from);
+                                    msg.To.Add(new MailAddress(recipient.Email));
+                                    msg.Subject = subject;
+                                    msg.Body = bodyTemplate
+                                        .Replace("{Name}", recipient.HoTen)
+                                        .Replace("{EventTitle}", selectedEvent.Title)
+                                        .Replace("{EventDate}", selectedEvent.Date.ToString("dd/MM/yyyy", culture))
+                                        .Replace("{EventTime}", $"{selectedEvent.StartTime} - {selectedEvent.EndTime}")
+                                        .Replace("{EventLocation}", selectedEvent.Location ?? "");
+                                    msg.IsBodyHtml = false;
+
+                                    using (var client = new SmtpClient(smtpHost, port))
+                                    {
+                                        client.EnableSsl = enableSsl;
+                                        client.Credentials = new NetworkCredential(from, password);
+                                        client.Timeout = 30000;
+                                        client.Send(msg);
+                                    }
+                                }
+                                succeeded++;
+                            }
+                            catch (Exception ex)
+                            {
+                                errors.Add($"{recipient.HoTen} <{recipient.Email}>: {ex.Message}");
+                            }
+                        }
+                    });
+
+                    btnGuiEmail.Enabled = true;
+                    btnGuiEmail.Text = "📧 Gửi email";
+
+                    var msgSum = $"Gửi xong!\n\nThành công: {succeeded}/{validRecipients.Count}\nThất bại: {errors.Count}";
+                    if (invalidEmails.Count > 0)
+                        msgSum += $"\nEmail không hợp lệ (bỏ qua): {invalidEmails.Count}";
+                    if (errors.Count > 0)
+                    {
+                        msgSum += "\n\nChi tiết lỗi (tối đa 5):\n" + string.Join("\n", errors.Take(5));
+                    }
+                    MessageBox.Show(msgSum, "Kết quả gửi email", MessageBoxButtons.OK, 
+                        errors.Count == 0 ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
+                }
+            }
+        }
+
         // Thêm sự kiện mẫu để demo
         private void AddSampleEvents()
         {
@@ -1855,6 +2016,186 @@ namespace ClubManageApp
                 tl.Controls.Add(btnPanel, 1, 8);
 
                 this.Controls.Add(tl);
+            }
+        }
+
+        // ✅ THÊM MỚI: Form chọn thành viên
+        public class SelectMembersForm : Form
+        {
+            private CheckedListBox lstMembers;
+            private Button btnSelectAll;
+            private Button btnDeselectAll;
+            private Button btnOK;
+            private Button btnCancel;
+            private TextBox txtSearch;
+            private List<ucParticipant> allMembers;
+
+            public List<ucParticipant> SelectedMembers { get; private set; }
+
+            public SelectMembersForm(List<ucParticipant> members)
+            {
+                this.allMembers = members;
+                this.SelectedMembers = new List<ucParticipant>();
+                InitializeForm();
+                LoadMembers();
+            }
+
+            private void InitializeForm()
+            {
+                this.Text = "Chọn thành viên nhận email";
+                this.ClientSize = new Size(500, 550);
+                this.FormBorderStyle = FormBorderStyle.FixedDialog;
+                this.StartPosition = FormStartPosition.CenterParent;
+                this.MaximizeBox = false;
+                this.MinimizeBox = false;
+
+                // Search box
+                var lblSearch = new Label
+                {
+                    Text = "Tìm kiếm:",
+                    Location = new Point(20, 20),
+                    AutoSize = true,
+                    Font = new Font("Segoe UI", 10F)
+                };
+                this.Controls.Add(lblSearch);
+
+                txtSearch = new TextBox
+                {
+                    Location = new Point(100, 18),
+                    Size = new Size(370, 25),
+                    Font = new Font("Segoe UI", 10F)
+                };
+                txtSearch.TextChanged += TxtSearch_TextChanged;
+                this.Controls.Add(txtSearch);
+
+                // CheckedListBox
+                lstMembers = new CheckedListBox
+                {
+                    Location = new Point(20, 55),
+                    Size = new Size(450, 350),
+                    Font = new Font("Segoe UI", 10F),
+                    CheckOnClick = true
+                };
+                this.Controls.Add(lstMembers);
+
+                // Buttons
+                btnSelectAll = new Button
+                {
+                    Text = "Chọn tất cả",
+                    Location = new Point(20, 415),
+                    Size = new Size(100, 35),
+                    Font = new Font("Segoe UI", 9F)
+                };
+                btnSelectAll.Click += BtnSelectAll_Click;
+                this.Controls.Add(btnSelectAll);
+
+                btnDeselectAll = new Button
+                {
+                    Text = "Bỏ chọn",
+                    Location = new Point(130, 415),
+                    Size = new Size(100, 35),
+                    Font = new Font("Segoe UI", 9F)
+                };
+                btnDeselectAll.Click += BtnDeselectAll_Click;
+                this.Controls.Add(btnDeselectAll);
+
+                btnOK = new Button
+                {
+                    Text = "Xác nhận",
+                    Location = new Point(270, 470),
+                    Size = new Size(100, 40),
+                    BackColor = Color.FromArgb(52, 152, 219),
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                    Cursor = Cursors.Hand
+                };
+                btnOK.FlatAppearance.BorderSize = 0;
+                btnOK.Click += BtnOK_Click;
+                this.Controls.Add(btnOK);
+
+                btnCancel = new Button
+                {
+                    Text = "Hủy",
+                    Location = new Point(380, 470),
+                    Size = new Size(90, 40),
+                    BackColor = Color.FromArgb(149, 165, 166),
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                    Cursor = Cursors.Hand
+                };
+                btnCancel.FlatAppearance.BorderSize = 0;
+                btnCancel.Click += (s, e) => { this.DialogResult = DialogResult.Cancel; this.Close(); };
+                this.Controls.Add(btnCancel);
+
+                // Count label
+                var lblCount = new Label
+                {
+                    Text = $"Tổng số: {allMembers.Count} thành viên",
+                    Location = new Point(20, 480),
+                    AutoSize = true,
+                    Font = new Font("Segoe UI", 9F, FontStyle.Italic),
+                    ForeColor = Color.Gray
+                };
+                this.Controls.Add(lblCount);
+            }
+
+            private void LoadMembers(string searchText = "")
+            {
+                lstMembers.Items.Clear();
+                var filtered = allMembers.Where(m =>
+                    string.IsNullOrWhiteSpace(searchText) ||
+                    m.HoTen.ToLower().Contains(searchText.ToLower()) ||
+                    (m.Email != null && m.Email.ToLower().Contains(searchText.ToLower())) ||
+                    (m.Lop != null && m.Lop.ToLower().Contains(searchText.ToLower()))
+                ).ToList();
+
+                foreach (var member in filtered)
+                {
+                    string display = $"{member.HoTen} - {member.Email ?? "(Không có email)"} - {member.Lop ?? ""}";
+                    lstMembers.Items.Add(new MemberItem { Member = member, DisplayText = display });
+                }
+            }
+
+            private void TxtSearch_TextChanged(object sender, EventArgs e)
+            {
+                LoadMembers(txtSearch.Text);
+            }
+
+            private void BtnSelectAll_Click(object sender, EventArgs e)
+            {
+                for (int i = 0; i < lstMembers.Items.Count; i++)
+                {
+                    lstMembers.SetItemChecked(i, true);
+                }
+            }
+
+            private void BtnDeselectAll_Click(object sender, EventArgs e)
+            {
+                for (int i = 0; i < lstMembers.Items.Count; i++)
+                {
+                    lstMembers.SetItemChecked(i, false);
+                }
+            }
+
+            private void BtnOK_Click(object sender, EventArgs e)
+            {
+                SelectedMembers.Clear();
+                foreach (MemberItem item in lstMembers.CheckedItems)
+                {
+                    SelectedMembers.Add(item.Member);
+                }
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+
+            // Helper class
+            private class MemberItem
+            {
+                public ucParticipant Member { get; set; }
+                public string DisplayText { get; set; }
+                public override string ToString() => DisplayText;
             }
         }
     }
