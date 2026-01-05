@@ -1035,21 +1035,25 @@ namespace ClubManageApp
 
         private void BtnDangXuat_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show(
-                "Bạn có chắc chắn muốn đăng xuất?",
-                "Xác nhận đăng xuất",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
-
-            if (result == DialogResult.Yes)
+            // Tạo overlay effect
+            using (LogoutEffectOverlay overlay = new LogoutEffectOverlay())
             {
-                this.Hide();
-                Login loginForm = new Login();
-                loginForm.FormClosed += (s, args) => this.Close();
-                loginForm.Show();
+                overlay.ShowOverlay(this);
+
+                // ShowDialog sẽ tự động show form
+                DialogResult result = overlay.ShowDialog(this);
+
+                if (result == DialogResult.OK && overlay.LogoutConfirmed)
+                {
+                    SelectMenuButton(null);
+                    this.Hide();
+
+                    Login loginForm = new Login();
+                    loginForm.FormClosed += (s, args) => this.Close();
+                    loginForm.Show();
+                }
             }
         }
-
         #endregion
 
         #region Lịch Họp - Calendar View
@@ -1836,6 +1840,11 @@ namespace ClubManageApp
 
         }
 
+        private void btnDangXuat_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
         private void LoadCurrentProfileData()
         {
             try
@@ -2028,5 +2037,12 @@ namespace ClubManageApp
         {
 
         }
+
+        // Add this method to your MemberDashboard class
+        private void SelectMenuButton(object selectedButton)
+        {
+            // If you want to visually deselect all menu buttons, you can call HighlightButton with null
+            HighlightButton(selectedButton);
+        }
     }
-}
+}   

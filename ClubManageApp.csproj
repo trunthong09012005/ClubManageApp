@@ -144,6 +144,12 @@
     <Compile Include="Login.Designer.cs">
       <DependentUpon>Login.cs</DependentUpon>
     </Compile>
+    <Compile Include="LogoutEffectOverlay.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LogoutEffectOverlay.Designer.cs">
+      <DependentUpon>LogoutEffectOverlay.cs</DependentUpon>
+    </Compile>
     <Compile Include="Meetings.cs">
       <SubType>UserControl</SubType>
     </Compile>

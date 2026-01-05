@@ -787,7 +787,7 @@
             this.flowTimeline.Location = new System.Drawing.Point(0, 62);
             this.flowTimeline.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.flowTimeline.Name = "flowTimeline";
-            this.flowTimeline.Padding = new System.Windows.Forms.Padding(20, 20, 20, 20);
+            this.flowTimeline.Padding = new System.Windows.Forms.Padding(20);
             this.flowTimeline.Size = new System.Drawing.Size(1180, 528);
             this.flowTimeline.TabIndex = 4;
             this.flowTimeline.Paint += new System.Windows.Forms.PaintEventHandler(this.flowTimeline_Paint);

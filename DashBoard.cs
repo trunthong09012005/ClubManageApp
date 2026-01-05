@@ -715,20 +715,23 @@ namespace ClubManageApp
 
         private void btnDangxuat_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show(
-                "Bạn có chắc chắn muốn đăng xuất?",
-                "Xác nhận đăng xuất",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
-
-            if (result == DialogResult.Yes)
+            // Tạo overlay effect
+            using (LogoutEffectOverlay overlay = new LogoutEffectOverlay())
             {
-                SelectMenuButton(null);
-                this.Hide();
+                overlay.ShowOverlay(this);
 
-                Login loginForm = new Login();
-                loginForm.FormClosed += (s, args) => this.Close();
-                loginForm.Show();
+                // ShowDialog sẽ tự động show form
+                DialogResult result = overlay.ShowDialog(this);
+
+                if (result == DialogResult.OK && overlay.LogoutConfirmed)
+                {
+                    SelectMenuButton(null);
+                    this.Hide();
+
+                    Login loginForm = new Login();
+                    loginForm.FormClosed += (s, args) => this.Close();
+                    loginForm.Show();
+                }
             }
         }
 
