@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -19,16 +20,23 @@ namespace ClubManageApp
         private string hoTenThanhVien = "";
         private string emailThanhVien = "";
 
+        // Panel cho animation thành công
+        private Panel successPanel;
+        private Timer successTimer;
+        private int successScale = 0;
+
         // Constructor mặc định (khi đăng ký từ đầu)
         public SignUp()
         {
             InitializeComponent();
+            InitializeSuccessPanel();
         }
 
         // Constructor nhận thông tin từ FormSignUp
         public SignUp(int maTV, string hoTen, string email)
         {
             InitializeComponent();
+            InitializeSuccessPanel();
             this.maTV = maTV;
             this.hoTenThanhVien = hoTen;
             this.emailThanhVien = email;
@@ -37,12 +45,245 @@ namespace ClubManageApp
             ShowMemberInfo();
         }
 
+        private void InitializeSuccessPanel()
+        {
+            successPanel = new Panel
+            {
+                Size = this.ClientSize,
+                Location = new Point(0, 0),
+                BackColor = Color.Transparent,
+                Visible = false
+            };
+
+            // Bật DoubleBuffering
+            successPanel.GetType().GetProperty("DoubleBuffered",
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.NonPublic)
+                ?.SetValue(successPanel, true, null);
+
+            successPanel.Paint += SuccessPanel_Paint;
+            this.Controls.Add(successPanel);
+            successPanel.BringToFront();
+
+            successTimer = new Timer { Interval = 16 }; // ~60 FPS
+            successTimer.Tick += SuccessTimer_Tick;
+        }
+
+        private void SuccessPanel_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+            float progress = successScale / 100f;
+            int centerX = successPanel.Width / 2;
+            int centerY = successPanel.Height / 2;
+
+            // Background gradient
+            if (progress > 0)
+            {
+                using (PathGradientBrush bgBrush = new PathGradientBrush(
+                    new PointF[] {
+                        new PointF(0, 0),
+                        new PointF(successPanel.Width, 0),
+                        new PointF(successPanel.Width, successPanel.Height),
+                        new PointF(0, successPanel.Height)
+                    }))
+                {
+                    bgBrush.CenterPoint = new PointF(centerX, centerY);
+                    bgBrush.CenterColor = Color.FromArgb((int)(180 * progress), 76, 175, 80);
+                    bgBrush.SurroundColors = new Color[] {
+                        Color.FromArgb((int)(100 * progress), 46, 125, 50),
+                        Color.FromArgb((int)(100 * progress), 46, 125, 50),
+                        Color.FromArgb((int)(100 * progress), 46, 125, 50),
+                        Color.FromArgb((int)(100 * progress), 46, 125, 50)
+                    };
+                    g.FillRectangle(bgBrush, successPanel.ClientRectangle);
+                }
+            }
+
+            // Pháo hoa
+            if (progress > 0.3f)
+            {
+                Random rand = new Random(42);
+                int particleCount = 24;
+                for (int i = 0; i < particleCount; i++)
+                {
+                    float angle = (i * 360f / particleCount) * (float)Math.PI / 180f;
+                    float distance = 100 * (progress - 0.3f) * 2.5f;
+                    float particleX = centerX + (float)Math.Cos(angle) * distance;
+                    float particleY = centerY + (float)Math.Sin(angle) * distance;
+
+                    float particleSize = 8 + (float)Math.Sin(progress * 10 + i) * 4;
+                    int alpha = (int)(255 * (1 - (progress - 0.3f) * 1.4f));
+                    if (alpha < 0) alpha = 0;
+
+                    Color particleColor = i % 3 == 0 ? Color.FromArgb(alpha, 255, 235, 59) :
+                                         i % 3 == 1 ? Color.FromArgb(alpha, 255, 255, 255) :
+                                         Color.FromArgb(alpha, 129, 212, 250);
+
+                    using (SolidBrush particleBrush = new SolidBrush(particleColor))
+                    {
+                        g.FillEllipse(particleBrush, particleX - particleSize / 2, particleY - particleSize / 2,
+                                    particleSize, particleSize);
+                    }
+                }
+            }
+
+            // Vòng tròn phát sáng
+            for (int i = 3; i >= 0; i--)
+            {
+                int glowSize = (int)(200 * progress) + i * 30;
+                int glowAlpha = (int)(40 * progress) - i * 8;
+                if (glowAlpha > 0)
+                {
+                    using (SolidBrush glowBrush = new SolidBrush(Color.FromArgb(glowAlpha, 255, 255, 255)))
+                    {
+                        g.FillEllipse(glowBrush,
+                            centerX - glowSize / 2,
+                            centerY - glowSize / 2,
+                            glowSize, glowSize);
+                    }
+                }
+            }
+
+            // Vòng tròn chính
+            int mainSize = (int)(160 * progress);
+            using (SolidBrush mainBrush = new SolidBrush(Color.FromArgb((int)(255 * progress), 76, 175, 80)))
+            {
+                g.FillEllipse(mainBrush,
+                    centerX - mainSize / 2,
+                    centerY - mainSize / 2,
+                    mainSize, mainSize);
+            }
+
+            // Viền trắng
+            if (progress > 0.5f)
+            {
+                int borderSize = (int)(170 * progress);
+                using (Pen borderPen = new Pen(Color.FromArgb((int)(255 * (progress - 0.5f) * 2), 255, 255, 255), 4))
+                {
+                    g.DrawEllipse(borderPen,
+                        centerX - borderSize / 2,
+                        centerY - borderSize / 2,
+                        borderSize, borderSize);
+                }
+            }
+
+            // Dấu tick
+            if (progress > 0.4f)
+            {
+                float checkProgress = (progress - 0.4f) / 0.6f;
+                if (checkProgress > 1f) checkProgress = 1f;
+
+                using (Pen checkPen = new Pen(Color.White, 12))
+                {
+                    checkPen.StartCap = LineCap.Round;
+                    checkPen.EndCap = LineCap.Round;
+
+                    PointF p1 = new PointF(centerX - 35, centerY);
+                    PointF p2 = new PointF(centerX - 10, centerY + 25);
+
+                    if (checkProgress <= 0.4f)
+                    {
+                        float t = checkProgress / 0.4f;
+                        PointF currentP2 = new PointF(
+                            p1.X + (p2.X - p1.X) * t,
+                            p1.Y + (p2.Y - p1.Y) * t
+                        );
+                        g.DrawLine(checkPen, p1, currentP2);
+                    }
+                    else
+                    {
+                        g.DrawLine(checkPen, p1, p2);
+
+                        PointF p3 = new PointF(centerX + 40, centerY - 30);
+                        float t = (checkProgress - 0.4f) / 0.6f;
+                        PointF currentP3 = new PointF(
+                            p2.X + (p3.X - p2.X) * t,
+                            p2.Y + (p3.Y - p2.Y) * t
+                        );
+                        g.DrawLine(checkPen, p2, currentP3);
+                    }
+                }
+            }
+
+            // Text
+            if (progress > 0.6f)
+            {
+                float textProgress = (progress - 0.6f) / 0.4f;
+                string text = "Đăng ký thành công!";
+                using (Font font = new Font("Segoe UI", 24, FontStyle.Bold))
+                {
+                    SizeF textSize = g.MeasureString(text, font);
+                    float textX = centerX - textSize.Width / 2;
+                    float textY = centerY + 120;
+
+                    using (SolidBrush shadowBrush = new SolidBrush(Color.FromArgb((int)(100 * textProgress), 0, 0, 0)))
+                    {
+                        g.DrawString(text, font, shadowBrush, textX + 2, textY + 2);
+                    }
+
+                    using (SolidBrush textBrush = new SolidBrush(Color.FromArgb((int)(255 * textProgress), 255, 255, 255)))
+                    {
+                        g.DrawString(text, font, textBrush, textX, textY);
+                    }
+                }
+
+                string subText = "Bạn có thể đăng nhập ngay!";
+                using (Font subFont = new Font("Segoe UI", 12, FontStyle.Regular))
+                {
+                    SizeF subSize = g.MeasureString(subText, subFont);
+                    float subX = centerX - subSize.Width / 2;
+                    float subY = centerY + 160;
+
+                    using (SolidBrush subBrush = new SolidBrush(Color.FromArgb((int)(200 * textProgress), 255, 255, 255)))
+                    {
+                        g.DrawString(subText, subFont, subBrush, subX, subY);
+                    }
+                }
+            }
+        }
+
+        private void SuccessTimer_Tick(object sender, EventArgs e)
+        {
+            if (successScale < 100)
+            {
+                successScale += 3;
+                if (successScale > 100) successScale = 100;
+                successPanel.Invalidate();
+            }
+            else
+            {
+                successTimer.Stop();
+            }
+        }
+
+        private async Task ShowSuccessAnimation()
+        {
+            successScale = 0;
+            successPanel.Visible = true;
+            successPanel.BringToFront();
+            successTimer.Start();
+
+            await Task.Delay(2500); // Hiển thị 2.5 giây
+        }
+
+        private async Task FadeOut()
+        {
+            while (this.Opacity > 0)
+            {
+                this.Opacity -= 0.05;
+                await Task.Delay(20);
+            }
+        }
+
         // Hiển thị thông tin thành viên đã đăng ký
         private void ShowMemberInfo()
         {
             if (maTV.HasValue)
             {
-                // Thêm label để hiển thị thông tin (hoặc bạn có thể thêm vào Designer)
                 Label lblInfo = new Label
                 {
                     Text = $"Đang tạo tài khoản cho:\n{hoTenThanhVien}\n{emailThanhVien}\nMã TV: {maTV}",
@@ -346,7 +587,8 @@ namespace ClubManageApp
         }
 
         // ✅ Sự kiện nút "Đăng ký"
-        private void btnDangKy_Click(object sender, EventArgs e)
+        // ✅ Sự kiện nút "Đăng ký" - CẬP NHẬT VỚI ANIMATION ĐẸP
+        private async void btnDangKy_Click(object sender, EventArgs e)
         {
             string username = txttaikhoan.Text.Trim();
             string password = txtmatkhau.Text.Trim();
@@ -411,8 +653,8 @@ namespace ClubManageApp
 
                         // Tạo tài khoản với MaTV có sẵn
                         string insertQuery = @"
-                            INSERT INTO TaiKhoan (MaTV, TenDN, MatKhau, QuyenHan, TrangThai, NgayTao)
-                            VALUES (@maTV, @user, @pass, N'Thành viên', N'Hoạt động', GETDATE())";
+                    INSERT INTO TaiKhoan (MaTV, TenDN, MatKhau, QuyenHan, TrangThai, NgayTao)
+                    VALUES (@maTV, @user, @pass, N'Thành viên', N'Hoạt động', GETDATE())";
 
                         SqlCommand insertCmd = new SqlCommand(insertQuery, conn);
                         insertCmd.Parameters.AddWithValue("@maTV", maTV.Value);
@@ -420,14 +662,14 @@ namespace ClubManageApp
                         insertCmd.Parameters.AddWithValue("@pass", HashPassword(password));
                         insertCmd.ExecuteNonQuery();
 
-                        MessageBox.Show(
-                            $"Tạo tài khoản thành công!\n\n" +
-                            $"Họ tên: {hoTenThanhVien}\n" +
-                            $"Email: {emailThanhVien}\n" +
-                            $"Tài khoản: {username}\n\n" +
-                            "Bạn có thể đăng nhập ngay bây giờ!",
-                            "Thành công",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        // 🎉 HIỂN THỊ ANIMATION THÀNH CÔNG
+                        await ShowSuccessAnimation();
+
+                        // Đợi 1 giây sau animation
+                        await Task.Delay(1000);
+
+                        // Fade out mượt mà
+                        await FadeOut();
 
                         this.DialogResult = DialogResult.OK;
                         this.Close();

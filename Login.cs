@@ -19,7 +19,7 @@ namespace ClubManageApp
         private Timer animationTimer;
         private int animationFrame = 0;
         private float birdX = -100;
-        private float birdY = 100;
+        private float birdY = 150; // Điều chỉnh vị trí Y để người que chạy ở mặt đất
         private bool movingRight = true;
         private float cloudOffset = 0;
 
@@ -120,33 +120,25 @@ namespace ClubManageApp
         {
             animationFrame++;
 
-            // Di chuyển chim với tốc độ chậm hơn
-            if (movingRight)
+            // Di chuyển xe ô tô - chạy một chiều từ trái sang phải
+            birdX += 2.5f; // Tốc độ xe chạy
+
+            // DEBUG: In ra console để kiểm tra
+            // System.Diagnostics.Debug.WriteLine($"birdX: {birdX}, Panel Width: {loadingPanel.Width}");
+
+            // Xe chạy HẾT màn hình (tính cả chiều rộng thân xe)
+            // loadingPanel.Width là chiều rộng thực của panel
+            if (birdX > loadingPanel.Width + 100)
             {
-                birdX += 2.5f; // Giảm từ 4 xuống 2.5
-                if (birdX > loadingPanel.Width + 50)
-                {
-                    movingRight = false;
-                    birdX = loadingPanel.Width + 50;
-                    birdY = (float)(birdRandom.NextDouble() * 100 + 50);
-                }
-            }
-            else
-            {
-                birdX -= 2.5f;
-                if (birdX < -100)
-                {
-                    movingRight = true;
-                    birdX = -100;
-                    birdY = (float)(birdRandom.NextDouble() * 100 + 50);
-                }
+                birdX = -150; // Reset về bên trái
+                birdY = (float)(birdRandom.NextDouble() * 50 + 120); // Thay đổi làn đường
             }
 
             // Di chuyển mây chậm hơn
-            cloudOffset = (cloudOffset + 0.3f) % 200; // Giảm từ 0.5f
+            cloudOffset = (cloudOffset + 0.3f) % 200;
 
             // Làm chữ nhấp nháy nhẹ
-            int alpha = (int)(Math.Sin(animationFrame * 0.05) * 30 + 225); // Giảm tốc độ
+            int alpha = (int)(Math.Sin(animationFrame * 0.05) * 30 + 225);
             loadingLabel.ForeColor = Color.FromArgb(alpha, 255, 255, 255);
 
             loadingPanel.Invalidate();
@@ -189,8 +181,8 @@ namespace ClubManageApp
             DrawCloud(g, cloudOffset - 200, 150, 0.2f);
             DrawCloud(g, cloudOffset + 100, 200, 0.25f);
 
-            // Vẽ chim bay
-            DrawBird(g, birdX, birdY + (float)(Math.Sin(animationFrame * 0.15) * 10), movingRight);
+            // Vẽ xe ô tô (không cần hiệu ứng nhảy)
+            DrawBird(g, birdX, birdY, movingRight);
 
             // Vẽ vòng tròn loading quay (chậm hơn)
             float centerX = loadingPanel.Width / 2;
@@ -224,51 +216,90 @@ namespace ClubManageApp
 
         private void DrawBird(Graphics g, float x, float y, bool facingRight)
         {
-            // Tính toán góc vỗ cánh (chậm hơn)
-            float wingAngle = (float)Math.Sin(animationFrame * 0.2) * 20; // Giảm từ 0.3
-
-            using (Pen pen = new Pen(Color.White, 3))
+            // Vẽ xe ô tô đơn giản
+            using (SolidBrush carBrush = new SolidBrush(Color.FromArgb(255, 231, 76, 60))) // Màu đỏ
+            using (SolidBrush windowBrush = new SolidBrush(Color.FromArgb(200, 52, 152, 219))) // Màu xanh dương nhạt
+            using (SolidBrush wheelBrush = new SolidBrush(Color.FromArgb(255, 44, 62, 80))) // Màu đen
+            using (Pen outlinePen = new Pen(Color.White, 2))
             {
-                pen.StartCap = LineCap.Round;
-                pen.EndCap = LineCap.Round;
+                // Thân xe (hình chữ nhật)
+                RectangleF body = new RectangleF(x - 40, y - 15, 80, 25);
+                g.FillRectangle(carBrush, body);
+                g.DrawRectangle(outlinePen, x - 40, y - 15, 80, 25);
 
-                if (facingRight)
+                // Cabin xe (hình thang)
+                PointF[] cabin = {
+                    new PointF(x - 15, y - 15),  // Trái dưới
+                    new PointF(x - 10, y - 30),  // Trái trên
+                    new PointF(x + 20, y - 30),  // Phải trên
+                    new PointF(x + 25, y - 15)   // Phải dưới
+                };
+                g.FillPolygon(carBrush, cabin);
+                g.DrawPolygon(outlinePen, cabin);
+
+                // Cửa sổ trước
+                PointF[] frontWindow = {
+                    new PointF(x - 8, y - 17),
+                    new PointF(x - 5, y - 28),
+                    new PointF(x + 5, y - 28),
+                    new PointF(x + 5, y - 17)
+                };
+                g.FillPolygon(windowBrush, frontWindow);
+
+                // Cửa sổ sau
+                PointF[] rearWindow = {
+                    new PointF(x + 7, y - 17),
+                    new PointF(x + 7, y - 28),
+                    new PointF(x + 18, y - 28),
+                    new PointF(x + 23, y - 17)
+                };
+                g.FillPolygon(windowBrush, rearWindow);
+
+                // Bánh xe với animation quay
+                float wheelRotation = (animationFrame * 0.4f) % 360;
+
+                // Bánh trước
+                float frontWheelX = x - 20;
+                float wheelY = y + 10;
+                g.FillEllipse(wheelBrush, frontWheelX - 8, wheelY - 8, 16, 16);
+                g.DrawEllipse(outlinePen, frontWheelX - 8, wheelY - 8, 16, 16);
+
+                // Nan hoa bánh trước
+                for (int i = 0; i < 4; i++)
                 {
-                    PointF[] leftWing = {
-                        new PointF(x, y),
-                        new PointF(x - 15, y - 15 + wingAngle),
-                        new PointF(x - 25, y - 10 + wingAngle)
-                    };
-                    g.DrawCurve(pen, leftWing, 0.5f);
-
-                    PointF[] rightWing = {
-                        new PointF(x, y),
-                        new PointF(x - 15, y + 15 - wingAngle),
-                        new PointF(x - 25, y + 10 - wingAngle)
-                    };
-                    g.DrawCurve(pen, rightWing, 0.5f);
+                    float angle = (wheelRotation + i * 90) * (float)Math.PI / 180f;
+                    float x1 = frontWheelX + (float)Math.Cos(angle) * 3;
+                    float y1 = wheelY + (float)Math.Sin(angle) * 3;
+                    float x2 = frontWheelX + (float)Math.Cos(angle) * 7;
+                    float y2 = wheelY + (float)Math.Sin(angle) * 7;
+                    using (Pen spokePen = new Pen(Color.White, 1.5f))
+                    {
+                        g.DrawLine(spokePen, x1, y1, x2, y2);
+                    }
                 }
-                else
+
+                // Bánh sau
+                float rearWheelX = x + 20;
+                g.FillEllipse(wheelBrush, rearWheelX - 8, wheelY - 8, 16, 16);
+                g.DrawEllipse(outlinePen, rearWheelX - 8, wheelY - 8, 16, 16);
+
+                // Nan hoa bánh sau
+                for (int i = 0; i < 4; i++)
                 {
-                    PointF[] leftWing = {
-                        new PointF(x, y),
-                        new PointF(x + 15, y - 15 + wingAngle),
-                        new PointF(x + 25, y - 10 + wingAngle)
-                    };
-                    g.DrawCurve(pen, leftWing, 0.5f);
-
-                    PointF[] rightWing = {
-                        new PointF(x, y),
-                        new PointF(x + 15, y + 15 - wingAngle),
-                        new PointF(x + 25, y + 10 - wingAngle)
-                    };
-                    g.DrawCurve(pen, rightWing, 0.5f);
+                    float angle = (wheelRotation + i * 90) * (float)Math.PI / 180f;
+                    float x1 = rearWheelX + (float)Math.Cos(angle) * 3;
+                    float y1 = wheelY + (float)Math.Sin(angle) * 3;
+                    float x2 = rearWheelX + (float)Math.Cos(angle) * 7;
+                    float y2 = wheelY + (float)Math.Sin(angle) * 7;
+                    using (Pen spokePen = new Pen(Color.White, 1.5f))
+                    {
+                        g.DrawLine(spokePen, x1, y1, x2, y2);
+                    }
                 }
-            }
 
-            using (SolidBrush bodyBrush = new SolidBrush(Color.White))
-            {
-                g.FillEllipse(bodyBrush, x - 5, y - 5, 10, 10);
+                // Đèn xe
+                g.FillEllipse(Brushes.Yellow, x + 35, y - 10, 6, 6); // Đèn trước
+                g.FillEllipse(Brushes.Red, x - 42, y - 10, 6, 6);    // Đèn sau
             }
         }
 
@@ -484,12 +515,20 @@ namespace ClubManageApp
         private void ShowLoading()
         {
             loadingPanel.Visible = true;
+            loadingPanel.Size = this.ClientSize; // CẬP NHẬT lại kích thước panel = form
             loadingPanel.BringToFront();
             animationFrame = 0;
-            birdX = -100;
-            birdY = 100;
+            birdX = -150; // Bắt đầu từ ngoài màn hình bên trái
+            birdY = 150;
             movingRight = true;
             cloudOffset = 0;
+
+            // Cập nhật lại vị trí label
+            loadingLabel.Location = new Point(
+                (loadingPanel.Width - loadingLabel.Width) / 2,
+                loadingPanel.Height - 100
+            );
+
             animationTimer.Start();
 
             btndangnhap.Enabled = false;
@@ -616,6 +655,9 @@ namespace ClubManageApp
                                 Properties.Settings.Default.SavedPass = "";
                                 Properties.Settings.Default.Save();
                             }
+
+                            // Thêm delay để xem animation loading lâu hơn trước khi hiển thị success
+                            await Task.Delay(6000); // Delay thêm 1.5 giây
 
                             await ShowSuccessAnimation();
                             await FadeOut();

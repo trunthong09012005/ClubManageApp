@@ -40,18 +40,109 @@ namespace ClubManageApp
                 }
             };
 
-            // Validation cho SĐT - chỉ cho phép nhập số
+            // Validation cho SĐT Việt Nam - chỉ cho phép nhập số và dấu +
             txtSDT.KeyPress += (s, e) => {
+                // Cho phép: số, phím xóa (Backspace), dấu + (chỉ ở đầu)
                 if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
                 {
-                    e.Handled = true;
+                    // Cho phép dấu + chỉ khi là ký tự đầu tiên và chưa có +
+                    if (e.KeyChar == '+' && txtSDT.Text.Length == 0 && txtSDT.SelectionStart == 0)
+                    {
+                        e.Handled = false; // Cho phép
+                    }
+                    else
+                    {
+                        e.Handled = true; // Chặn
+                    }
                 }
             };
 
-            // Giới hạn độ dài SĐT
-            txtSDT.MaxLength = 15;
-        }
+            // Kiểm tra định dạng SĐT khi rời khỏi ô nhập
+            txtSDT.Leave += (s, e) => {
+                if (!string.IsNullOrEmpty(txtSDT.Text) && !IsValidVietnamesePhone(txtSDT.Text))
+                {
+                    MessageBox.Show(
+                        "Số điện thoại không hợp lệ!\n\n" +
+                        "Định dạng hợp lệ:\n" +
+                        "• 0XXXXXXXXX (10 số, bắt đầu bằng 03, 05, 07, 08, 09)\n" +
+                        "• +84XXXXXXXXX (12 số, bắt đầu bằng +84)\n\n" +
+                        "Ví dụ: 0901234567 hoặc +84901234567",
+                        "Cảnh báo",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    txtSDT.Focus();
+                    txtSDT.SelectAll();
+                }   
+            };
 
+            // Giới hạn độ dài SĐT (tối đa 12 ký tự cho +84XXXXXXXXX)
+            txtSDT.MaxLength = 12;
+
+            // Placeholder text
+
+        }
+        private bool IsValidVietnamesePhone(string phone)
+        {
+            // Loại bỏ khoảng trắng
+            phone = phone.Trim().Replace(" ", "").Replace("-", "");
+
+            // Trường hợp 1: Số điện thoại bắt đầu bằng 0 (10 số)
+            // Đầu số hợp lệ: 03, 05, 07, 08, 09
+            if (phone.StartsWith("0"))
+            {
+                if (phone.Length != 10)
+                    return false;
+
+                // Kiểm tra đầu số hợp lệ
+                string prefix = phone.Substring(0, 2);
+                string[] validPrefixes = { "03", "05", "07", "08", "09" };
+
+                bool hasValidPrefix = false;
+                foreach (string validPrefix in validPrefixes)
+                {
+                    if (prefix == validPrefix)
+                    {
+                        hasValidPrefix = true;
+                        break;
+                    }
+                }
+
+                if (!hasValidPrefix)
+                    return false;
+
+                // Kiểm tra các ký tự còn lại có phải số không
+                for (int i = 2; i < phone.Length; i++)
+                {
+                    if (!char.IsDigit(phone[i]))
+                        return false;
+                }
+
+                return true;
+            }
+            // Trường hợp 2: Số điện thoại quốc tế bắt đầu bằng +84
+            else if (phone.StartsWith("+84"))
+            {
+                if (phone.Length != 12)
+                    return false;
+
+                // Kiểm tra ký tự thứ 4 (sau +84) phải là 3, 5, 7, 8, hoặc 9
+                char fourthChar = phone[3];
+                if (fourthChar != '3' && fourthChar != '5' && fourthChar != '7' &&
+                    fourthChar != '8' && fourthChar != '9')
+                    return false;
+
+                // Kiểm tra các ký tự còn lại có phải số không
+                for (int i = 4; i < phone.Length; i++)
+                {
+                    if (!char.IsDigit(phone[i]))
+                        return false;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
         // Kiểm tra email hợp lệ
         private bool IsValidEmail(string email)
         {
@@ -220,6 +311,21 @@ namespace ClubManageApp
             {
                 MessageBox.Show("Vui lòng nhập số điện thoại!", "Thông báo",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtSDT.Focus();
+                return;
+            }
+
+            if (!IsValidVietnamesePhone(txtSDT.Text))
+            {
+                MessageBox.Show(
+                    "Số điện thoại không hợp lệ!\n\n" +
+                    "Định dạng hợp lệ:\n" +
+                    "• 0XXXXXXXXX (10 số, bắt đầu bằng 03, 05, 07, 08, 09)\n" +
+                    "• +84XXXXXXXXX (12 số, bắt đầu bằng +84)\n\n" +
+                    "Ví dụ: 0901234567 hoặc +84901234567",
+                    "Thông báo",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
                 txtSDT.Focus();
                 return;
             }
