@@ -13,10 +13,18 @@ namespace ClubManageApp
         private DataTable logTable;
         private string currentUserRole = "Admin"; // ✅ THÊM: Vai trò người dùng hiện tại (có thể truyền từ form chính)
 
+        // ✅ PHÂN TRANG: Các biến quản lý phân trang
+        private int currentPage = 1;
+        private int pageSize = 20;
+        private int totalRecords = 0;
+        private int totalPages = 0;
+        private string currentFilter = null;
+
         public ucAccountTest()
         {
             InitializeComponent();
             InitializeLogTable();
+            InitializePagination();
             
             // Add event handler to txtMaTV to display member info when MaTV is entered
             txtMaTV.TextChanged += TxtMaTV_TextChanged;
@@ -26,6 +34,13 @@ namespace ClubManageApp
         public ucAccountTest(string userRole) : this()
         {
             this.currentUserRole = userRole;
+        }
+
+        // ✅ PHÂN TRANG: Khởi tạo pagination
+        private void InitializePagination()
+        {
+            cboPageSize.SelectedItem = "20";
+            UpdatePaginationControls();
         }
 
         private void TxtMaTV_TextChanged(object sender, EventArgs e)
@@ -162,13 +177,41 @@ namespace ClubManageApp
         {
             try
             {
+                currentFilter = filter;
                 dgvTaiKhoan.DataSource = null;
 
                 using (var conn = new SqlConnection(connectionString))
-                using (var cmd = new SqlCommand())
                 {
-                    cmd.Connection = conn;
+                    conn.Open();
 
+                    // ✅ PHÂN TRANG: Đếm tổng số bản ghi
+                    string countSql = @"SELECT COUNT(*) 
+                                       FROM TaiKhoan TK
+                                       LEFT JOIN ThanhVien TV ON TK.MaTV = TV.MaTV";
+                    
+                    if (!string.IsNullOrWhiteSpace(filter))
+                    {
+                        countSql += " WHERE TK.TenDN LIKE @f OR TV.HoTen LIKE @f OR TK.QuyenHan LIKE @f OR TK.TrangThai LIKE @f";
+                    }
+
+                    using (var countCmd = new SqlCommand(countSql, conn))
+                    {
+                        if (!string.IsNullOrWhiteSpace(filter))
+                        {
+                            countCmd.Parameters.AddWithValue("@f", "%" + filter + "%");
+                        }
+                        totalRecords = (int)countCmd.ExecuteScalar();
+                    }
+
+                    // ✅ PHÂN TRANG: Tính tổng số trang
+                    totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+                    if (totalPages == 0) totalPages = 1;
+                    
+                    // ✅ PHÂN TRANG: Đảm bảo currentPage hợp lệ
+                    if (currentPage > totalPages) currentPage = totalPages;
+                    if (currentPage < 1) currentPage = 1;
+
+                    // ✅ PHÂN TRANG: Lấy dữ liệu với OFFSET và FETCH
                     string sql = @"SELECT TK.MaTK, TK.TenDN, TK.MatKhau, TK.MaTV, TV.HoTen, TV.SDT,
                                    TK.QuyenHan, TK.NgayTao, TK.LanDangNhapCuoi, TK.TrangThai 
                                    FROM TaiKhoan TK
@@ -177,60 +220,369 @@ namespace ClubManageApp
                     if (!string.IsNullOrWhiteSpace(filter))
                     {
                         sql += " WHERE TK.TenDN LIKE @f OR TV.HoTen LIKE @f OR TK.QuyenHan LIKE @f OR TK.TrangThai LIKE @f";
-                        cmd.Parameters.AddWithValue("@f", "%" + filter + "%");
                     }
 
-                    cmd.CommandText = sql;
-                    conn.Open();
+                    sql += " ORDER BY TK.MaTK OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
 
-                    var da = new SqlDataAdapter(cmd);
-                    var dt = new DataTable();
-                    da.Fill(dt);
+                    using (var cmd = new SqlCommand(sql, conn))
+                    {
+                        if (!string.IsNullOrWhiteSpace(filter))
+                        {
+                            cmd.Parameters.AddWithValue("@f", "%" + filter + "%");
+                        }
+                        
+                        int offset = (currentPage - 1) * pageSize;
+                        cmd.Parameters.AddWithValue("@offset", offset);
+                        cmd.Parameters.AddWithValue("@pageSize", pageSize);
 
-                    if (dt.Rows.Count > 0)
-                    {
-                        dgvTaiKhoan.DataSource = dt;
-                        
-                        // Customize column headers
-                        if (dgvTaiKhoan.Columns.Contains("MaTK")) dgvTaiKhoan.Columns["MaTK"].HeaderText = "Mã TK";
-                        if (dgvTaiKhoan.Columns.Contains("TenDN")) dgvTaiKhoan.Columns["TenDN"].HeaderText = "Tên đăng nhập";
-                        if (dgvTaiKhoan.Columns.Contains("MatKhau"))
+                        var da = new SqlDataAdapter(cmd);
+                        var dt = new DataTable();
+                        da.Fill(dt);
+
+                        if (dt.Rows.Count > 0)
                         {
-                            dgvTaiKhoan.Columns["MatKhau"].HeaderText = "Mật khẩu";
-                            dgvTaiKhoan.Columns["MatKhau"].Visible = false; // Hide password column
+                            dgvTaiKhoan.DataSource = dt;
+                            
+                            // Customize column headers
+                            if (dgvTaiKhoan.Columns.Contains("MaTK")) dgvTaiKhoan.Columns["MaTK"].HeaderText = "Mã TK";
+                            if (dgvTaiKhoan.Columns.Contains("TenDN")) dgvTaiKhoan.Columns["TenDN"].HeaderText = "Tên đăng nhập";
+                            if (dgvTaiKhoan.Columns.Contains("MatKhau"))
+                            {
+                                dgvTaiKhoan.Columns["MatKhau"].HeaderText = "Mật khẩu";
+                                dgvTaiKhoan.Columns["MatKhau"].Visible = false; // Hide password column
+                            }
+                            if (dgvTaiKhoan.Columns.Contains("MaTV")) dgvTaiKhoan.Columns["MaTV"].HeaderText = "Mã TV";
+                            if (dgvTaiKhoan.Columns.Contains("HoTen")) dgvTaiKhoan.Columns["HoTen"].HeaderText = "Họ tên";
+                            if (dgvTaiKhoan.Columns.Contains("SDT")) dgvTaiKhoan.Columns["SDT"].HeaderText = "Số điện thoại";
+                            if (dgvTaiKhoan.Columns.Contains("QuyenHan")) dgvTaiKhoan.Columns["QuyenHan"].HeaderText = "Quyền hạn";
+                            if (dgvTaiKhoan.Columns.Contains("NgayTao")) 
+                            {
+                                dgvTaiKhoan.Columns["NgayTao"].HeaderText = "Ngày tạo";
+                                dgvTaiKhoan.Columns["NgayTao"].DefaultCellStyle.Format = "dd/MM/yyyy HH:mm:ss";
+                            }
+                            if (dgvTaiKhoan.Columns.Contains("LanDangNhapCuoi"))
+                            {
+                                dgvTaiKhoan.Columns["LanDangNhapCuoi"].HeaderText = "Lần đăng nhập cuối";
+                                dgvTaiKhoan.Columns["LanDangNhapCuoi"].DefaultCellStyle.Format = "dd/MM/yyyy HH:mm:ss";
+                            }
+                            if (dgvTaiKhoan.Columns.Contains("TrangThai")) dgvTaiKhoan.Columns["TrangThai"].HeaderText = "Trạng thái";
+                            
+                            dgvTaiKhoan.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
                         }
-                        if (dgvTaiKhoan.Columns.Contains("MaTV")) dgvTaiKhoan.Columns["MaTV"].HeaderText = "Mã TV";
-                        if (dgvTaiKhoan.Columns.Contains("HoTen")) dgvTaiKhoan.Columns["HoTen"].HeaderText = "Họ tên";
-                        if (dgvTaiKhoan.Columns.Contains("SDT")) dgvTaiKhoan.Columns["SDT"].HeaderText = "Số điện thoại";
-                        if (dgvTaiKhoan.Columns.Contains("QuyenHan")) dgvTaiKhoan.Columns["QuyenHan"].HeaderText = "Quyền hạn";
-                        if (dgvTaiKhoan.Columns.Contains("NgayTao")) 
+                        else
                         {
-                            dgvTaiKhoan.Columns["NgayTao"].HeaderText = "Ngày tạo";
-                            dgvTaiKhoan.Columns["NgayTao"].DefaultCellStyle.Format = "dd/MM/yyyy HH:mm:ss";
+                            dgvTaiKhoan.DataSource = dt;
                         }
-                        if (dgvTaiKhoan.Columns.Contains("LanDangNhapCuoi"))
-                        {
-                            dgvTaiKhoan.Columns["LanDangNhapCuoi"].HeaderText = "Lần đăng nhập cuối";
-                            dgvTaiKhoan.Columns["LanDangNhapCuoi"].DefaultCellStyle.Format = "dd/MM/yyyy HH:mm:ss";
-                        }
-                        if (dgvTaiKhoan.Columns.Contains("TrangThai")) dgvTaiKhoan.Columns["TrangThai"].HeaderText = "Trạng thái";
-                        
-                        dgvTaiKhoan.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-                    }
-                    else
-                    {
-                        dgvTaiKhoan.DataSource = dt;
                     }
                 }
 
+                // ✅ PHÂN TRANG: Cập nhật UI phân trang
+                UpdatePaginationControls();
                 UpdateStatistics();
-                AddLog("Tải danh sách tài khoản");
+                AddLog($"Tải danh sách tài khoản - Trang {currentPage}/{totalPages}");
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi tải danh sách tài khoản: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 AddLog("LỖI: Tải danh sách tài khoản - " + ex.Message);
             }
+        }
+
+        // ✅ PHÂN TRANG: Cập nhật trạng thái các nút phân trang
+        private void UpdatePaginationControls()
+        {
+            lblPageInfo.Text = $"Trang {currentPage} / {totalPages} (Tổng: {totalRecords} tài khoản)";
+            
+            btnPreviousPage.Enabled = currentPage > 1;
+            btnNextPage.Enabled = currentPage < totalPages;
+            
+            // Đổi màu nút khi disabled
+            btnPreviousPage.BackColor = btnPreviousPage.Enabled 
+                ? System.Drawing.Color.FromArgb(52, 152, 219) 
+                : System.Drawing.Color.FromArgb(189, 195, 199);
+            
+            btnNextPage.BackColor = btnNextPage.Enabled 
+                ? System.Drawing.Color.FromArgb(52, 152, 219) 
+                : System.Drawing.Color.FromArgb(189, 195, 199);
+        }
+
+        // ✅ PHÂN TRANG: Nút trang trước
+        private void btnPreviousPage_Click(object sender, EventArgs e)
+        {
+            if (currentPage > 1)
+            {
+                currentPage--;
+                LoadTaiKhoan(currentFilter);
+                AddLog($"Chuyển sang trang {currentPage}");
+            }
+        }
+
+        // ✅ PHÂN TRANG: Nút trang sau
+        private void btnNextPage_Click(object sender, EventArgs e)
+        {
+            if (currentPage < totalPages)
+            {
+                currentPage++;
+                LoadTaiKhoan(currentFilter);
+                AddLog($"Chuyển sang trang {currentPage}");
+            }
+        }
+
+        // ✅ PHÂN TRANG: Thay đổi số bản ghi mỗi trang
+        private void cboPageSize_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (int.TryParse(cboPageSize.SelectedItem?.ToString(), out int newPageSize))
+            {
+                pageSize = newPageSize;
+                currentPage = 1; // Reset về trang đầu
+                LoadTaiKhoan(currentFilter);
+                AddLog($"Đổi số bản ghi mỗi trang: {pageSize}");
+            }
+        }
+
+        private void btnAdd_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string tenDN = txtTenDN.Text.Trim();
+                string matKhau = txtMatKhau.Text.Trim();
+                string maTVText = txtMaTV.Text.Trim();
+                string quyenHan = cboQuyenHan.SelectedItem?.ToString();
+                string trangThai = cboTrangThai.SelectedItem?.ToString();
+
+                // ✅ VALIDATE: Tên đăng nhập không được để trống
+                if (string.IsNullOrEmpty(tenDN))
+                {
+                    MessageBox.Show("❌ Tên đăng nhập không được để trống!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtTenDN.Focus();
+                    return;
+                }
+
+                // ✅ VALIDATE: Tên đăng nhập chi tiết
+                if (!ValidateTenDangNhap(tenDN))
+                {
+                    return;
+                }
+
+                // ✅ VALIDATE: Mật khẩu không được để trống
+                if (string.IsNullOrEmpty(matKhau))
+                {
+                    MessageBox.Show("❌ Mật khẩu không được để trống!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtMatKhau.Focus();
+                    return;
+                }
+
+                // ✅ VALIDATE: Mật khẩu chi tiết
+                if (!ValidateMatKhau(matKhau))
+                {
+                    return;
+                }
+
+                // ✅ VALIDATE: Mã thành viên không được để trống
+                if (string.IsNullOrEmpty(maTVText))
+                {
+                    MessageBox.Show("❌ Mã thành viên không được để trống!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtMaTV.Focus();
+                    return;
+                }
+
+                if (!int.TryParse(maTVText, out int maTV))
+                {
+                    MessageBox.Show("❌ Mã thành viên phải là số!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtMaTV.Focus();
+                    return;
+                }
+
+                // ✅ VALIDATE: Check if MaTV exists in ThanhVien table
+                var memberInfo = GetMemberInfo(maTV);
+                if (memberInfo == null)
+                {
+                    MessageBox.Show(
+                        $"❌ Mã thành viên {maTV} không tồn tại trong hệ thống!\n\n" +
+                        $"Vui lòng:\n" +
+                        $"1. Kiểm tra lại mã thành viên\n" +
+                        $"2. Hoặc tạo thành viên mới trước trong module 'Quản lý thành viên'",
+                        "Lỗi - Thành viên không tồn tại", 
+                        MessageBoxButtons.OK, 
+                        MessageBoxIcon.Error);
+                    txtMaTV.Focus();
+                    return;
+                }
+
+                // Default values
+                if (string.IsNullOrEmpty(quyenHan))
+                {
+                    quyenHan = "Thành viên";
+                }
+
+                if (string.IsNullOrEmpty(trangThai))
+                {
+                    trangThai = "Chờ kích hoạt";
+                }
+
+                // ✅ VALIDATE: Kiểm tra quyền hạn Admin
+                if (string.Equals(quyenHan, "Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Kiểm tra quyền của người dùng hiện tại
+                    if (!string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
+                    {
+                        MessageBox.Show(
+                            "⛔ KHÔNG CÓ QUYỀN!\n\n" +
+                            "Chỉ có Admin mới được phép đặt quyền Admin cho tài khoản khác.\n\n" +
+                            $"Vai trò hiện tại của bạn: {currentUserRole}",
+                            "Không có quyền",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                        cboQuyenHan.SelectedItem = "Thành viên";
+                        AddLog($"LỖI: Cố tạo Admin khi không có quyền - User: {currentUserRole}");
+                        return;
+                    }
+
+                    // Kiểm tra số lượng Admin hiện tại
+                    int adminCount = GetAdminCount();
+                    if (adminCount >= 1)
+                    {
+                        MessageBox.Show(
+                            "❌ KHÔNG THỂ TẠO ADMIN MỚI!\n\n" +
+                            "Hệ thống chỉ cho phép TỐI ĐA MỘT ADMIN duy nhất.\n" +
+                            $"Hiện tại đã có {adminCount} Admin trong hệ thống.\n\n" +
+                            "Để tạo Admin mới, bạn cần:\n" +
+                            "1. Đổi quyền hạn của Admin hiện tại sang quyền khác\n" +
+                            "2. Sau đó mới có thể tạo Admin mới",
+                            "Vi phạm quy tắc hệ thống",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                        cboQuyenHan.SelectedItem = "Thành viên";
+                        AddLog($"LỖI: Cố tạo Admin thứ {adminCount + 1}");
+                        return;
+                    }
+
+                    // Xác nhận tạo Admin
+                    DialogResult confirmAdmin = MessageBox.Show(
+                        "⚠️ XÁC NHẬN TẠO ADMIN!\n\n" +
+                        $"Bạn đang tạo tài khoản Admin cho:\n" +
+                        $"• Họ tên: {memberInfo.HoTen}\n" +
+                        $"• Tài khoản: {tenDN}\n\n" +
+                        "Admin sẽ có toàn quyền trong hệ thống.\n\n" +
+                        "Bạn có CHẮC CHẮN muốn tiếp tục?",
+                        "Xác nhận tạo Admin",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (confirmAdmin != DialogResult.Yes)
+                    {
+                        AddLog("HỦY: Tạo tài khoản Admin");
+                        return;
+                    }
+                }
+
+                // ✅ INSERT vào bảng TaiKhoan
+                using (var conn = new SqlConnection(connectionString))
+                using (var cmd = new SqlCommand(@"
+                    INSERT INTO TaiKhoan(TenDN, MatKhau, MaTV, QuyenHan, TrangThai, NgayTao) 
+                    VALUES(@tendn, @matkhau, @matv, @quyenhan, @trangthai, GETDATE())", conn))
+                {
+                    cmd.Parameters.AddWithValue("@tendn", tenDN);
+                    cmd.Parameters.AddWithValue("@matkhau", matKhau); // Plain text (theo yêu cầu không mã hóa)
+                    cmd.Parameters.AddWithValue("@matv", maTV);
+                    cmd.Parameters.AddWithValue("@quyenhan", quyenHan);
+                    cmd.Parameters.AddWithValue("@trangthai", trangThai);
+
+                    conn.Open();
+                    try
+                    {
+                        int r = cmd.ExecuteNonQuery();
+                        if (r > 0)
+                        {
+                            string successMessage = "✅ Thêm tài khoản thành công!\n\n" +
+                                $"👤 Họ tên: {memberInfo.HoTen}\n" +
+                                $"📱 SĐT: {memberInfo.SDT}\n" +
+                                $"🔑 Tài khoản: {tenDN}\n" +
+                                $"⚡ Quyền hạn: {quyenHan}\n" +
+                                $"📊 Trạng thái: {trangThai}";
+
+                            if (string.Equals(quyenHan, "Admin", StringComparison.OrdinalIgnoreCase))
+                            {
+                                successMessage += "\n\n👑 VAI TRÒ ADMIN ĐÃ ĐƯỢC GÁN!";
+                            }
+
+                            MessageBox.Show(successMessage, "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            AddLog($"Thêm tài khoản: {tenDN} - {quyenHan} cho {memberInfo.HoTen}");
+                            ClearFields();
+                            currentPage = 1; // ✅ PHÂN TRANG: Reset về trang đầu khi thêm mới
+                            LoadTaiKhoan();
+                        }
+                    }
+                    catch (SqlException sex)
+                    {
+                        if (sex.Number == 2627 || sex.Number == 2601) // Unique constraint violation
+                        {
+                            MessageBox.Show(
+                                $"❌ Tên đăng nhập '{tenDN}' hoặc Mã thành viên {maTV} đã được sử dụng!\n\n" +
+                                "Vui lòng:\n" +
+                                "• Chọn tên đăng nhập khác\n" +
+                                "• Hoặc kiểm tra mã thành viên", 
+                                "Lỗi - Trùng lặp dữ liệu", 
+                                MessageBoxButtons.OK, 
+                                MessageBoxIcon.Error);
+                        }
+                        else if (sex.Number == 547) // Foreign key constraint violation
+                        {
+                            MessageBox.Show(
+                                $"❌ Mã thành viên {maTV} không tồn tại trong hệ thống!\n\n" +
+                                "Vui lòng tạo thành viên trước trong module 'Quản lý thành viên'", 
+                                "Lỗi - Foreign Key", 
+                                MessageBoxButtons.OK, 
+                                MessageBoxIcon.Error);
+                        }
+                        else
+                        {
+                            MessageBox.Show("❌ Lỗi khi thêm tài khoản: " + sex.Message, "Lỗi SQL", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        AddLog($"LỖI: Thêm tài khoản {tenDN} - {sex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("❌ Lỗi khi thêm tài khoản: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                AddLog("LỖI: Thêm tài khoản - " + ex.Message);
+            }
+        }
+
+        private void ClearFields()
+        {
+            txtMaTK.Clear();
+            txtTenDN.Clear();
+            txtMatKhau.Clear();
+            txtMaTV.Clear();
+            txtHoTen.Clear();
+            txtSDT.Clear();
+            cboQuyenHan.SelectedIndex = -1;
+            cboTrangThai.SelectedIndex = -1;
+            dtpNgayTao.Value = DateTime.Now;
+            dtpLanDangNhapCuoi.Value = DateTime.Now;
+            txtSearch.Clear();
+        }
+
+        private void label10_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            currentPage = 1; // ✅ PHÂN TRANG: Reset về trang đầu
+            LoadTaiKhoan();
+            txtSearch.Clear();
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            string searchText = txtSearch.Text.Trim();
+            currentPage = 1; // ✅ PHÂN TRANG: Reset về trang đầu khi tìm kiếm
+            LoadTaiKhoan(searchText);
+            AddLog($"Tìm kiếm: {searchText}");
         }
 
         private void UpdateStatistics()
@@ -516,215 +868,6 @@ namespace ClubManageApp
             return true;
         }
 
-        private void btnAdd_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string tenDN = txtTenDN.Text.Trim();
-                string matKhau = txtMatKhau.Text.Trim();
-                string maTVText = txtMaTV.Text.Trim();
-                string quyenHan = cboQuyenHan.SelectedItem?.ToString();
-                string trangThai = cboTrangThai.SelectedItem?.ToString();
-
-                // ✅ VALIDATE: Tên đăng nhập không được để trống
-                if (string.IsNullOrEmpty(tenDN))
-                {
-                    MessageBox.Show("❌ Tên đăng nhập không được để trống!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtTenDN.Focus();
-                    return;
-                }
-
-                // ✅ VALIDATE: Tên đăng nhập chi tiết
-                if (!ValidateTenDangNhap(tenDN))
-                {
-                    return;
-                }
-
-                // ✅ VALIDATE: Mật khẩu không được để trống
-                if (string.IsNullOrEmpty(matKhau))
-                {
-                    MessageBox.Show("❌ Mật khẩu không được để trống!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtMatKhau.Focus();
-                    return;
-                }
-
-                // ✅ VALIDATE: Mật khẩu chi tiết
-                if (!ValidateMatKhau(matKhau))
-                {
-                    return;
-                }
-
-                // ✅ VALIDATE: Mã thành viên không được để trống
-                if (string.IsNullOrEmpty(maTVText))
-                {
-                    MessageBox.Show("❌ Mã thành viên không được để trống!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtMaTV.Focus();
-                    return;
-                }
-
-                if (!int.TryParse(maTVText, out int maTV))
-                {
-                    MessageBox.Show("❌ Mã thành viên phải là số!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtMaTV.Focus();
-                    return;
-                }
-
-                // ✅ VALIDATE: Check if MaTV exists in ThanhVien table
-                var memberInfo = GetMemberInfo(maTV);
-                if (memberInfo == null)
-                {
-                    MessageBox.Show(
-                        $"❌ Mã thành viên {maTV} không tồn tại trong hệ thống!\n\n" +
-                        $"Vui lòng:\n" +
-                        $"1. Kiểm tra lại mã thành viên\n" +
-                        $"2. Hoặc tạo thành viên mới trước trong module 'Quản lý thành viên'",
-                        "Lỗi - Thành viên không tồn tại", 
-                        MessageBoxButtons.OK, 
-                        MessageBoxIcon.Error);
-                    txtMaTV.Focus();
-                    return;
-                }
-
-                // Default values
-                if (string.IsNullOrEmpty(quyenHan))
-                {
-                    quyenHan = "Thành viên";
-                }
-
-                if (string.IsNullOrEmpty(trangThai))
-                {
-                    trangThai = "Chờ kích hoạt";
-                }
-
-                // ✅ VALIDATE: Kiểm tra quyền hạn Admin
-                if (string.Equals(quyenHan, "Admin", StringComparison.OrdinalIgnoreCase))
-                {
-                    // Kiểm tra quyền của người dùng hiện tại
-                    if (!string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
-                    {
-                        MessageBox.Show(
-                            "⛔ KHÔNG CÓ QUYỀN!\n\n" +
-                            "Chỉ có Admin mới được phép đặt quyền Admin cho tài khoản khác.\n\n" +
-                            $"Vai trò hiện tại của bạn: {currentUserRole}",
-                            "Không có quyền",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-                        cboQuyenHan.SelectedItem = "Thành viên";
-                        AddLog($"LỖI: Cố tạo Admin khi không có quyền - User: {currentUserRole}");
-                        return;
-                    }
-
-                    // Kiểm tra số lượng Admin hiện tại
-                    int adminCount = GetAdminCount();
-                    if (adminCount >= 1)
-                    {
-                        MessageBox.Show(
-                            "❌ KHÔNG THỂ TẠO ADMIN MỚI!\n\n" +
-                            "Hệ thống chỉ cho phép TỐI ĐA MỘT ADMIN duy nhất.\n" +
-                            $"Hiện tại đã có {adminCount} Admin trong hệ thống.\n\n" +
-                            "Để tạo Admin mới, bạn cần:\n" +
-                            "1. Đổi quyền hạn của Admin hiện tại sang quyền khác\n" +
-                            "2. Sau đó mới có thể tạo Admin mới",
-                            "Vi phạm quy tắc hệ thống",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-                        cboQuyenHan.SelectedItem = "Thành viên";
-                        AddLog($"LỖI: Cố tạo Admin thứ {adminCount + 1}");
-                        return;
-                    }
-
-                    // Xác nhận tạo Admin
-                    DialogResult confirmAdmin = MessageBox.Show(
-                        "⚠️ XÁC NHẬN TẠO ADMIN!\n\n" +
-                        $"Bạn đang tạo tài khoản Admin cho:\n" +
-                        $"• Họ tên: {memberInfo.HoTen}\n" +
-                        $"• Tài khoản: {tenDN}\n\n" +
-                        "Admin sẽ có toàn quyền trong hệ thống.\n\n" +
-                        "Bạn có CHẮC CHẮN muốn tiếp tục?",
-                        "Xác nhận tạo Admin",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question);
-
-                    if (confirmAdmin != DialogResult.Yes)
-                    {
-                        AddLog("HỦY: Tạo tài khoản Admin");
-                        return;
-                    }
-                }
-
-                // ✅ INSERT vào bảng TaiKhoan
-                using (var conn = new SqlConnection(connectionString))
-                using (var cmd = new SqlCommand(@"
-                    INSERT INTO TaiKhoan(TenDN, MatKhau, MaTV, QuyenHan, TrangThai, NgayTao) 
-                    VALUES(@tendn, @matkhau, @matv, @quyenhan, @trangthai, GETDATE())", conn))
-                {
-                    cmd.Parameters.AddWithValue("@tendn", tenDN);
-                    cmd.Parameters.AddWithValue("@matkhau", matKhau); // Plain text (theo yêu cầu không mã hóa)
-                    cmd.Parameters.AddWithValue("@matv", maTV);
-                    cmd.Parameters.AddWithValue("@quyenhan", quyenHan);
-                    cmd.Parameters.AddWithValue("@trangthai", trangThai);
-
-                    conn.Open();
-                    try
-                    {
-                        int r = cmd.ExecuteNonQuery();
-                        if (r > 0)
-                        {
-                            string successMessage = "✅ Thêm tài khoản thành công!\n\n" +
-                                $"👤 Họ tên: {memberInfo.HoTen}\n" +
-                                $"📱 SĐT: {memberInfo.SDT}\n" +
-                                $"🔑 Tài khoản: {tenDN}\n" +
-                                $"⚡ Quyền hạn: {quyenHan}\n" +
-                                $"📊 Trạng thái: {trangThai}";
-
-                            if (string.Equals(quyenHan, "Admin", StringComparison.OrdinalIgnoreCase))
-                            {
-                                successMessage += "\n\n👑 VAI TRÒ ADMIN ĐÃ ĐƯỢC GÁN!";
-                            }
-
-                            MessageBox.Show(successMessage, "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            AddLog($"Thêm tài khoản: {tenDN} - {quyenHan} cho {memberInfo.HoTen}");
-                            ClearFields();
-                            LoadTaiKhoan();
-                        }
-                    }
-                    catch (SqlException sex)
-                    {
-                        if (sex.Number == 2627 || sex.Number == 2601) // Unique constraint violation
-                        {
-                            MessageBox.Show(
-                                $"❌ Tên đăng nhập '{tenDN}' hoặc Mã thành viên {maTV} đã được sử dụng!\n\n" +
-                                "Vui lòng:\n" +
-                                "• Chọn tên đăng nhập khác\n" +
-                                "• Hoặc kiểm tra mã thành viên", 
-                                "Lỗi - Trùng lặp dữ liệu", 
-                                MessageBoxButtons.OK, 
-                                MessageBoxIcon.Error);
-                        }
-                        else if (sex.Number == 547) // Foreign key constraint violation
-                        {
-                            MessageBox.Show(
-                                $"❌ Mã thành viên {maTV} không tồn tại trong hệ thống!\n\n" +
-                                "Vui lòng tạo thành viên trước trong module 'Quản lý thành viên'", 
-                                "Lỗi - Foreign Key", 
-                                MessageBoxButtons.OK, 
-                                MessageBoxIcon.Error);
-                        }
-                        else
-                        {
-                            MessageBox.Show("❌ Lỗi khi thêm tài khoản: " + sex.Message, "Lỗi SQL", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        AddLog($"LỖI: Thêm tài khoản {tenDN} - {sex.Message}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("❌ Lỗi khi thêm tài khoản: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                AddLog("LỖI: Thêm tài khoản - " + ex.Message);
-            }
-        }
-
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             try
@@ -918,7 +1061,7 @@ namespace ClubManageApp
             catch (Exception ex)
             {
                 MessageBox.Show("❌ Lỗi khi cập nhật: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                AddLog("LỎI: Cập nhật tài khoản - " + ex.Message);
+                AddLog("LỖI: Cập nhật tài khoản - " + ex.Message);
             }
         }
 
@@ -1094,13 +1237,13 @@ namespace ClubManageApp
                 {
                     MessageBox.Show($"❌ Lỗi SQL khi xóa: {sqlEx.Message}", "Lỗi", 
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    AddLog($"LỎI: Xóa tài khoản - {sqlEx.Message}");
+                    AddLog($"LỖI: Xóa tài khoản - {sqlEx.Message}");
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("❌ Lỗi khi xóa: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                AddLog("LỎI: Xóa tài khoản - " + ex.Message);
+                AddLog("LỖI: Xóa tài khoản - " + ex.Message);
             }
         }
 
@@ -1108,19 +1251,6 @@ namespace ClubManageApp
         {
             ClearFields();
             AddLog("Làm mới form nhập liệu");
-        }
-
-        private void btnRefresh_Click(object sender, EventArgs e)
-        {
-            LoadTaiKhoan();
-            txtSearch.Clear();
-        }
-
-        private void btnSearch_Click(object sender, EventArgs e)
-        {
-            string searchText = txtSearch.Text.Trim();
-            LoadTaiKhoan(searchText);
-            AddLog($"Tìm kiếm: {searchText}");
         }
 
         private void btnClearLog_Click(object sender, EventArgs e)
@@ -1183,26 +1313,6 @@ namespace ClubManageApp
             {
                 MessageBox.Show("Lỗi khi chọn tài khoản: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void ClearFields()
-        {
-            txtMaTK.Clear();
-            txtTenDN.Clear();
-            txtMatKhau.Clear();
-            txtMaTV.Clear();
-            txtHoTen.Clear();
-            txtSDT.Clear();
-            cboQuyenHan.SelectedIndex = -1;
-            cboTrangThai.SelectedIndex = -1;
-            dtpNgayTao.Value = DateTime.Now;
-            dtpLanDangNhapCuoi.Value = DateTime.Now;
-            txtSearch.Clear();
-        }
-
-        private void label10_Click(object sender, EventArgs e)
-        {
-
         }
     }
 
