@@ -11,7 +11,7 @@ namespace ClubManageApp
         // ?? CH? S?A CONNECTION STRING ? ?ÂY
         // Sau khi pull code v?, ch? c?n thay Data Source và thông tin login t?i ?ây
     
-        private static string _connectionString = @"Data Source=DESKTOP-EJIGPN3;Initial Catalog=QL_APP_LSC;Persist Security Info=True;User ID=sa;Password=1234;Encrypt=True;TrustServerCertificate=True";
+        private static string _connectionString = @"Data Source=21AK22-COM;Initial Catalog=QL_CLB_LSC;Persist Security Info=True;User ID=sa;Password=912005;Encrypt=True;TrustServerCertificate=True";
         /// <summary>
         /// L?y connection string cho toàn b? ?ng d?ng
         /// </summary>
