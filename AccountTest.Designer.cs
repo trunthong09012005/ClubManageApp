@@ -32,10 +32,10 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.pnlTaiKhoan = new System.Windows.Forms.Panel();
             this.pnlPagination = new System.Windows.Forms.Panel();
+            this.cboPageSize = new System.Windows.Forms.ComboBox();
             this.btnPreviousPage = new System.Windows.Forms.Button();
             this.lblPageInfo = new System.Windows.Forms.Label();
             this.btnNextPage = new System.Windows.Forms.Button();
-            this.cboPageSize = new System.Windows.Forms.ComboBox();
             this.dgvTaiKhoan = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.txtSDT = new System.Windows.Forms.TextBox();
@@ -123,6 +123,22 @@
             this.pnlPagination.Size = new System.Drawing.Size(894, 40);
             this.pnlPagination.TabIndex = 3;
             // 
+            // cboPageSize
+            // 
+            this.cboPageSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboPageSize.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboPageSize.FormattingEnabled = true;
+            this.cboPageSize.Items.AddRange(new object[] {
+            "10",
+            "20",
+            "50",
+            "100"});
+            this.cboPageSize.Location = new System.Drawing.Point(790, 7);
+            this.cboPageSize.Name = "cboPageSize";
+            this.cboPageSize.Size = new System.Drawing.Size(90, 23);
+            this.cboPageSize.TabIndex = 3;
+            this.cboPageSize.SelectedIndexChanged += new System.EventHandler(this.cboPageSize_SelectedIndexChanged);
+            // 
             // btnPreviousPage
             // 
             this.btnPreviousPage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
@@ -162,22 +178,6 @@
             this.btnNextPage.Text = "Tiếp ▶";
             this.btnNextPage.UseVisualStyleBackColor = false;
             this.btnNextPage.Click += new System.EventHandler(this.btnNextPage_Click);
-            // 
-            // cboPageSize
-            // 
-            this.cboPageSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboPageSize.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cboPageSize.FormattingEnabled = true;
-            this.cboPageSize.Items.AddRange(new object[] {
-            "10",
-            "20",
-            "50",
-            "100"});
-            this.cboPageSize.Location = new System.Drawing.Point(790, 7);
-            this.cboPageSize.Name = "cboPageSize";
-            this.cboPageSize.Size = new System.Drawing.Size(90, 23);
-            this.cboPageSize.TabIndex = 3;
-            this.cboPageSize.SelectedIndexChanged += new System.EventHandler(this.cboPageSize_SelectedIndexChanged);
             // 
             // dgvTaiKhoan
             // 
@@ -560,7 +560,7 @@
             this.pnlLog.Controls.Add(this.panel4);
             this.pnlLog.Location = new System.Drawing.Point(961, 545);
             this.pnlLog.Name = "pnlLog";
-            this.pnlLog.Size = new System.Drawing.Size(500, 306);
+            this.pnlLog.Size = new System.Drawing.Size(332, 306);
             this.pnlLog.TabIndex = 1;
             // 
             // dgvLog
@@ -583,7 +583,7 @@
             this.dgvLog.Name = "dgvLog";
             this.dgvLog.ReadOnly = true;
             this.dgvLog.RowHeadersVisible = false;
-            this.dgvLog.Size = new System.Drawing.Size(477, 232);
+            this.dgvLog.Size = new System.Drawing.Size(308, 232);
             this.dgvLog.TabIndex = 1;
             // 
             // panel4
@@ -594,7 +594,7 @@
             this.panel4.Controls.Add(this.lblLog);
             this.panel4.Location = new System.Drawing.Point(10, 10);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(478, 40);
+            this.panel4.Size = new System.Drawing.Size(308, 40);
             this.panel4.TabIndex = 0;
             // 
             // btnClearLog
@@ -604,7 +604,7 @@
             this.btnClearLog.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearLog.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnClearLog.ForeColor = System.Drawing.Color.White;
-            this.btnClearLog.Location = new System.Drawing.Point(403, 9);
+            this.btnClearLog.Location = new System.Drawing.Point(225, 5);
             this.btnClearLog.Name = "btnClearLog";
             this.btnClearLog.Size = new System.Drawing.Size(70, 25);
             this.btnClearLog.TabIndex = 1;
@@ -630,7 +630,7 @@
             this.pnlCongCu.Controls.Add(this.panel3);
             this.pnlCongCu.Location = new System.Drawing.Point(961, 26);
             this.pnlCongCu.Name = "pnlCongCu";
-            this.pnlCongCu.Size = new System.Drawing.Size(500, 513);
+            this.pnlCongCu.Size = new System.Drawing.Size(332, 513);
             this.pnlCongCu.TabIndex = 1;
             // 
             // panel3
@@ -650,7 +650,7 @@
             this.panel3.Controls.Add(this.lblCongCu);
             this.panel3.Location = new System.Drawing.Point(10, 10);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(478, 486);
+            this.panel3.Size = new System.Drawing.Size(308, 486);
             this.panel3.TabIndex = 0;
             // 
             // lblChoKichHoat
@@ -660,7 +660,7 @@
             this.lblChoKichHoat.ForeColor = System.Drawing.Color.White;
             this.lblChoKichHoat.Location = new System.Drawing.Point(20, 419);
             this.lblChoKichHoat.Name = "lblChoKichHoat";
-            this.lblChoKichHoat.Size = new System.Drawing.Size(429, 35);
+            this.lblChoKichHoat.Size = new System.Drawing.Size(258, 35);
             this.lblChoKichHoat.TabIndex = 10;
             this.lblChoKichHoat.Text = "Chờ kích hoạt: 0";
             this.lblChoKichHoat.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -672,7 +672,7 @@
             this.lblKhoa.ForeColor = System.Drawing.Color.White;
             this.lblKhoa.Location = new System.Drawing.Point(20, 379);
             this.lblKhoa.Name = "lblKhoa";
-            this.lblKhoa.Size = new System.Drawing.Size(429, 35);
+            this.lblKhoa.Size = new System.Drawing.Size(258, 35);
             this.lblKhoa.TabIndex = 9;
             this.lblKhoa.Text = "Khóa: 0";
             this.lblKhoa.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -684,7 +684,7 @@
             this.lblHoatDong.ForeColor = System.Drawing.Color.White;
             this.lblHoatDong.Location = new System.Drawing.Point(20, 339);
             this.lblHoatDong.Name = "lblHoatDong";
-            this.lblHoatDong.Size = new System.Drawing.Size(429, 35);
+            this.lblHoatDong.Size = new System.Drawing.Size(258, 35);
             this.lblHoatDong.TabIndex = 8;
             this.lblHoatDong.Text = "Hoạt động: 0";
             this.lblHoatDong.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -706,7 +706,7 @@
             this.lblThanhVien.ForeColor = System.Drawing.Color.White;
             this.lblThanhVien.Location = new System.Drawing.Point(20, 249);
             this.lblThanhVien.Name = "lblThanhVien";
-            this.lblThanhVien.Size = new System.Drawing.Size(429, 35);
+            this.lblThanhVien.Size = new System.Drawing.Size(258, 35);
             this.lblThanhVien.TabIndex = 6;
             this.lblThanhVien.Text = "Thành viên: 0";
             this.lblThanhVien.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -718,7 +718,7 @@
             this.lblQuanTriVien.ForeColor = System.Drawing.Color.White;
             this.lblQuanTriVien.Location = new System.Drawing.Point(20, 209);
             this.lblQuanTriVien.Name = "lblQuanTriVien";
-            this.lblQuanTriVien.Size = new System.Drawing.Size(429, 35);
+            this.lblQuanTriVien.Size = new System.Drawing.Size(258, 35);
             this.lblQuanTriVien.TabIndex = 5;
             this.lblQuanTriVien.Text = "Quản trị viên: 0";
             this.lblQuanTriVien.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -730,7 +730,7 @@
             this.lblAdmin.ForeColor = System.Drawing.Color.White;
             this.lblAdmin.Location = new System.Drawing.Point(20, 169);
             this.lblAdmin.Name = "lblAdmin";
-            this.lblAdmin.Size = new System.Drawing.Size(429, 35);
+            this.lblAdmin.Size = new System.Drawing.Size(258, 35);
             this.lblAdmin.TabIndex = 4;
             this.lblAdmin.Text = "Admin: 0";
             this.lblAdmin.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -775,7 +775,7 @@
             this.lblCongCu.ForeColor = System.Drawing.Color.White;
             this.lblCongCu.Location = new System.Drawing.Point(0, 0);
             this.lblCongCu.Name = "lblCongCu";
-            this.lblCongCu.Size = new System.Drawing.Size(476, 40);
+            this.lblCongCu.Size = new System.Drawing.Size(306, 40);
             this.lblCongCu.TabIndex = 0;
             this.lblCongCu.Text = "THỐNG KÊ VÀ KIỂM SOÁT";
             this.lblCongCu.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -792,8 +792,8 @@
             this.Size = new System.Drawing.Size(1480, 880);
             this.Load += new System.EventHandler(this.ucAccountTest_Load);
             this.pnlTaiKhoan.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvTaiKhoan)).EndInit();
             this.pnlPagination.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvTaiKhoan)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
