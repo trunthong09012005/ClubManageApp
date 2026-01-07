@@ -72,12 +72,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Account.Designer.cs">
-      <DependentUpon>Account.cs</DependentUpon>
-    </Compile>
     <Compile Include="AccountTest.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -192,12 +186,6 @@
     <Compile Include="RoomSelectionForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Schedule.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Schedule.Designer.cs">
-      <DependentUpon>Schedule.cs</DependentUpon>
-    </Compile>
     <Compile Include="SendMailForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -207,21 +195,12 @@
     <Compile Include="SignUp.Designer.cs">
       <DependentUpon>SignUp.cs</DependentUpon>
     </Compile>
-    <Compile Include="User.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="User.Designer.cs">
-      <DependentUpon>User.cs</DependentUpon>
-    </Compile>
     <Compile Include="UserTest.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UserTest.Designer.cs">
       <DependentUpon>UserTest.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Account.resx">
-      <DependentUpon>Account.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="AccountTest.resx">
       <DependentUpon>AccountTest.cs</DependentUpon>
     </EmbeddedResource>
@@ -274,14 +253,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Schedule.resx">
-      <DependentUpon>Schedule.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="SignUp.resx">
       <DependentUpon>SignUp.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="User.resx">
-      <DependentUpon>User.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserTest.resx">
       <DependentUpon>UserTest.cs</DependentUpon>
