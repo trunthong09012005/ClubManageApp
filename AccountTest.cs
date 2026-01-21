@@ -161,8 +161,11 @@ namespace ClubManageApp
         {
             cboQuyenHan.Items.Clear();
             cboQuyenHan.Items.Add("Admin");
-            cboQuyenHan.Items.Add("Quản trị viên");
+            cboQuyenHan.Items.Add("Chủ nhiệm");
+            cboQuyenHan.Items.Add("Phó chủ nhiệm");
+            cboQuyenHan.Items.Add("Trưởng ban");
             cboQuyenHan.Items.Add("Thành viên");
+            cboQuyenHan.Items.Add("Cộng tác viên");
         }
 
         private void PopulateTrangThai()
