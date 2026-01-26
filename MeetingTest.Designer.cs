@@ -201,7 +201,7 @@
             this.lblThongTinSuKien.Name = "lblThongTinSuKien";
             this.lblThongTinSuKien.Size = new System.Drawing.Size(168, 25);
             this.lblThongTinSuKien.TabIndex = 0;
-            this.lblThongTinSuKien.Text = "Thông tin sự kiện";
+            this.lblThongTinSuKien.Text = "QUẢN LÝ LỊCH HỌP";
             // 
             // pnlChucNang
             // 
