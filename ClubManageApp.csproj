@@ -78,12 +78,7 @@
     <Compile Include="AccountTest.Designer.cs">
       <DependentUpon>AccountTest.cs</DependentUpon>
     </Compile>
-    <Compile Include="Activity.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Activity.Designer.cs">
-      <DependentUpon>Activity.cs</DependentUpon>
-    </Compile>
+    <Compile Include="ActivityData.cs" />
     <Compile Include="ActivityDetailForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -95,6 +90,12 @@
     </Compile>
     <Compile Include="ActivityEditForm.Designer.cs">
       <DependentUpon>ActivityEditForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ActivityTest.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ActivityTest.Designer.cs">
+      <DependentUpon>ActivityTest.cs</DependentUpon>
     </Compile>
     <Compile Include="ChatbotPanel.cs">
       <SubType>UserControl</SubType>
@@ -174,6 +175,18 @@
     <Compile Include="Notification.Designer.cs">
       <DependentUpon>Notification.cs</DependentUpon>
     </Compile>
+    <Compile Include="NotificationEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NotificationEditForm.Designer.cs">
+      <DependentUpon>NotificationEditForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NotificationTest.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="NotificationTest.Designer.cs">
+      <DependentUpon>NotificationTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="ParticipantModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Project.cs">
@@ -204,14 +217,14 @@
     <EmbeddedResource Include="AccountTest.resx">
       <DependentUpon>AccountTest.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Activity.resx">
-      <DependentUpon>Activity.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ActivityDetailForm.resx">
       <DependentUpon>ActivityDetailForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ActivityEditForm.resx">
       <DependentUpon>ActivityEditForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ActivityTest.resx">
+      <DependentUpon>ActivityTest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DashBoard.resx">
       <DependentUpon>DashBoard.cs</DependentUpon>
@@ -239,6 +252,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Notification.resx">
       <DependentUpon>Notification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NotificationEditForm.resx">
+      <DependentUpon>NotificationEditForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NotificationTest.resx">
+      <DependentUpon>NotificationTest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Project.resx">
       <DependentUpon>Project.cs</DependentUpon>

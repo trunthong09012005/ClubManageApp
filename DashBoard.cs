@@ -572,7 +572,7 @@ namespace ClubManageApp
                 if (this.lblTimeline != null) this.lblTimeline.Visible = false;
                 if (this.flowTimeline != null) this.flowTimeline.Visible = false;
 
-                var notificationControl = new Notification();
+                var notificationControl = new NotificationTest();
                 notificationControl.Dock = DockStyle.Fill;
                 notificationControl.Margin = new Padding(0);
                 notificationControl.Location = new Point(0, 0);
@@ -753,6 +753,11 @@ namespace ClubManageApp
         }
 
         private void flowTimeline_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panelStats_Paint(object sender, PaintEventArgs e)
         {
 
         }

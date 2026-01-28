@@ -75,18 +75,18 @@
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pnlMain.Name = "pnlMain";
-            this.pnlMain.Size = new System.Drawing.Size(971, 570);
+            this.pnlMain.Size = new System.Drawing.Size(1092, 712);
             this.pnlMain.TabIndex = 0;
             // 
             // pnlGrid
             // 
             this.pnlGrid.Controls.Add(this.dgvNotifications);
             this.pnlGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlGrid.Location = new System.Drawing.Point(0, 253);
+            this.pnlGrid.Location = new System.Drawing.Point(0, 316);
             this.pnlGrid.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pnlGrid.Name = "pnlGrid";
-            this.pnlGrid.Padding = new System.Windows.Forms.Padding(13, 12, 13, 12);
-            this.pnlGrid.Size = new System.Drawing.Size(971, 283);
+            this.pnlGrid.Padding = new System.Windows.Forms.Padding(15);
+            this.pnlGrid.Size = new System.Drawing.Size(1092, 354);
             this.pnlGrid.TabIndex = 0;
             // 
             // dgvNotifications
@@ -95,13 +95,13 @@
             this.dgvNotifications.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvNotifications.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvNotifications.GridColor = System.Drawing.Color.White;
-            this.dgvNotifications.Location = new System.Drawing.Point(13, 12);
+            this.dgvNotifications.Location = new System.Drawing.Point(15, 15);
             this.dgvNotifications.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dgvNotifications.Name = "dgvNotifications";
             this.dgvNotifications.RowHeadersVisible = false;
             this.dgvNotifications.RowHeadersWidth = 62;
             this.dgvNotifications.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvNotifications.Size = new System.Drawing.Size(945, 259);
+            this.dgvNotifications.Size = new System.Drawing.Size(1062, 324);
             this.dgvNotifications.StandardTab = true;
             this.dgvNotifications.TabIndex = 0;
             this.dgvNotifications.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvNotifications_CellContentClick);
@@ -121,11 +121,11 @@
             this.pnlFilter.Controls.Add(this.cboSortBy);
             this.pnlFilter.Controls.Add(this.btnResetFilter);
             this.pnlFilter.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlFilter.Location = new System.Drawing.Point(0, 163);
+            this.pnlFilter.Location = new System.Drawing.Point(0, 204);
             this.pnlFilter.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pnlFilter.Name = "pnlFilter";
-            this.pnlFilter.Padding = new System.Windows.Forms.Padding(13, 12, 13, 12);
-            this.pnlFilter.Size = new System.Drawing.Size(971, 90);
+            this.pnlFilter.Padding = new System.Windows.Forms.Padding(15);
+            this.pnlFilter.Size = new System.Drawing.Size(1092, 112);
             this.pnlFilter.TabIndex = 1;
             // 
             // btnRefresh
@@ -134,10 +134,10 @@
             this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefresh.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnRefresh.ForeColor = System.Drawing.Color.White;
-            this.btnRefresh.Location = new System.Drawing.Point(830, 41);
+            this.btnRefresh.Location = new System.Drawing.Point(934, 51);
             this.btnRefresh.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(124, 42);
+            this.btnRefresh.Size = new System.Drawing.Size(140, 52);
             this.btnRefresh.TabIndex = 0;
             this.btnRefresh.Text = "🔄 Làm mới";
             this.btnRefresh.UseVisualStyleBackColor = false;
@@ -146,19 +146,19 @@
             // 
             this.lblSearch.AutoSize = true;
             this.lblSearch.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblSearch.Location = new System.Drawing.Point(13, 10);
+            this.lblSearch.Location = new System.Drawing.Point(15, 12);
             this.lblSearch.Name = "lblSearch";
-            this.lblSearch.Size = new System.Drawing.Size(73, 20);
+            this.lblSearch.Size = new System.Drawing.Size(88, 25);
             this.lblSearch.TabIndex = 0;
             this.lblSearch.Text = "Tìm kiếm:";
             // 
             // txtSearch
             // 
             this.txtSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtSearch.Location = new System.Drawing.Point(97, 11);
+            this.txtSearch.Location = new System.Drawing.Point(109, 14);
             this.txtSearch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(267, 22);
+            this.txtSearch.Size = new System.Drawing.Size(300, 26);
             this.txtSearch.TabIndex = 1;
             this.txtSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtSearch_KeyPress);
             // 
@@ -168,10 +168,10 @@
             this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSearch.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnSearch.ForeColor = System.Drawing.Color.White;
-            this.btnSearch.Location = new System.Drawing.Point(385, 6);
+            this.btnSearch.Location = new System.Drawing.Point(433, 8);
             this.btnSearch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(97, 31);
+            this.btnSearch.Size = new System.Drawing.Size(109, 39);
             this.btnSearch.TabIndex = 2;
             this.btnSearch.Text = "🔍 Tìm";
             this.btnSearch.UseVisualStyleBackColor = false;
@@ -180,47 +180,47 @@
             // 
             this.lblFilterType.AutoSize = true;
             this.lblFilterType.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblFilterType.Location = new System.Drawing.Point(508, 10);
+            this.lblFilterType.Location = new System.Drawing.Point(572, 12);
             this.lblFilterType.Name = "lblFilterType";
-            this.lblFilterType.Size = new System.Drawing.Size(61, 20);
+            this.lblFilterType.Size = new System.Drawing.Size(72, 25);
             this.lblFilterType.TabIndex = 3;
             this.lblFilterType.Text = "Loại TB:";
             // 
             // cboFilterType
             // 
             this.cboFilterType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboFilterType.Location = new System.Drawing.Point(596, 10);
+            this.cboFilterType.Location = new System.Drawing.Point(670, 12);
             this.cboFilterType.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cboFilterType.Name = "cboFilterType";
-            this.cboFilterType.Size = new System.Drawing.Size(360, 24);
+            this.cboFilterType.Size = new System.Drawing.Size(404, 28);
             this.cboFilterType.TabIndex = 4;
             // 
             // lblFilterStatus
             // 
             this.lblFilterStatus.AutoSize = true;
             this.lblFilterStatus.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblFilterStatus.Location = new System.Drawing.Point(18, 50);
+            this.lblFilterStatus.Location = new System.Drawing.Point(20, 62);
             this.lblFilterStatus.Name = "lblFilterStatus";
-            this.lblFilterStatus.Size = new System.Drawing.Size(78, 20);
+            this.lblFilterStatus.Size = new System.Drawing.Size(93, 25);
             this.lblFilterStatus.TabIndex = 5;
             this.lblFilterStatus.Text = "Trạng thái:";
             // 
             // cboFilterStatus
             // 
             this.cboFilterStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboFilterStatus.Location = new System.Drawing.Point(97, 51);
+            this.cboFilterStatus.Location = new System.Drawing.Point(109, 64);
             this.cboFilterStatus.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cboFilterStatus.Name = "cboFilterStatus";
-            this.cboFilterStatus.Size = new System.Drawing.Size(267, 24);
+            this.cboFilterStatus.Size = new System.Drawing.Size(300, 28);
             this.cboFilterStatus.TabIndex = 6;
             // 
             // lblSort
             // 
             this.lblSort.AutoSize = true;
             this.lblSort.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblSort.Location = new System.Drawing.Point(508, 53);
+            this.lblSort.Location = new System.Drawing.Point(572, 66);
             this.lblSort.Name = "lblSort";
-            this.lblSort.Size = new System.Drawing.Size(65, 20);
+            this.lblSort.Size = new System.Drawing.Size(79, 25);
             this.lblSort.TabIndex = 7;
             this.lblSort.Text = "Sắp xếp:";
             // 
@@ -232,10 +232,10 @@
             "Ngày gửi (Cũ nhất)",
             "Tiêu đề (A-Z)",
             "Tiêu đề (Z-A)"});
-            this.cboSortBy.Location = new System.Drawing.Point(596, 54);
+            this.cboSortBy.Location = new System.Drawing.Point(670, 68);
             this.cboSortBy.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cboSortBy.Name = "cboSortBy";
-            this.cboSortBy.Size = new System.Drawing.Size(205, 24);
+            this.cboSortBy.Size = new System.Drawing.Size(230, 28);
             this.cboSortBy.TabIndex = 8;
             this.cboSortBy.SelectedIndexChanged += new System.EventHandler(this.cboSortBy_SelectedIndexChanged);
             // 
@@ -245,10 +245,10 @@
             this.btnResetFilter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnResetFilter.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnResetFilter.ForeColor = System.Drawing.Color.White;
-            this.btnResetFilter.Location = new System.Drawing.Point(385, 47);
+            this.btnResetFilter.Location = new System.Drawing.Point(433, 59);
             this.btnResetFilter.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnResetFilter.Name = "btnResetFilter";
-            this.btnResetFilter.Size = new System.Drawing.Size(97, 31);
+            this.btnResetFilter.Size = new System.Drawing.Size(109, 39);
             this.btnResetFilter.TabIndex = 9;
             this.btnResetFilter.Text = "↺ Đặt lại";
             this.btnResetFilter.UseVisualStyleBackColor = false;
@@ -262,11 +262,11 @@
             this.pnlToolbar.Controls.Add(this.btnView);
             this.pnlToolbar.Controls.Add(this.btnDelete);
             this.pnlToolbar.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlToolbar.Location = new System.Drawing.Point(0, 92);
+            this.pnlToolbar.Location = new System.Drawing.Point(0, 115);
             this.pnlToolbar.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pnlToolbar.Name = "pnlToolbar";
-            this.pnlToolbar.Padding = new System.Windows.Forms.Padding(13, 12, 13, 12);
-            this.pnlToolbar.Size = new System.Drawing.Size(971, 71);
+            this.pnlToolbar.Padding = new System.Windows.Forms.Padding(15);
+            this.pnlToolbar.Size = new System.Drawing.Size(1092, 89);
             this.pnlToolbar.TabIndex = 2;
             // 
             // btnEdit
@@ -275,10 +275,10 @@
             this.btnEdit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnEdit.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnEdit.ForeColor = System.Drawing.Color.White;
-            this.btnEdit.Location = new System.Drawing.Point(178, 14);
+            this.btnEdit.Location = new System.Drawing.Point(200, 18);
             this.btnEdit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnEdit.Name = "btnEdit";
-            this.btnEdit.Size = new System.Drawing.Size(137, 42);
+            this.btnEdit.Size = new System.Drawing.Size(154, 52);
             this.btnEdit.TabIndex = 2;
             this.btnEdit.Text = "✎ Chỉnh sửa";
             this.btnEdit.UseVisualStyleBackColor = false;
@@ -290,13 +290,14 @@
             this.btnAdd.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAdd.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnAdd.ForeColor = System.Drawing.Color.White;
-            this.btnAdd.Location = new System.Drawing.Point(25, 14);
+            this.btnAdd.Location = new System.Drawing.Point(28, 18);
             this.btnAdd.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(124, 42);
+            this.btnAdd.Size = new System.Drawing.Size(140, 52);
             this.btnAdd.TabIndex = 3;
             this.btnAdd.Text = "+ Thêm TB";
             this.btnAdd.UseVisualStyleBackColor = false;
+            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
             // btnView
             // 
@@ -304,13 +305,14 @@
             this.btnView.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnView.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnView.ForeColor = System.Drawing.Color.White;
-            this.btnView.Location = new System.Drawing.Point(481, 15);
+            this.btnView.Location = new System.Drawing.Point(541, 19);
             this.btnView.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnView.Name = "btnView";
-            this.btnView.Size = new System.Drawing.Size(138, 42);
+            this.btnView.Size = new System.Drawing.Size(155, 52);
             this.btnView.TabIndex = 3;
             this.btnView.Text = "👁 Chi tiết";
             this.btnView.UseVisualStyleBackColor = false;
+            this.btnView.Click += new System.EventHandler(this.btnView_Click);
             // 
             // btnDelete
             // 
@@ -318,10 +320,10 @@
             this.btnDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDelete.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnDelete.ForeColor = System.Drawing.Color.White;
-            this.btnDelete.Location = new System.Drawing.Point(344, 15);
+            this.btnDelete.Location = new System.Drawing.Point(387, 19);
             this.btnDelete.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(102, 42);
+            this.btnDelete.Size = new System.Drawing.Size(115, 52);
             this.btnDelete.TabIndex = 4;
             this.btnDelete.Text = "🗑 Xóa";
             this.btnDelete.UseVisualStyleBackColor = false;
@@ -335,8 +337,8 @@
             this.pnlHeader.Location = new System.Drawing.Point(0, 0);
             this.pnlHeader.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pnlHeader.Name = "pnlHeader";
-            this.pnlHeader.Padding = new System.Windows.Forms.Padding(18, 16, 18, 16);
-            this.pnlHeader.Size = new System.Drawing.Size(971, 92);
+            this.pnlHeader.Padding = new System.Windows.Forms.Padding(20);
+            this.pnlHeader.Size = new System.Drawing.Size(1092, 115);
             this.pnlHeader.TabIndex = 3;
             this.pnlHeader.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlHeader_Paint);
             // 
@@ -346,9 +348,9 @@
             this.lblHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblHeader.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
             this.lblHeader.ForeColor = System.Drawing.Color.White;
-            this.lblHeader.Location = new System.Drawing.Point(18, 39);
+            this.lblHeader.Location = new System.Drawing.Point(20, 48);
             this.lblHeader.Name = "lblHeader";
-            this.lblHeader.Size = new System.Drawing.Size(280, 41);
+            this.lblHeader.Size = new System.Drawing.Size(334, 48);
             this.lblHeader.TabIndex = 0;
             this.lblHeader.Text = "Quản lý thông báo";
             // 
@@ -358,9 +360,9 @@
             this.lblSubtitle.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblSubtitle.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(230)))), ((int)(((byte)(255)))));
-            this.lblSubtitle.Location = new System.Drawing.Point(18, 16);
+            this.lblSubtitle.Location = new System.Drawing.Point(20, 20);
             this.lblSubtitle.Name = "lblSubtitle";
-            this.lblSubtitle.Size = new System.Drawing.Size(420, 23);
+            this.lblSubtitle.Size = new System.Drawing.Size(471, 28);
             this.lblSubtitle.TabIndex = 1;
             this.lblSubtitle.Text = "Tạo, chỉnh sửa, xóa và quản lý các thông báo của CLB";
             // 
@@ -370,20 +372,20 @@
             this.pnlFooter.Controls.Add(this.lblCountFooter);
             this.pnlFooter.Controls.Add(this.lblTimeFooter);
             this.pnlFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlFooter.Location = new System.Drawing.Point(0, 536);
+            this.pnlFooter.Location = new System.Drawing.Point(0, 670);
             this.pnlFooter.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pnlFooter.Name = "pnlFooter";
-            this.pnlFooter.Padding = new System.Windows.Forms.Padding(9, 8, 9, 8);
-            this.pnlFooter.Size = new System.Drawing.Size(971, 34);
+            this.pnlFooter.Padding = new System.Windows.Forms.Padding(10);
+            this.pnlFooter.Size = new System.Drawing.Size(1092, 42);
             this.pnlFooter.TabIndex = 4;
             // 
             // lblCountFooter
             // 
             this.lblCountFooter.AutoSize = true;
             this.lblCountFooter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.lblCountFooter.Location = new System.Drawing.Point(18, 8);
+            this.lblCountFooter.Location = new System.Drawing.Point(20, 10);
             this.lblCountFooter.Name = "lblCountFooter";
-            this.lblCountFooter.Size = new System.Drawing.Size(159, 16);
+            this.lblCountFooter.Size = new System.Drawing.Size(196, 20);
             this.lblCountFooter.TabIndex = 0;
             this.lblCountFooter.Text = "Đang hiển thị: 0 thông báo";
             // 
@@ -391,19 +393,19 @@
             // 
             this.lblTimeFooter.AutoSize = true;
             this.lblTimeFooter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(140)))), ((int)(((byte)(141)))));
-            this.lblTimeFooter.Location = new System.Drawing.Point(800, 8);
+            this.lblTimeFooter.Location = new System.Drawing.Point(900, 10);
             this.lblTimeFooter.Name = "lblTimeFooter";
-            this.lblTimeFooter.Size = new System.Drawing.Size(0, 16);
+            this.lblTimeFooter.Size = new System.Drawing.Size(0, 20);
             this.lblTimeFooter.TabIndex = 1;
             // 
             // Notification
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.pnlMain);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Notification";
-            this.Size = new System.Drawing.Size(971, 570);
+            this.Size = new System.Drawing.Size(1092, 712);
             this.Load += new System.EventHandler(this.Notification_Load);
             this.pnlMain.ResumeLayout(false);
             this.pnlGrid.ResumeLayout(false);
