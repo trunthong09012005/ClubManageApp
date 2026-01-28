@@ -642,5 +642,10 @@ namespace ClubManageApp
         {
 
         }
+
+        private void lblLog_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

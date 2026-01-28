@@ -126,7 +126,7 @@
             this.cboPageSize.Location = new System.Drawing.Point(1185, 11);
             this.cboPageSize.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.cboPageSize.Name = "cboPageSize";
-            this.cboPageSize.Size = new System.Drawing.Size(133, 33);
+            this.cboPageSize.Size = new System.Drawing.Size(133, 23);
             this.cboPageSize.TabIndex = 3;
             this.cboPageSize.SelectedIndexChanged += new System.EventHandler(this.cboPageSize_SelectedIndexChanged);
             // 
@@ -231,7 +231,7 @@
             this.cboFilterType.Location = new System.Drawing.Point(603, 121);
             this.cboFilterType.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.cboFilterType.Name = "cboFilterType";
-            this.cboFilterType.Size = new System.Drawing.Size(228, 36);
+            this.cboFilterType.Size = new System.Drawing.Size(228, 25);
             this.cboFilterType.TabIndex = 9;
             // 
             // lblType
@@ -241,7 +241,7 @@
             this.lblType.Location = new System.Drawing.Point(460, 125);
             this.lblType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblType.Name = "lblType";
-            this.lblType.Size = new System.Drawing.Size(56, 28);
+            this.lblType.Size = new System.Drawing.Size(38, 17);
             this.lblType.TabIndex = 8;
             this.lblType.Text = "Loại:";
             // 
@@ -252,7 +252,7 @@
             this.cboFilterStatus.Location = new System.Drawing.Point(1080, 121);
             this.cboFilterStatus.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.cboFilterStatus.Name = "cboFilterStatus";
-            this.cboFilterStatus.Size = new System.Drawing.Size(229, 36);
+            this.cboFilterStatus.Size = new System.Drawing.Size(229, 25);
             this.cboFilterStatus.TabIndex = 7;
             // 
             // lblFilterStatus
@@ -262,7 +262,7 @@
             this.lblFilterStatus.Location = new System.Drawing.Point(874, 125);
             this.lblFilterStatus.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblFilterStatus.Name = "lblFilterStatus";
-            this.lblFilterStatus.Size = new System.Drawing.Size(113, 28);
+            this.lblFilterStatus.Size = new System.Drawing.Size(75, 17);
             this.lblFilterStatus.TabIndex = 6;
             this.lblFilterStatus.Text = "Trạng thái:";
             // 
@@ -338,7 +338,7 @@
             this.dtpNgayGui.Location = new System.Drawing.Point(225, 124);
             this.dtpNgayGui.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dtpNgayGui.Name = "dtpNgayGui";
-            this.dtpNgayGui.Size = new System.Drawing.Size(193, 33);
+            this.dtpNgayGui.Size = new System.Drawing.Size(193, 25);
             this.dtpNgayGui.TabIndex = 11;
             this.dtpNgayGui.ValueChanged += new System.EventHandler(this.dtpNgayGui_ValueChanged);
             // 
@@ -349,7 +349,7 @@
             this.lblDate.Location = new System.Drawing.Point(30, 128);
             this.lblDate.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblDate.Name = "lblDate";
-            this.lblDate.Size = new System.Drawing.Size(104, 28);
+            this.lblDate.Size = new System.Drawing.Size(69, 17);
             this.lblDate.TabIndex = 10;
             this.lblDate.Text = "Ngày gửi:";
             // 
@@ -359,7 +359,7 @@
             this.txtDoiTuong.Location = new System.Drawing.Point(603, 51);
             this.txtDoiTuong.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtDoiTuong.Name = "txtDoiTuong";
-            this.txtDoiTuong.Size = new System.Drawing.Size(228, 33);
+            this.txtDoiTuong.Size = new System.Drawing.Size(228, 25);
             this.txtDoiTuong.TabIndex = 5;
             // 
             // lblRecipient
@@ -369,7 +369,7 @@
             this.lblRecipient.Location = new System.Drawing.Point(460, 55);
             this.lblRecipient.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblRecipient.Name = "lblRecipient";
-            this.lblRecipient.Size = new System.Drawing.Size(114, 28);
+            this.lblRecipient.Size = new System.Drawing.Size(76, 17);
             this.lblRecipient.TabIndex = 4;
             this.lblRecipient.Text = "Đối tượng:";
             // 
@@ -379,7 +379,7 @@
             this.txtTieuDe.Location = new System.Drawing.Point(225, 202);
             this.txtTieuDe.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtTieuDe.Name = "txtTieuDe";
-            this.txtTieuDe.Size = new System.Drawing.Size(606, 33);
+            this.txtTieuDe.Size = new System.Drawing.Size(606, 25);
             this.txtTieuDe.TabIndex = 3;
             // 
             // label3
@@ -389,7 +389,7 @@
             this.label3.Location = new System.Drawing.Point(30, 206);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(88, 28);
+            this.label3.Size = new System.Drawing.Size(58, 17);
             this.label3.TabIndex = 2;
             this.label3.Text = "Tiêu đề:";
             // 
@@ -401,7 +401,7 @@
             this.txtMaTB.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtMaTB.Name = "txtMaTB";
             this.txtMaTB.ReadOnly = true;
-            this.txtMaTB.Size = new System.Drawing.Size(193, 33);
+            this.txtMaTB.Size = new System.Drawing.Size(193, 25);
             this.txtMaTB.TabIndex = 1;
             // 
             // label1
@@ -411,7 +411,7 @@
             this.label1.Location = new System.Drawing.Point(30, 51);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(78, 28);
+            this.label1.Size = new System.Drawing.Size(51, 17);
             this.label1.TabIndex = 0;
             this.label1.Text = "Mã TB:";
             // 
@@ -467,7 +467,7 @@
             this.txtSearch.Location = new System.Drawing.Point(690, 23);
             this.txtSearch.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(373, 33);
+            this.txtSearch.Size = new System.Drawing.Size(373, 25);
             this.txtSearch.TabIndex = 1;
             // 
             // lblTitle
@@ -478,7 +478,7 @@
             this.lblTitle.Location = new System.Drawing.Point(15, 18);
             this.lblTitle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(325, 40);
+            this.lblTitle.Size = new System.Drawing.Size(212, 25);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "QUẢN LÝ THÔNG BÁO";
             // 
@@ -491,7 +491,7 @@
             this.pnlLog.Location = new System.Drawing.Point(1442, 838);
             this.pnlLog.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pnlLog.Name = "pnlLog";
-            this.pnlLog.Size = new System.Drawing.Size(497, 470);
+            this.pnlLog.Size = new System.Drawing.Size(746, 470);
             this.pnlLog.TabIndex = 1;
             // 
             // dgvLog
@@ -513,7 +513,7 @@
             this.dgvLog.ReadOnly = true;
             this.dgvLog.RowHeadersVisible = false;
             this.dgvLog.RowHeadersWidth = 62;
-            this.dgvLog.Size = new System.Drawing.Size(462, 357);
+            this.dgvLog.Size = new System.Drawing.Size(705, 357);
             this.dgvLog.TabIndex = 1;
             // 
             // pnlLogHeader
@@ -525,7 +525,7 @@
             this.pnlLogHeader.Location = new System.Drawing.Point(15, 15);
             this.pnlLogHeader.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pnlLogHeader.Name = "pnlLogHeader";
-            this.pnlLogHeader.Size = new System.Drawing.Size(461, 60);
+            this.pnlLogHeader.Size = new System.Drawing.Size(705, 60);
             this.pnlLogHeader.TabIndex = 0;
             // 
             // btnClearLog
@@ -535,7 +535,7 @@
             this.btnClearLog.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearLog.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold);
             this.btnClearLog.ForeColor = System.Drawing.Color.White;
-            this.btnClearLog.Location = new System.Drawing.Point(338, 8);
+            this.btnClearLog.Location = new System.Drawing.Point(574, 9);
             this.btnClearLog.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnClearLog.Name = "btnClearLog";
             this.btnClearLog.Size = new System.Drawing.Size(105, 38);
@@ -552,7 +552,7 @@
             this.lblLog.Location = new System.Drawing.Point(15, 15);
             this.lblLog.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblLog.Name = "lblLog";
-            this.lblLog.Size = new System.Drawing.Size(188, 31);
+            this.lblLog.Size = new System.Drawing.Size(123, 20);
             this.lblLog.TabIndex = 0;
             this.lblLog.Text = "LỊCH SỬ TÁC VỤ";
             // 
@@ -564,7 +564,7 @@
             this.pnlStats.Location = new System.Drawing.Point(1442, 40);
             this.pnlStats.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pnlStats.Name = "pnlStats";
-            this.pnlStats.Size = new System.Drawing.Size(497, 788);
+            this.pnlStats.Size = new System.Drawing.Size(746, 788);
             this.pnlStats.TabIndex = 1;
             // 
             // pnlStatsContent
@@ -581,7 +581,7 @@
             this.pnlStatsContent.Location = new System.Drawing.Point(15, 15);
             this.pnlStatsContent.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pnlStatsContent.Name = "pnlStatsContent";
-            this.pnlStatsContent.Size = new System.Drawing.Size(461, 747);
+            this.pnlStatsContent.Size = new System.Drawing.Size(706, 747);
             this.pnlStatsContent.TabIndex = 0;
             // 
             // lblHuyBo
@@ -589,7 +589,7 @@
             this.lblHuyBo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
             this.lblHuyBo.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold);
             this.lblHuyBo.ForeColor = System.Drawing.Color.White;
-            this.lblHuyBo.Location = new System.Drawing.Point(30, 645);
+            this.lblHuyBo.Location = new System.Drawing.Point(158, 641);
             this.lblHuyBo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblHuyBo.Name = "lblHuyBo";
             this.lblHuyBo.Size = new System.Drawing.Size(387, 54);
@@ -602,7 +602,7 @@
             this.lblDuyet.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(89)))), ((int)(((byte)(182)))));
             this.lblDuyet.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold);
             this.lblDuyet.ForeColor = System.Drawing.Color.White;
-            this.lblDuyet.Location = new System.Drawing.Point(30, 583);
+            this.lblDuyet.Location = new System.Drawing.Point(158, 579);
             this.lblDuyet.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblDuyet.Name = "lblDuyet";
             this.lblDuyet.Size = new System.Drawing.Size(387, 54);
@@ -615,7 +615,7 @@
             this.lblNhap.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
             this.lblNhap.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold);
             this.lblNhap.ForeColor = System.Drawing.Color.White;
-            this.lblNhap.Location = new System.Drawing.Point(30, 522);
+            this.lblNhap.Location = new System.Drawing.Point(158, 518);
             this.lblNhap.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblNhap.Name = "lblNhap";
             this.lblNhap.Size = new System.Drawing.Size(387, 54);
@@ -630,7 +630,7 @@
             this.label12.Location = new System.Drawing.Point(30, 483);
             this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(150, 28);
+            this.label12.Size = new System.Drawing.Size(106, 19);
             this.label12.TabIndex = 3;
             this.label12.Text = "Trạng thái gửi:";
             // 
@@ -638,7 +638,7 @@
             // 
             this.lblTongThongBao.Font = new System.Drawing.Font("Segoe UI", 16.25F, System.Drawing.FontStyle.Bold);
             this.lblTongThongBao.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
-            this.lblTongThongBao.Location = new System.Drawing.Point(222, 126);
+            this.lblTongThongBao.Location = new System.Drawing.Point(333, 125);
             this.lblTongThongBao.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTongThongBao.Name = "lblTongThongBao";
             this.lblTongThongBao.Size = new System.Drawing.Size(195, 57);
@@ -653,7 +653,7 @@
             this.label10.Location = new System.Drawing.Point(30, 148);
             this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(168, 28);
+            this.label10.Size = new System.Drawing.Size(120, 19);
             this.label10.TabIndex = 1;
             this.label10.Text = "Tổng thông báo:";
             // 
@@ -666,7 +666,7 @@
             this.lblStatsTitle.Location = new System.Drawing.Point(0, 0);
             this.lblStatsTitle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblStatsTitle.Name = "lblStatsTitle";
-            this.lblStatsTitle.Size = new System.Drawing.Size(459, 62);
+            this.lblStatsTitle.Size = new System.Drawing.Size(704, 62);
             this.lblStatsTitle.TabIndex = 0;
             this.lblStatsTitle.Text = "THỐNG KÊ THÔNG BÁO";
             this.lblStatsTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
