@@ -54,6 +54,12 @@ namespace ClubManageApp
             this.username = username;
             this.maTV = maTV;
 
+            // maximize and cover screen area
+            this.WindowState = FormWindowState.Maximized;
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.StartPosition = FormStartPosition.Manual;
+            this.Bounds = Screen.PrimaryScreen.Bounds;
+
             this.Load += MemberDashboard_Load;
             this.Resize += MemberDashboard_Resize;
             btnham.Click += btnham_Click;
@@ -224,6 +230,7 @@ namespace ClubManageApp
 
         private void MemberDashboard_Resize(object sender, EventArgs e)
         {
+            // Keep chatbot anchored
             if (chatbot != null)
             {
                 chatbot.Location = new Point(
@@ -232,6 +239,11 @@ namespace ClubManageApp
                 );
                 chatbot.BringToFront();
             }
+
+            // Update dynamic layout so dashboard & calendar scale with window
+            AdjustLayout();
+            // Re-render calendar grid so cells scale to new size
+            try { if (pnlCalendarContainer != null) RenderCalendar(); } catch { }
         }
 
         #region Load Member Profile
@@ -543,11 +555,13 @@ namespace ClubManageApp
             cardPanel.Height = Math.Max(totalHeight, 100);
 
             // ✨ Sự kiện hover
-            cardPanel.MouseEnter += (s, e) => {
+            cardPanel.MouseEnter += (s, e) =>
+            {
                 cardPanel.BackColor = Color.FromArgb(249, 250, 251);
                 lblViewDetail.ForeColor = Color.FromArgb(59, 130, 246);
             };
-            cardPanel.MouseLeave += (s, e) => {
+            cardPanel.MouseLeave += (s, e) =>
+            {
                 cardPanel.BackColor = bgColor;
                 lblViewDetail.ForeColor = leftBorderColor;
             };
@@ -585,7 +599,8 @@ namespace ClubManageApp
             };
             detailForm.Controls.Add(mainPanel);
 
-            mainPanel.Paint += (s, e) => {
+            mainPanel.Paint += (s, e) =>
+            {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 using (var path = CreateRoundedRectPath(0, 0, mainPanel.Width - 1, mainPanel.Height - 1, 12))
                 {
@@ -627,7 +642,8 @@ namespace ClubManageApp
             };
             mainPanel.Controls.Add(headerPanel);
 
-            headerPanel.Paint += (s, e) => {
+            headerPanel.Paint += (s, e) =>
+            {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 using (var brush = new LinearGradientBrush(
                     new Rectangle(0, 0, headerPanel.Width, headerPanel.Height),
@@ -708,7 +724,8 @@ namespace ClubManageApp
             };
             mainPanel.Controls.Add(contentBox);
 
-            contentBox.Paint += (s, e) => {
+            contentBox.Paint += (s, e) =>
+            {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 using (var path = CreateRoundedRectPath(0, 0, contentBox.Width - 1, contentBox.Height - 1, 8))
                 {
@@ -990,14 +1007,16 @@ namespace ClubManageApp
 
         private void RegisterMenuEvents()
         {
-            btnMemberDashBoard.Click += (s, e) => {
+            btnMemberDashBoard.Click += (s, e) =>
+            {
                 HighlightButton(btnMemberDashBoard);
                 ShowDashboard();
             };
 
             ;
 
-            btnLichhop.Click += (s, e) => {
+            btnLichhop.Click += (s, e) =>
+            {
                 HighlightButton(btnLichhop);
                 ShowMeetingsPage();
             };
@@ -1021,6 +1040,9 @@ namespace ClubManageApp
             LoadStatisticsData();
             LoadMemberProfile();
             LoadActivityTimeline();
+
+            // ensure controls expand to new size
+            AdjustLayout();
         }
 
 
@@ -1069,12 +1091,14 @@ namespace ClubManageApp
             currentViewMonth = DateTime.Now;
             meetingsByDate = new Dictionary<DateTime, List<MeetingInfo>>();
 
+            // create panel but don't hardcode absolute size; AdjustLayout will size it
             pnlLichHop = new Panel()
             {
                 Location = new Point(250, 80),
                 Size = new Size(1030, 620),
                 BackColor = Color.FromArgb(240, 242, 245),
-                Visible = true
+                Visible = true,
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
             };
             this.Controls.Add(pnlLichHop);
             pnlLichHop.BringToFront();
@@ -1101,6 +1125,9 @@ namespace ClubManageApp
 
             CreateCalendarControls();
             CreateCalendarView();
+
+            // size everything relative to current form size
+            AdjustLayout();
             LoadMonthMeetings();
         }
 
@@ -1114,7 +1141,8 @@ namespace ClubManageApp
             };
             pnlLichHop.Controls.Add(pnlControls);
 
-            pnlControls.Paint += (s, e) => {
+            pnlControls.Paint += (s, e) =>
+            {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 using (var path = CreateRoundedRectPath(0, 0, pnlControls.Width - 1, pnlControls.Height - 1, 8))
                 {
@@ -1135,7 +1163,8 @@ namespace ClubManageApp
                 Cursor = Cursors.Hand
             };
             btnPrevMonth.FlatAppearance.BorderSize = 0;
-            btnPrevMonth.Click += (s, e) => {
+            btnPrevMonth.Click += (s, e) =>
+            {
                 currentViewMonth = currentViewMonth.AddMonths(-1);
                 LoadMonthMeetings();
             };
@@ -1164,7 +1193,8 @@ namespace ClubManageApp
                 Cursor = Cursors.Hand
             };
             btnNextMonth.FlatAppearance.BorderSize = 0;
-            btnNextMonth.Click += (s, e) => {
+            btnNextMonth.Click += (s, e) =>
+            {
                 currentViewMonth = currentViewMonth.AddMonths(1);
                 LoadMonthMeetings();
             };
@@ -1182,7 +1212,8 @@ namespace ClubManageApp
                 Cursor = Cursors.Hand
             };
             btnToday.FlatAppearance.BorderSize = 0;
-            btnToday.Click += (s, e) => {
+            btnToday.Click += (s, e) =>
+            {
                 currentViewMonth = DateTime.Now;
                 LoadMonthMeetings();
             };
@@ -1191,15 +1222,18 @@ namespace ClubManageApp
 
         private void CreateCalendarView()
         {
+            // create container; actual size set by AdjustLayout
             pnlCalendarContainer = new Panel()
             {
                 Location = new Point(20, 140),
                 Size = new Size(720, 470),
-                BackColor = Color.White
+                BackColor = Color.White,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
             };
             pnlLichHop.Controls.Add(pnlCalendarContainer);
 
-            pnlCalendarContainer.Paint += (s, e) => {
+            pnlCalendarContainer.Paint += (s, e) =>
+            {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 using (var path = CreateRoundedRectPath(0, 0, pnlCalendarContainer.Width - 1, pnlCalendarContainer.Height - 1, 8))
                 {
@@ -1273,13 +1307,18 @@ namespace ClubManageApp
 
         private void RenderCalendar()
         {
+            if (pnlCalendarContainer == null) return;
             pnlCalendarContainer.Controls.Clear();
 
-            int cellWidth = 100;
-            int cellHeight = 65;
             int headerHeight = 35;
             int startX = 10;
             int startY = 10;
+
+            // compute dynamic cell sizes based on container
+            int availableWidth = Math.Max(700, pnlCalendarContainer.ClientSize.Width - startX * 2);
+            int availableHeight = Math.Max(300, pnlCalendarContainer.ClientSize.Height - headerHeight - startY * 2);
+            int cellWidth = Math.Max(80, availableWidth / 7);
+            int cellHeight = Math.Max(60, availableHeight / 6);
 
             string[] dayNames = { "CN", "T2", "T3", "T4", "T5", "T6", "T7" };
             for (int i = 0; i < 7; i++)
@@ -1348,7 +1387,8 @@ namespace ClubManageApp
                 Cursor = hasMeetings ? Cursors.Hand : Cursors.Default
             };
 
-            cell.Paint += (s, e) => {
+            cell.Paint += (s, e) =>
+            {
                 using (var pen = new Pen(borderColor, isToday ? 2 : 1))
                     e.Graphics.DrawRectangle(pen, 0, 0, cell.Width - 1, cell.Height - 1);
             };
@@ -1375,7 +1415,8 @@ namespace ClubManageApp
                     Location = new Point(cell.Width - 13, 5),
                     BackColor = Color.FromArgb(239, 68, 68)
                 };
-                dot.Paint += (s, e) => {
+                dot.Paint += (s, e) =>
+                {
                     e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                     e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(239, 68, 68)), 0, 0, 8, 8);
                 };
@@ -1465,7 +1506,8 @@ namespace ClubManageApp
                     Margin = new Padding(0, 0, 0, 10)
                 };
 
-                card.Paint += (s, e) => {
+                card.Paint += (s, e) =>
+                {
                     e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                     using (var path = CreateRoundedRectPath(0, 0, card.Width - 1, card.Height - 1, 8))
                     {
@@ -2044,5 +2086,61 @@ namespace ClubManageApp
             // If you want to visually deselect all menu buttons, you can call HighlightButton with null
             HighlightButton(selectedButton);
         }
+
+        // New helper to adjust dashboard/calendar sizes dynamically
+        private void AdjustLayout()
+        {
+            int left = (slidebar != null) ? slidebar.Width : SIDEBAR_MAX;
+            int topOffset = 60; // header/menu area
+            int margin = 20;
+            int contentWidth = Math.Max(600, this.ClientSize.Width - left - (margin * 2));
+
+            // Stats container: full width area under header
+            if (pnlStatsContainer != null)
+            {
+                pnlStatsContainer.Location = new Point(left + margin, topOffset);
+                pnlStatsContainer.Size = new Size(contentWidth, pnlStatsContainer.Height);
+            }
+
+            // Compute contentTop so profile sits BELOW the stats container (prevents overlap)
+            int contentTop = topOffset + 80;
+            if (pnlStatsContainer != null)
+                contentTop = pnlStatsContainer.Bottom + 20; // 20px gap under stats
+
+            int contentHeight = Math.Max(300, this.ClientSize.Height - contentTop - 40);
+
+            // Move profile panel to the left under stats
+            if (pnlProfileSection != null)
+            {
+                int profileW = Math.Min(420, Math.Max(300, pnlProfileSection.Width)); // reasonable width
+                int profileH = contentHeight;
+                int profileX = left + margin; // left-aligned relative to slidebar
+                pnlProfileSection.Location = new Point(profileX, contentTop);
+                pnlProfileSection.Size = new Size(profileW, profileH);
+            }
+
+            // Place timeline to the right of profile panel and let it take remaining width
+            if (pnlTimelineSection != null)
+            {
+                int gap = 20;
+                int timelineX = (pnlProfileSection != null) ? pnlProfileSection.Right + gap : left + margin;
+                int timelineW = Math.Max(360, left + margin + contentWidth - (timelineX - left));
+                pnlTimelineSection.Location = new Point(timelineX, contentTop);
+                pnlTimelineSection.Size = new Size(Math.Min(timelineW, this.ClientSize.Width - timelineX - margin), contentHeight);
+            }
+
+            // Resize meeting panel and internal calendar container if visible
+            if (pnlLichHop != null)
+            {
+                pnlLichHop.Location = new Point(left, topOffset);
+                pnlLichHop.Size = new Size(this.ClientSize.Width - left, this.ClientSize.Height - topOffset);
+
+                if (pnlCalendarContainer != null)
+                {
+                    pnlCalendarContainer.Location = new Point(20, 140);
+                    pnlCalendarContainer.Size = new Size(Math.Max(300, pnlLichHop.ClientSize.Width - 40), Math.Max(240, pnlLichHop.ClientSize.Height - 160));
+                }
+            }
+        }
     }
-}   
+}

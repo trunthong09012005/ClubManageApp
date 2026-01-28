@@ -268,7 +268,7 @@
             this.btnDangXuat.TabIndex = 0;
             this.btnDangXuat.Text = "Đăng xuất";
             this.btnDangXuat.TextOffset = new System.Drawing.Point(10, 0);
-            this.btnDangXuat.Click += new System.EventHandler(this.btnDangXuat_Click_1);
+          
             // 
             // pnlStatsContainer
             // 
@@ -622,7 +622,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MemberDashboard";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Load += new System.EventHandler(this.MemberDashboard_Load_2);
+      
             this.guna2Panel1.ResumeLayout(false);
             this.guna2Panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.btnham)).EndInit();
