@@ -234,26 +234,16 @@ namespace ClubManageApp
             // if filter changed reset to first page
             if (filter != currentFilter) currentPage =1;
 
-            // load from DB with optional filter
+            // load from DB without filter (we'll filter in-memory to support searching by assigned member and dates)
             allProjects.Clear();
             string sql = @"SELECT MaDA, TenDuAn, MoTa, NgayBatDau, NgayKetThuc, MucDoUuTien, TienDo, TrangThai, NgayTao
-                           FROM DuAn";
-            if (!string.IsNullOrWhiteSpace(filter))
-            {
-                sql += " WHERE TenDuAn LIKE @q";
-            }
-            sql += " ORDER BY MaDA";
+                           FROM DuAn ORDER BY MaDA";
 
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 using (SqlCommand cmd = new SqlCommand(sql, conn))
                 {
-                    if (!string.IsNullOrWhiteSpace(filter))
-                    {
-                        cmd.Parameters.AddWithValue("@q", "%" + filter.Trim() + "%");
-                    }
-
                     conn.Open();
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -267,7 +257,7 @@ namespace ClubManageApp
                                 StartDate = reader["NgayBatDau"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["NgayBatDau"]),
                                 EndDate = reader["NgayKetThuc"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["NgayKetThuc"]),
                                 Priority = reader["MucDoUuTien"] as string ?? string.Empty,
-                                Progress = reader["TienDo"] == DBNull.Value ? 0 : Convert.ToInt32(reader["TienDo"]),
+                                Progress = reader["TienDo"] == DBNull.Value ?0 : Convert.ToInt32(reader["TienDo"]),
                                 Status = reader["TrangThai"] as string ?? string.Empty,
                                 Created = reader["NgayTao"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["NgayTao"])
                             };
@@ -286,17 +276,17 @@ namespace ClubManageApp
             try
             {
                 var ids = allProjects.Select(p => p.Id).ToList();
-                if (ids.Count > 0)
+                if (ids.Count >0)
                 {
                     // build parameterized IN clause
                     var parameters = new List<string>();
-                    for (int i = 0; i < ids.Count; i++) parameters.Add("@id" + i);
+                    for (int i =0; i < ids.Count; i++) parameters.Add("@id" + i);
                     string inClause = string.Join(",", parameters);
                     string sqlAssign = $"SELECT PC.MaDA, TV.HoTen FROM PhanCong PC INNER JOIN ThanhVien TV ON PC.MaTV = TV.MaTV WHERE PC.MaDA IN ({inClause})";
                     using (SqlConnection conn = new SqlConnection(connectionString))
                     using (SqlCommand cmd = new SqlCommand(sqlAssign, conn))
                     {
-                        for (int i = 0; i < ids.Count; i++) cmd.Parameters.AddWithValue(parameters[i], ids[i]);
+                        for (int i =0; i < ids.Count; i++) cmd.Parameters.AddWithValue(parameters[i], ids[i]);
                         conn.Open();
                         using (var rdr = cmd.ExecuteReader())
                         {
@@ -327,9 +317,21 @@ namespace ClubManageApp
             if (!string.IsNullOrWhiteSpace(filter))
             {
                 var q = filter.Trim();
-                filtered = filtered.Where(p => p.Name.IndexOf(q, StringComparison.OrdinalIgnoreCase) >=0 || (p.Description ?? string.Empty).IndexOf(q, StringComparison.OrdinalIgnoreCase) >=0);
+
+                // support date search in common formats
+                DateTime parsedDate;
+                bool isDate = DateTime.TryParseExact(q, new[] { "dd/MM/yyyy", "d/M/yyyy", "yyyy-MM-dd", "dd-MM-yyyy" }, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out parsedDate);
+
+                filtered = filtered.Where(p =>
+                    (p.Name.IndexOf(q, StringComparison.OrdinalIgnoreCase) >=0)
+                    || ((p.Description ?? string.Empty).IndexOf(q, StringComparison.OrdinalIgnoreCase) >=0)
+                    || (!string.IsNullOrEmpty(p.AssignedMembers) && p.AssignedMembers.IndexOf(q, StringComparison.OrdinalIgnoreCase) >=0)
+                    || (isDate && ((p.StartDate.HasValue && p.StartDate.Value.Date == parsedDate.Date)
+                                   || (p.EndDate.HasValue && p.EndDate.Value.Date == parsedDate.Date)
+                                   || (p.Created.HasValue && p.Created.Value.Date == parsedDate.Date)))
+                );
             }
-            
+
             var filteredList = filtered.ToList();
             totalRecords = filteredList.Count;
             totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);

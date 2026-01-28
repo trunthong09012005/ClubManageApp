@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Globalization;
 
 namespace ClubManageApp
 {
@@ -160,42 +161,68 @@ namespace ClubManageApp
         {
             try
             {
-                var filters = new System.Collections.Generic.List<string>();
-
                 var f = (cmbFilter.SelectedItem as string) ?? "Tất cả";
+                currentFilter = txtSearch.Text.Trim();
+
+                // Prepare in-memory LINQ filter from thuChiTable
+                var rows = thuChiTable.AsEnumerable();
+
+                // filter by Loai if needed
                 if (f == "Thu" || f == "Chi")
                 {
-                    filters.Add("LoaiGD = '" + f.Replace("'", "''") + "'");
+                    rows = rows.Where(r => string.Equals(Convert.ToString(r["LoaiGD"]), f, StringComparison.OrdinalIgnoreCase));
                 }
 
-                var q = txtSearch.Text.Trim();
-                currentFilter = q;
-                if (!string.IsNullOrEmpty(q))
+                // if search text provided, support matching NoiDung, NguoiThucHienName and exact date matches (dd/MM/yyyy, yyyy-MM-dd)
+                if (!string.IsNullOrEmpty(currentFilter))
                 {
-                    var s = q.Replace("'", "''");
-                    filters.Add($"(NoiDung LIKE '%{s}%')");
+                    var q = currentFilter;
+                    // try parse date in several common formats
+                    DateTime parsedDate;
+                    bool isDate = DateTime.TryParseExact(q, new[] { "dd/MM/yyyy", "d/M/yyyy", "yyyy-MM-dd", "dd-MM-yyyy" }, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate);
+
+                    rows = rows.Where(r =>
+                    {
+                        try
+                        {
+                            var nd = r.Table.Columns.Contains("NoiDung") && r["NoiDung"] != DBNull.Value ? (r["NoiDung"]?.ToString() ?? string.Empty) : string.Empty;
+                            var name = r.Table.Columns.Contains("NguoiThucHienName") && r["NguoiThucHienName"] != DBNull.Value ? (r["NguoiThucHienName"]?.ToString() ?? string.Empty) : string.Empty;
+
+                            bool textMatch = (!string.IsNullOrEmpty(nd) && nd.IndexOf(q, StringComparison.OrdinalIgnoreCase) >=0)
+                                             || (!string.IsNullOrEmpty(name) && name.IndexOf(q, StringComparison.OrdinalIgnoreCase) >=0);
+
+                            if (isDate && r.Table.Columns.Contains("NgayGD") && r["NgayGD"] != DBNull.Value)
+                            {
+                                DateTime dt;
+                                if (DateTime.TryParse(Convert.ToString(r["NgayGD"]), out dt))
+                                {
+                                    if (dt.Date == parsedDate.Date) return true;
+                                }
+                            }
+
+                            return textMatch;
+                        }
+                        catch { return false; }
+                    });
                 }
 
-                // Create filtered view of full table (not paged)
-                thuChiView = new DataView(thuChiTable);
-                thuChiView.RowFilter = string.Join(" AND ", filters);
+                // create a DataTable from filtered rows for paging and grid
+                var filteredList = rows.ToList();
 
-                // Update pagination counts based on filtered view
-                totalRecords = thuChiView.Count;
+                totalRecords = filteredList.Count;
                 totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
                 if (totalPages ==0) totalPages =1;
 
                 if (currentPage > totalPages) currentPage = totalPages;
                 if (currentPage <1) currentPage =1;
 
-                // Build a paged DataTable for the grid
-                var pageTable = thuChiView.ToTable().Clone();
+                var pageTable = thuChiTable.Clone();
                 int start = (currentPage -1) * pageSize;
-                int end = Math.Min(start + pageSize, thuChiView.Count);
+                int end = Math.Min(start + pageSize, filteredList.Count);
 
                 for (int i = start; i < end; i++)
                 {
-                    pageTable.ImportRow(thuChiView[i].Row);
+                    pageTable.ImportRow(filteredList[i]);
                 }
 
                 dgvThuChi.DataSource = pageTable;
@@ -421,7 +448,7 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
                 var seriesThuMonthly = new Series("Thu") { ChartType = SeriesChartType.Column, ChartArea = "MonthArea", IsValueShownAsLabel = true, LabelFormat = "N0" };
                 var seriesChiMonthly = new Series("Chi") { ChartType = SeriesChartType.Column, ChartArea = "MonthArea", IsValueShownAsLabel = true, LabelFormat = "N0" };
 
-                // prepare last6 months (oldest -> newest)
+                // prepare last6 months (oldest ->Newest)
                 var months = Enumerable.Range(0,6)
                     .Select(i => new DateTime(DateTime.Today.AddMonths(-5 + i).Year, DateTime.Today.AddMonths(-5 + i).Month,1))
                     .ToList();
