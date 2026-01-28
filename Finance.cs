@@ -592,6 +592,11 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
                 dtpNgay.Value = ngay ?? DateTime.Today;
                 txtNoiDung.Text = noiDung ?? string.Empty;
 
+                // ensure negative values cannot be entered
+                nudSoTien.Minimum =0; // prevent negative numbers
+                // also suppress typing the '-' character
+                nudSoTien.KeyPress += NudSoTien_KeyPress;
+
                 // load members into cmbNguoi
                 try
                 {
@@ -632,6 +637,15 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
                 this.CancelButton = btnCancel;
 
                 btnOk.Click += BtnOk_Click;
+            }
+
+            private void NudSoTien_KeyPress(object sender, KeyPressEventArgs e)
+            {
+                // Block '-' so user cannot type negative sign
+                if (e.KeyChar == '-')
+                {
+                    e.Handled = true;
+                }
             }
 
             private void BtnOk_Click(object sender, EventArgs e)
