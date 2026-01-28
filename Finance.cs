@@ -346,7 +346,7 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
                 // clear existing controls in the chart panel
                 chartSummary.Controls.Clear();
 
-                // create chart
+                // create first chart (pie) - summary Thu/Chi
                 var chart = new Chart();
                 chart.Dock = DockStyle.Fill;
                 chart.BackColor = System.Drawing.Color.WhiteSmoke;
@@ -403,7 +403,78 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
 
                 chart.Series.Add(series);
 
-                chartSummary.Controls.Add(chart);
+                // create second chart (column) - monthly Thu/Chi for last6 months
+                var chart2 = new Chart();
+                chart2.Dock = DockStyle.Fill;
+                chart2.BackColor = System.Drawing.Color.WhiteSmoke;
+
+                var monthArea = new ChartArea("MonthArea");
+                monthArea.BackColor = System.Drawing.Color.Transparent;
+                monthArea.AxisX.Interval =1;
+                monthArea.AxisX.LabelStyle.Angle = -45;
+                chart2.ChartAreas.Add(monthArea);
+
+                var legend2 = new Legend("Legend2");
+                legend2.Docking = Docking.Top;
+                chart2.Legends.Add(legend2);
+
+                var seriesThuMonthly = new Series("Thu") { ChartType = SeriesChartType.Column, ChartArea = "MonthArea", IsValueShownAsLabel = true, LabelFormat = "N0" };
+                var seriesChiMonthly = new Series("Chi") { ChartType = SeriesChartType.Column, ChartArea = "MonthArea", IsValueShownAsLabel = true, LabelFormat = "N0" };
+
+                // prepare last6 months (oldest -> newest)
+                var months = Enumerable.Range(0,6)
+                    .Select(i => new DateTime(DateTime.Today.AddMonths(-5 + i).Year, DateTime.Today.AddMonths(-5 + i).Month,1))
+                    .ToList();
+
+                foreach (var m in months)
+                {
+                    decimal mThu =0m;
+                    decimal mChi =0m;
+
+                    try
+                    {
+                        var rows = dt.AsEnumerable()
+                            .Where(r => r["NgayGD"] != DBNull.Value)
+                            .Where(r =>
+                            {
+                                DateTime d;
+                                try { d = Convert.ToDateTime(r["NgayGD"]); } catch { return false; }
+                                return d.Year == m.Year && d.Month == m.Month;
+                            });
+
+                        mThu = rows
+                            .Where(r => string.Equals(r.Field<string>("LoaiGD"), "Thu", StringComparison.OrdinalIgnoreCase))
+                            .Sum(r => Convert.ToDecimal(r.Field<object>("SoTien")));
+
+                        mChi = rows
+                            .Where(r => string.Equals(r.Field<string>("LoaiGD"), "Chi", StringComparison.OrdinalIgnoreCase))
+                            .Sum(r => Convert.ToDecimal(r.Field<object>("SoTien")));
+                    }
+                    catch { mThu =0m; mChi =0m; }
+
+                    var label = m.ToString("MM/yy");
+                    seriesThuMonthly.Points.AddXY(label, mThu);
+                    seriesChiMonthly.Points.AddXY(label, mChi);
+                }
+
+                chart2.Series.Add(seriesThuMonthly);
+                chart2.Series.Add(seriesChiMonthly);
+
+                // arrange two charts side-by-side using a TableLayoutPanel
+                var container = new TableLayoutPanel();
+                container.Dock = DockStyle.Fill;
+                container.ColumnCount =2;
+                container.RowCount =1;
+                container.ColumnStyles.Clear();
+                container.ColumnStyles.Add(new ColumnStyle(SizeType.Percent,50f));
+                container.ColumnStyles.Add(new ColumnStyle(SizeType.Percent,50f));
+                container.RowStyles.Clear();
+                container.RowStyles.Add(new RowStyle(SizeType.Percent,100f));
+
+                container.Controls.Add(chart,0,0);
+                container.Controls.Add(chart2,1,0);
+
+                chartSummary.Controls.Add(container);
             }
             catch (Exception ex)
             {
@@ -521,6 +592,11 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
                 dtpNgay.Value = ngay ?? DateTime.Today;
                 txtNoiDung.Text = noiDung ?? string.Empty;
 
+                // ensure negative values cannot be entered
+                nudSoTien.Minimum =0; // prevent negative numbers
+                // also suppress typing the '-' character
+                nudSoTien.KeyPress += NudSoTien_KeyPress;
+
                 // load members into cmbNguoi
                 try
                 {
@@ -561,6 +637,15 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
                 this.CancelButton = btnCancel;
 
                 btnOk.Click += BtnOk_Click;
+            }
+
+            private void NudSoTien_KeyPress(object sender, KeyPressEventArgs e)
+            {
+                // Block '-' so user cannot type negative sign
+                if (e.KeyChar == '-')
+                {
+                    e.Handled = true;
+                }
             }
 
             private void BtnOk_Click(object sender, EventArgs e)
