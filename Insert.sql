@@ -211,11 +211,11 @@ SELECT * FROM TaiKhoan
 		 N'Chuyến du lịch team building 1 ngày tại Vũng Tàu với các hoạt động gắn kết', 
 		 3, 4, 8000000, 40, N'Hoàn thành'),
     
-		(N'Ngày hội văn hóa sinh viên', '2025-11-28', '08:00', '18:00', N'Sân khấu trung tâm', 
+		(N'Ngày hội văn hóa sinh viên', '2026-11-28', '08:00', '18:00', N'Sân khấu trung tâm', 
 		 N'Tổ chức ngày hội văn hóa với các tiết mục văn nghệ, ẩm thực và trò chơi dân gian', 
 		 4, 5, 10000000, 200, N'Đang chuẩn bị'), -- Giữ nguyên tháng 11, chỉ lùi ngày
     
-		(N'Giải bóng đá CLB lần thứ 5', '2025-12-10', '07:00', '12:00', N'Sân bóng Thể Công', 
+		(N'Giải bóng đá CLB lần thứ 5', '2026-12-10', '07:00', '12:00', N'Sân bóng Thể Công', 
 		 N'Giải bóng đá giao hữu giữa các thành viên CLB', 
 		 5, 6, 3000000, 30, N'Đang chuẩn bị');
 	GO
@@ -225,30 +225,30 @@ SELECT * FROM TaiKhoan
 		-- lấy bảng dưới này
 		INSERT INTO DangKyHoatDong (MaTV, MaHD, TrangThai)
 		VALUES
-			-- MaHD=4 (Workshop)
-			(7, 4, N'Đã duyệt'), (2, 4, N'Đã duyệt'), (11, 4, N'Đã duyệt'), -- MaTV cũ 17, 13, 21 -> 7, 2, 11
-			(8, 4, N'Đã duyệt'), (4, 4, N'Đã duyệt'), -- MaTV cũ 18, 14 -> 8, 4
+			-- MaHD=5 (Workshop)
+			(7, 5, N'Đã duyệt'), (2, 5, N'Đã duyệt'), (11, 5, N'Đã duyệt'), -- MaTV cũ 17, 13, 21 -> 7, 2, 11
+			(8, 5, N'Đã duyệt'), (4, 5, N'Đã duyệt'), -- MaTV cũ 18, 14 -> 8, 4
 	
-			-- MaHD=5 (Dã ngoại)
-			(9, 5, N'Đã duyệt'), (5, 5, N'Đã duyệt'), (8, 5, N'Đã duyệt'), -- MaTV cũ 19, 15, 18 -> 9, 5, 8
-			(10, 5, N'Đã duyệt'), (6, 5, N'Đã duyệt'); -- MaTV cũ 20, 16 -> 10, 6
+			-- MaHD=6 (Dã ngoại)
+			(9, 6, N'Đã duyệt'), (5, 6, N'Đã duyệt'), (8, 6, N'Đã duyệt'), -- MaTV cũ 19, 15, 18 -> 9, 5, 8
+			(10, 6, N'Đã duyệt'), (6, 6, N'Đã duyệt'); -- MaTV cũ 20, 16 -> 10, 6
 
 		GO
 		SELECT * FROM DangKyHoatDong;
 	INSERT INTO ThamGia (MaHD, MaTV, VaiTroTrongHD, DiemDanh, DiemThuong)
 	VALUES
 		-- Hoạt động MAHD=4 (Workshop: Kỹ năng thuyết trình chuyên nghiệp)
-		(4, 7, N'Trưởng đoàn', 1, 10), -- MaTV cũ 17 -> 7
-		(4, 2, N'Thành viên', 1, 8), -- MaTV cũ 13 -> 2
-		(4, 4, N'Thành viên', 1, 8), -- MaTV cũ 14 -> 4
-		(4, 5, N'Thành viên', 1, 7), -- MaTV cũ 15 -> 5
-		(4, 6, N'Thành viên', 0, 0), -- MaTV cũ 16 -> 6
+		(5, 7, N'Trưởng đoàn', 1, 10), -- MaTV cũ 17 -> 7
+		(5, 2, N'Thành viên', 1, 8), -- MaTV cũ 13 -> 2
+		(5, 4, N'Thành viên', 1, 8), -- MaTV cũ 14 -> 4
+		(5, 5, N'Thành viên', 1, 7), -- MaTV cũ 15 -> 5
+		(5, 6, N'Thành viên', 0, 0), -- MaTV cũ 16 -> 6
 
 		-- Hoạt động MAHD=5 (Dã ngoại CLB - Vũng Tàu)
-		(5, 7, N'MC', 1, 10), -- MaTV cũ 17 -> 7
-		(5, 8, N'Tổ chức', 1, 9), -- MaTV cũ 18 -> 8
-		(5, 9, N'Thành viên', 1, 8), -- MaTV cũ 19 -> 9
-		(5, 10, N'Thành viên', 1, 8); -- MaTV cũ 20 -> 10
+		(6, 7, N'MC', 1, 10), -- MaTV cũ 17 -> 7
+		(6, 8, N'Tổ chức', 1, 9), -- MaTV cũ 18 -> 8
+		(6, 9, N'Thành viên', 1, 8), -- MaTV cũ 19 -> 9
+		(6, 10, N'Thành viên', 1, 8); -- MaTV cũ 20 -> 10
 
 	GO
 	SELECT * FROM ThamGia;
@@ -289,29 +289,24 @@ SELECT * FROM TaiKhoan
 
 	INSERT INTO ThuChi (LoaiGD, SoTien, NgayGD, NoiDung, NguoiThucHien, MaNguon, MaHD)
 	VALUES 
-		(N'Thu', 5000000, '2025-06-15', N'Tài trợ từ công ty ABC Technology', 2, 1, NULL), -- NguoiThucHien cũ 12 -> 2
-		(N'Thu', 3000000, '2025-07-01', N'Đóng góp quỹ CLB học kỳ 1', 3, 2, NULL), -- NguoiThucHien cũ 13 -> 3
-		(N'Thu', 2000000, '2025-08-10', N'Tài trợ workshop kỹ năng mềm', 3, 1, 1), -- NguoiThucHien cũ 13 -> 3, MaHD cũ 3 -> 8
-		(N'Chi', 4500000, '2025-07-08', N'Chi phí hoạt động Mùa hè xanh', 2, NULL, 4), -- NguoiThucHien cũ 12 -> 2, MaHD cũ 2 -> 7
-		(N'Chi', 1800000, '2025-08-14', N'Chi phí tổ chức workshop', 3, NULL, 5), -- NguoiThucHien cũ 13 -> 3, MaHD cũ 3 -> 8
-		(N'Chi', 7500000, '2025-09-04', N'Chi phí dã ngoại Vũng Tàu', 4, NULL, 3), -- NguoiThucHien cũ 14 -> 4, MaHD cũ 4 -> 9
-		(N'Chi', 500000, '2025-09-20', N'Mua vật tư văn phòng CLB', 5, NULL, NULL); -- NguoiThucHien cũ 15 -> 5
+		(N'Thu', 5000000, '2025-06-15', N'Tài trợ từ công ty ABC Technology', NULL, NULL, NULL), -- NguoiThucHien cũ 12 -> 2
+		(N'Thu', 3000000, '2025-07-01', N'Đóng góp quỹ CLB học kỳ 1', NULL, NULL, NULL), -- NguoiThucHien cũ 13 -> 3
+		(N'Thu', 2000000, '2025-08-10', N'Tài trợ workshop kỹ năng mềm', NULL, NULL, NULL), -- NguoiThucHien cũ 13 -> 3, MaHD cũ 3 -> 8
+		(N'Chi', 4500000, '2025-07-08', N'Chi phí hoạt động Mùa hè xanh', NULL, NULL, NULL), -- NguoiThucHien cũ 12 -> 2, MaHD cũ 2 -> 7
+		(N'Chi', 1800000, '2025-08-14', N'Chi phí tổ chức workshop', NULL, NULL, NULL), -- NguoiThucHien cũ 13 -> 3, MaHD cũ 3 -> 8
+		(N'Chi', 7500000, '2025-09-04', N'Chi phí dã ngoại Vũng Tàu', NULL, NULL, NULL), -- NguoiThucHien cũ 14 -> 4, MaHD cũ 4 -> 9
+		(N'Chi', 500000, '2025-09-20', N'Mua vật tư văn phòng CLB', NULL, NULL, NULL); -- NguoiThucHien cũ 15 -> 5
 	GO
 	SELECT * FROM THUCHI;
 	INSERT INTO ThuChi_ChiTiet (MaGD, NoiDung, SoTien, DonViTinh, SoLuong)
 	VALUES
-		(1, N'Tiền mặt nhận tài trợ', 5000000, N'VNĐ', 1),
-		(2, N'Đóng góp từ 30 thành viên', 3000000, N'VNĐ/người', 30),
-		(3, N'Tài trợ diễn giả và địa điểm', 2000000, N'VNĐ', 1),
-		(4, N'Chi phí di chuyển và ăn uống', 2500000, N'VNĐ', 1),
-		(5, N'Mua cây giống và dụng cụ', 2000000, N'VNĐ', 1),
-		(6, N'Thuê diễn giả', 1000000, N'VNĐ', 1),
-		(7, N'In tài liệu và nước uống', 800000, N'VNĐ', 1),
-		(1, N'Thuê xe và chi phí di chuyển', 3000000, N'VNĐ', 1),
-		(2, N'Chi phí ăn uống', 2500000, N'VNĐ', 1),
-		(3, N'Thuê địa điểm và thiết bị', 2000000, N'VNĐ', 1),
-		(5, N'Giấy A4, bút viết', 200000, N'Bộ', 5),
-		(6, N'File hồ sơ, kẹp tài liệu', 300000, N'Bộ', 3);
+		(10, N'Tiền mặt nhận tài trợ', 5000000, N'VNĐ', 1),
+		(11, N'Đóng góp từ 30 thành viên', 3000000, N'VNĐ/người', 30),
+		(12, N'Tài trợ diễn giả và địa điểm', 2000000, N'VNĐ', 1),
+		(13, N'Chi phí di chuyển và ăn uống', 2500000, N'VNĐ', 1),
+		(14, N'Mua cây giống và dụng cụ', 2000000, N'VNĐ', 1),
+		(15, N'Thuê diễn giả', 1000000, N'VNĐ', 1),
+		(16, N'In tài liệu và nước uống', 800000, N'VNĐ', 1);
 	GO
 
 	
@@ -425,13 +420,14 @@ SELECT * FROM TaiKhoan
 
 	INSERT INTO Feedback (MaTV, MaHD, NoiDung, DanhGiaSao, TrangThai)
 	VALUES 
-		(3, 3, N'Hoạt động rất ý nghĩa! Được giúp đỡ cộng đồng và hiểu hơn về cuộc sống nông thôn.', 5, N'Đã xử lý'), -- MaTV cũ 13 -> 3, MaHD cũ 2 -> 7
-		(4, 4, N'Tổ chức tốt nhưng nên có thêm thời gian nghỉ giữa các hoạt động.', 4, N'Đã xử lý'), -- MaTV cũ 14 -> 4, MaHD cũ 2 -> 7
-		(6, 5, N'Workshop rất bổ ích! Diễn giả nhiệt tình và nội dung thiết thực.', 5, N'Đã xử lý'), -- MaTV cũ 16 -> 6, MaHD cũ 3 -> 8
-		(7, 1, N'Nên tổ chức thêm các buổi thực hành để áp dụng kiến thức vừa học.', 4, N'Đang xử lý'), -- MaTV cũ 17 -> 7, MaHD cũ 3 -> 8
-		(5, 2, N'Chuyến đi vui vẻ và ý nghĩa, giúp các thành viên gắn kết hơn.', 5, N'Đã xử lý'), -- MaTV cũ 15 -> 5, MaHD cũ 4 -> 9
-		(9, 3, N'Nội dung hay nhưng thời gian hơi ngắn, muốn học thêm.', 4, N'Đã nhận'); -- MaTV cũ 19 -> 9, MaHD cũ 3 -> 8
+		(3, 5, N'Hoạt động rất ý nghĩa! Được giúp đỡ cộng đồng và hiểu hơn về cuộc sống nông thôn.', 5, N'Đã xử lý'), -- MaTV cũ 13 -> 3, MaHD cũ 2 -> 7
+		(4, 5, N'Tổ chức tốt nhưng nên có thêm thời gian nghỉ giữa các hoạt động.', 4, N'Đã xử lý'), -- MaTV cũ 14 -> 4, MaHD cũ 2 -> 7
+		(6, 6, N'Workshop rất bổ ích! Diễn giả nhiệt tình và nội dung thiết thực.', 5, N'Đã xử lý'), -- MaTV cũ 16 -> 6, MaHD cũ 3 -> 8
+		(7, 7, N'Nên tổ chức thêm các buổi thực hành để áp dụng kiến thức vừa học.', 4, N'Đang xử lý'), -- MaTV cũ 17 -> 7, MaHD cũ 3 -> 8
+		(5, 8, N'Chuyến đi vui vẻ và ý nghĩa, giúp các thành viên gắn kết hơn.', 5, N'Đã xử lý'), -- MaTV cũ 15 -> 5, MaHD cũ 4 -> 9
+		(9, 9, N'Nội dung hay nhưng thời gian hơi ngắn, muốn học thêm.', 4, N'Đã nhận'); -- MaTV cũ 19 -> 9, MaHD cũ 3 -> 8
 	GO
+	select * from hoatdong
 
 
 INSERT INTO ThongBao (TieuDe, NoiDung, LoaiThongBao, NguoiDang, DoiTuong, TrangThai)
@@ -505,12 +501,12 @@ GO
 
 	INSERT INTO FileDinhKem (TenFile, DuongDan, KichThuoc, LoaiFile, MaDA, MaHD, NguoiTai)
 	VALUES
-		(N'Kế hoạch Mùa hè xanh 2025.pdf', N'/files/projects/ke-hoach-mua-he-xanh-2025.pdf', 2048576, N'PDF', NULL, 2, 2), -- NguoiTai cũ 12 -> 2, MaHD cũ 2 -> 7
-		(N'Slide Workshop Kỹ năng mềm.pptx', N'/files/activities/slide-workshop-ky-nang-mem.pptx', 5242880, N'PowerPoint', NULL, 3, 3), -- NguoiTai cũ 13 -> 3, MaHD cũ 3 -> 8
+		(N'Kế hoạch Mùa hè xanh 2025.pdf', N'/files/projects/ke-hoach-mua-he-xanh-2025.pdf', 2048576, N'PDF', NULL, 5, 2), -- NguoiTai cũ 12 -> 2, MaHD cũ 2 -> 7
+		(N'Slide Workshop Kỹ năng mềm.pptx', N'/files/activities/slide-workshop-ky-nang-mem.pptx', 5242880, N'PowerPoint', NULL, 6, 3), -- NguoiTai cũ 13 -> 3, MaHD cũ 3 -> 8
 		(N'Báo cáo tài chính Q2-2025.xlsx', N'/files/reports/bao-cao-tai-chinh-q2-2025.xlsx', 1048576, N'Excel', NULL, NULL, 3), -- NguoiTai cũ 13 -> 3
 		(N'Database Schema v1.0.sql', N'/files/projects/database-schema-v1.sql', 524288, N'SQL', 1, NULL, 4), -- NguoiTai cũ 14 -> 4
 		(N'UI Design CLB Management.fig', N'/files/projects/ui-design-clb-management.fig', 15728640, N'Figma', 1, NULL, 6), -- NguoiTai cũ 16 -> 6
-		(N'Video recap Dã ngoại Vũng Tàu.mp4', N'/files/activities/video-recap-da-ngoai-vung-tau.mp4', 104857600, N'Video', NULL, 4, 9); -- NguoiTai cũ 19 -> 9, MaHD cũ 4 -> 9
+		(N'Video recap Dã ngoại Vũng Tàu.mp4', N'/files/activities/video-recap-da-ngoai-vung-tau.mp4', 104857600, N'Video', NULL, 7, 9); -- NguoiTai cũ 19 -> 9, MaHD cũ 4 -> 9
 	GO
 
 	-- =============================================
