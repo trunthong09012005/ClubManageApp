@@ -1664,6 +1664,7 @@ namespace ClubManageApp
 
         private Panel pnlEditProfile;
         private TextBox txtHoTen, txtEmail, txtSDT, txtLop, txtKhoa;
+        private TextBox txtUsername, txtPassword, txtConfirmPassword;
         private PictureBox picEditAvatar;
         private Button btnSaveProfile, btnCancelEdit, btnChangeAvatar;
         private string selectedAvatarPath = string.Empty;
@@ -1710,8 +1711,9 @@ namespace ClubManageApp
                 Panel mainContainer = new Panel()
                 {
                     Location = new Point(20, 90),
-                    Size = new Size(990, 510),
-                    BackColor = Color.White
+                    Size = new Size(990, 700),  // ✅ Tăng chiều cao lên 700px
+                    BackColor = Color.White,
+                    AutoScroll = true  // ✅ Thêm scroll nếu nội dung quá dài
                 };
                 pnlEditProfile.Controls.Add(mainContainer);
 
@@ -1762,6 +1764,7 @@ namespace ClubManageApp
                         path.AddEllipse(0, 0, picEditAvatar.Width - 1, picEditAvatar.Height - 1);
                         picEditAvatar.Region = new Region(path);
                     }
+
                 };
 
                 btnChangeAvatar = new Button()
@@ -1803,13 +1806,67 @@ namespace ClubManageApp
                 AddFormField(rightPanel, ref yPos, "Họ và tên:", "txtHoTen", out txtHoTen);
                 AddFormField(rightPanel, ref yPos, "Email:", "txtEmail", out txtEmail);
                 AddFormField(rightPanel, ref yPos, "Số điện thoại:", "txtSDT", out txtSDT);
+
+                // --- Tên đăng nhập ---
+                AddFormField(rightPanel, ref yPos, "Tên đăng nhập:", "txtUsername", out txtUsername);
+
+                // --- Mật khẩu mới ---
+                Label lblPwd = new Label()
+                {
+                    Text = "Mật khẩu mới:",
+                    Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(31, 41, 55),
+                    Location = new Point(0, yPos),
+                    Size = new Size(150, 25)
+                };
+                rightPanel.Controls.Add(lblPwd);
+
+                txtPassword = new TextBox()
+                {
+                    Name = "txtPassword",
+                    Location = new Point(160, yPos - 3),
+                    Size = new Size(430, 30),
+                    Font = new Font("Segoe UI", 11),
+                    BorderStyle = BorderStyle.FixedSingle,
+                    UseSystemPasswordChar = true
+                };
+                rightPanel.Controls.Add(txtPassword);
+                yPos += 60;
+
+                // --- Xác nhận mật khẩu ---
+                Label lblConfirm = new Label()
+                {
+                    Text = "Xác nhận mật khẩu:",
+                    Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(31, 41, 55),
+                    Location = new Point(0, yPos),
+                    Size = new Size(150, 25)
+                };
+                rightPanel.Controls.Add(lblConfirm);
+
+                txtConfirmPassword = new TextBox()
+                {
+                    Name = "txtConfirmPassword",
+                    Location = new Point(160, yPos - 3),
+                    Size = new Size(430, 30),
+                    Font = new Font("Segoe UI", 11),
+                    BorderStyle = BorderStyle.FixedSingle,
+                    UseSystemPasswordChar = true
+                };
+                rightPanel.Controls.Add(txtConfirmPassword);
+                yPos += 60;
+
+                // ✅ CHỈ THÊM MỘT LẦN
                 AddFormField(rightPanel, ref yPos, "Lớp:", "txtLop", out txtLop);
                 AddFormField(rightPanel, ref yPos, "Khoa:", "txtKhoa", out txtKhoa);
 
                 // Load current profile values
+                // Load current profile values
                 LoadCurrentProfileData();
 
+                // ✅✅✅ THÊM CODE TẠO NÚT LƯU VÀ HỦY ✅✅✅
                 yPos += 30;
+
                 btnSaveProfile = new Button()
                 {
                     Text = "💾 Lưu thay đổi",
@@ -1839,10 +1896,17 @@ namespace ClubManageApp
                 btnCancelEdit.FlatAppearance.BorderSize = 0;
                 btnCancelEdit.Click += (s, e) =>
                 {
-                    // Close edit panel and return to dashboard
-                    try { if (pnlEditProfile != null) { this.Controls.Remove(pnlEditProfile); pnlEditProfile.Dispose(); pnlEditProfile = null; } } catch { }
+                    try
+                    {
+                        if (pnlEditProfile != null)
+                        {
+                            this.Controls.Remove(pnlEditProfile);
+                            pnlEditProfile.Dispose();
+                            pnlEditProfile = null;
+                        }
+                    }
+                    catch { }
                     ShowDashboard();
-
                 };
                 rightPanel.Controls.Add(btnCancelEdit);
             }
@@ -1874,7 +1938,7 @@ namespace ClubManageApp
             };
             parent.Controls.Add(textBox);
 
-            yPos += 60;
+            yPos += 40;
         }
 
         private void MemberDashboard_Load_2(object sender, EventArgs e)
@@ -1895,9 +1959,11 @@ namespace ClubManageApp
                 {
                     conn.Open();
                     string query = @"
-                        SELECT HoTen, Email, SDT, Lop, Khoa, AnhDaiDien
-                        FROM ThanhVien
-                        WHERE MaTV = @maTV";
+                SELECT tv.HoTen, tv.Email, tv.SDT, tv.Lop, tv.Khoa, tv.AnhDaiDien,
+                       tk.TenDN as TaiKhoan
+                FROM ThanhVien tv
+                LEFT JOIN TaiKhoan tk ON tv.MaTV = tk.MaTV
+                WHERE tv.MaTV = @maTV";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -1911,6 +1977,10 @@ namespace ClubManageApp
                                 txtSDT.Text = reader["SDT"] != DBNull.Value ? reader["SDT"].ToString() : string.Empty;
                                 txtLop.Text = reader["Lop"] != DBNull.Value ? reader["Lop"].ToString() : string.Empty;
                                 txtKhoa.Text = reader["Khoa"] != DBNull.Value ? reader["Khoa"].ToString() : string.Empty;
+
+                                // ✅ LOAD USERNAME
+                                if (txtUsername != null && reader["TaiKhoan"] != DBNull.Value)
+                                    txtUsername.Text = reader["TaiKhoan"].ToString();
 
                                 if (reader["AnhDaiDien"] != DBNull.Value)
                                 {
@@ -1981,6 +2051,35 @@ namespace ClubManageApp
                 return;
             }
 
+            // Username validation
+            if (txtUsername != null && string.IsNullOrWhiteSpace(txtUsername.Text))
+            {
+                MessageBox.Show("Vui lòng nhập tên đăng nhập!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtUsername.Focus();
+                return;
+            }
+
+            // Password validation
+            string passwordHash = null;
+            if (txtPassword != null && (!string.IsNullOrWhiteSpace(txtPassword.Text) || !string.IsNullOrWhiteSpace(txtConfirmPassword.Text)))
+            {
+                if (string.IsNullOrWhiteSpace(txtPassword.Text) || string.IsNullOrWhiteSpace(txtConfirmPassword.Text))
+                {
+                    MessageBox.Show("Vui lòng nhập đầy đủ mật khẩu và xác nhận mật khẩu!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtPassword.Focus();
+                    return;
+                }
+
+                if (txtPassword.Text != txtConfirmPassword.Text)
+                {
+                    MessageBox.Show("Mật khẩu và xác nhận mật khẩu không khớp!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtPassword.Focus();
+                    return;
+                }
+
+                passwordHash = HashPassword(txtPassword.Text);
+            }
+
             try
             {
                 string finalAvatarPath = selectedAvatarPath;
@@ -1998,7 +2097,29 @@ namespace ClubManageApp
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    string query = @"
+                    using (SqlTransaction transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            // ✅ CHECK USERNAME UNIQUENESS
+                            if (txtUsername != null && !string.IsNullOrWhiteSpace(txtUsername.Text))
+                            {
+                                using (SqlCommand chk = new SqlCommand("SELECT COUNT(*) FROM TaiKhoan WHERE TenDN = @tenDN AND MaTV <> @maTV", conn, transaction))
+                                {
+                                    chk.Parameters.AddWithValue("@tenDN", txtUsername.Text.Trim());
+                                    chk.Parameters.AddWithValue("@maTV", maTV);
+                                    int count = Convert.ToInt32(chk.ExecuteScalar());
+                                    if (count > 0)
+                                    {
+                                        MessageBox.Show("Tên đăng nhập đã được sử dụng. Vui lòng chọn tên khác.", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                        txtUsername.Focus();
+                                        return;
+                                    }
+                                }
+                            }
+
+                            // ✅ UPDATE ThanhVien
+                            string queryTV = @"
                         UPDATE ThanhVien 
                         SET HoTen = @hoTen,
                             Email = @email,
@@ -2008,32 +2129,60 @@ namespace ClubManageApp
                             AnhDaiDien = @anhDaiDien
                         WHERE MaTV = @maTV";
 
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@maTV", maTV);
-                        cmd.Parameters.AddWithValue("@hoTen", txtHoTen.Text.Trim());
-                        cmd.Parameters.AddWithValue("@email", string.IsNullOrWhiteSpace(txtEmail.Text) ? (object)DBNull.Value : txtEmail.Text.Trim());
-                        cmd.Parameters.AddWithValue("@sdt", string.IsNullOrWhiteSpace(txtSDT.Text) ? (object)DBNull.Value : txtSDT.Text.Trim());
-                        cmd.Parameters.AddWithValue("@lop", string.IsNullOrWhiteSpace(txtLop.Text) ? (object)DBNull.Value : txtLop.Text.Trim());
-                        cmd.Parameters.AddWithValue("@khoa", string.IsNullOrWhiteSpace(txtKhoa.Text) ? (object)DBNull.Value : txtKhoa.Text.Trim());
-                        cmd.Parameters.AddWithValue("@anhDaiDien", string.IsNullOrEmpty(finalAvatarPath) ? (object)DBNull.Value : finalAvatarPath);
+                            using (SqlCommand cmd = new SqlCommand(queryTV, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@maTV", maTV);
+                                cmd.Parameters.AddWithValue("@hoTen", txtHoTen.Text.Trim());
+                                cmd.Parameters.AddWithValue("@email", string.IsNullOrWhiteSpace(txtEmail.Text) ? (object)DBNull.Value : txtEmail.Text.Trim());
+                                cmd.Parameters.AddWithValue("@sdt", string.IsNullOrWhiteSpace(txtSDT.Text) ? (object)DBNull.Value : txtSDT.Text.Trim());
+                                cmd.Parameters.AddWithValue("@lop", string.IsNullOrWhiteSpace(txtLop.Text) ? (object)DBNull.Value : txtLop.Text.Trim());
+                                cmd.Parameters.AddWithValue("@khoa", string.IsNullOrWhiteSpace(txtKhoa.Text) ? (object)DBNull.Value : txtKhoa.Text.Trim());
+                                cmd.Parameters.AddWithValue("@anhDaiDien", string.IsNullOrEmpty(finalAvatarPath) ? (object)DBNull.Value : finalAvatarPath);
 
-                        int rows = cmd.ExecuteNonQuery();
-                        if (rows > 0)
-                        {
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // ✅ UPDATE TaiKhoan
+                            if (txtUsername != null && !string.IsNullOrWhiteSpace(txtUsername.Text))
+                            {
+                                string queryTK = "UPDATE TaiKhoan SET TenDN = @tenDN";
+
+                                if (!string.IsNullOrEmpty(passwordHash))
+                                    queryTK += ", MatKhau = @matKhau";
+
+                                queryTK += " WHERE MaTV = @maTV";
+
+                                using (SqlCommand cmd = new SqlCommand(queryTK, conn, transaction))
+                                {
+                                    cmd.Parameters.AddWithValue("@maTV", maTV);
+                                    cmd.Parameters.AddWithValue("@tenDN", txtUsername.Text.Trim());
+
+                                    if (!string.IsNullOrEmpty(passwordHash))
+                                        cmd.Parameters.AddWithValue("@matKhau", passwordHash);
+
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+
+                            transaction.Commit();
+
                             MessageBox.Show("✅ Cập nhật hồ sơ thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            // refresh profile
+
                             LoadMemberProfile();
 
-                            // close edit panel
-                            try { if (pnlEditProfile != null) { this.Controls.Remove(pnlEditProfile); pnlEditProfile.Dispose(); pnlEditProfile = null; } } catch { }
+                            if (pnlEditProfile != null)
+                            {
+                                this.Controls.Remove(pnlEditProfile);
+                                pnlEditProfile.Dispose();
+                                pnlEditProfile = null;
+                            }
 
                             ShowDashboard();
-
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            MessageBox.Show("Không có thay đổi nào được lưu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            transaction.Rollback();
+                            throw ex;
                         }
                     }
                 }
@@ -2058,6 +2207,19 @@ namespace ClubManageApp
         {
             // Kiểm tra số điện thoại Việt Nam (10 chữ số, bắt đầu bằng 0)
             return System.Text.RegularExpressions.Regex.IsMatch(phone, @"^0\d{9}$");
+        }
+        // Hash password using SHA256
+        private string HashPassword(string password)
+        {
+            if (string.IsNullOrEmpty(password)) return null;
+            using (var sha = System.Security.Cryptography.SHA256.Create())
+            {
+                byte[] bytes = System.Text.Encoding.UTF8.GetBytes(password);
+                byte[] hash = sha.ComputeHash(bytes);
+                var sb = new System.Text.StringBuilder();
+                foreach (var b in hash) sb.Append(b.ToString("x2"));
+                return sb.ToString();
+            }
         }
 
         #endregion
