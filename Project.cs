@@ -678,8 +678,11 @@ namespace ClubManageApp
                 cmbPriority = new ComboBox { Location = new Point(120, 206), Width = 200, DropDownStyle = ComboBoxStyle.DropDownList };
                 cmbPriority.Items.AddRange(new object[] { "Thấp", "Trung bình", "Cao", "Khẩn cấp" });
 
-                var lblProgress = new Label { Text = "Tiến độ (%):", Location = new Point(10, 245), AutoSize = true };
-                nudProgress = new NumericUpDown { Location = new Point(120, 241), Width = 100, Minimum = 0, Maximum = 100 };
+                var lblProgress = new Label { Text = "Tiến độ (%):", Location = new Point(10,245), AutoSize = true };
+                nudProgress = new NumericUpDown { Location = new Point(120,241), Width =100, Minimum =0, Maximum =100 };
+                // Prevent typing '-' and ensure value stays within0..100
+                nudProgress.KeyPress += NudProgress_KeyPress;
+                nudProgress.ValueChanged += NudProgress_ValueChanged;
 
                 var lblStatus = new Label { Text = "Trạng thái:", Location = new Point(10, 280), AutoSize = true };
                 cmbStatus = new ComboBox { Location = new Point(120, 276), Width = 200, DropDownStyle = ComboBoxStyle.DropDownList };
@@ -713,8 +716,29 @@ namespace ClubManageApp
                 }
 
                 // ensure selections for comboboxes
-                if (cmbPriority.SelectedItem == null) cmbPriority.SelectedIndex = 0;
-                if (cmbStatus.SelectedItem == null) cmbStatus.SelectedIndex = 1; // mặc định 'Đang thực hiện'
+                if (cmbPriority.SelectedItem == null) cmbPriority.SelectedIndex =0;
+                if (cmbStatus.SelectedItem == null) cmbStatus.SelectedIndex =1; // mặc định 'Đang thực hiện'
+                
+                // final validation for progress to be within0..100
+                if (nudProgress.Value < nudProgress.Minimum || nudProgress.Value > nudProgress.Maximum)
+                {
+                    MessageBox.Show(this, "Tiến độ phải nằm trong khoảng0 đến100.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    this.DialogResult = DialogResult.None;
+                    return;
+                }
+            }
+
+            private void NudProgress_KeyPress(object sender, KeyPressEventArgs e)
+            {
+                // Block minus sign so user cannot type negative values
+                if (e.KeyChar == '-') e.Handled = true;
+            }
+
+            private void NudProgress_ValueChanged(object sender, EventArgs e)
+            {
+                // Clamp just in case of paste or programmatic set
+                if (nudProgress.Value < nudProgress.Minimum) nudProgress.Value = nudProgress.Minimum;
+                if (nudProgress.Value > nudProgress.Maximum) nudProgress.Value = nudProgress.Maximum;
             }
         }
 
