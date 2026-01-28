@@ -13,8 +13,8 @@ namespace ClubManageApp
         // ?? CH? S?A CONNECTION STRING ? ?ÂY
         // Sau khi pull code v?, ch? c?n thay Data Source và thông tin login t?i ?ây
     
-        private static string _connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=LSC_APP;Persist Security Info=True;User ID=sa;Password=1234;TrustServerCertificate=True";
-      
+        private static string _connectionString = @"Data Source=DESKTOP-HE7MI7F\SQLEXPRESS;Initial Catalog=QL_CLB_LSC;Integrated Security=True;TrustServerCertificate=True";
+
         /// <summary>
         /// L?y connection string cho toàn b? ?ng d?ng
         /// </summary>
