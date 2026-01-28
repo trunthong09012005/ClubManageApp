@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace ClubManageApp
 {
@@ -20,6 +21,13 @@ namespace ClubManageApp
         private List<ProjectItem> allProjects = new List<ProjectItem>();
         private BindingList<ProjectItem> viewProjects = new BindingList<ProjectItem>();
         private BindingSource bsProjects = new BindingSource();
+
+        // Pagination fields
+        private int currentPage =1;
+        private int pageSize =20;
+        private int totalRecords =0;
+        private int totalPages =1;
+        private string currentFilter = null;
 
         public ucProject()
         {
@@ -109,6 +117,13 @@ namespace ClubManageApp
             dgvProjects.AllowUserToOrderColumns = true;
             dgvProjects.ScrollBars = ScrollBars.Both;
 
+            // Ensure background is white (remove gray area when grid doesn't fill control)
+            dgvProjects.BackgroundColor = Color.White;
+            dgvProjects.DefaultCellStyle.BackColor = Color.White;
+            dgvProjects.RowsDefaultCellStyle.BackColor = Color.White;
+            dgvProjects.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
+            dgvProjects.GridColor = Color.LightGray;
+
             // wire events
             txtSearch.TextChanged += TxtSearch_TextChanged;
             btnAdd.Click += BtnAdd_Click;
@@ -143,6 +158,18 @@ namespace ClubManageApp
             }
             catch { }
 
+            // wire pagination controls if present
+            try
+            {
+                var btnPrev = this.Controls.Find("btnPreviousPage", true).FirstOrDefault() as Button;
+                var btnNext = this.Controls.Find("btnNextPage", true).FirstOrDefault() as Button;
+                var cb = this.Controls.Find("cboPageSize", true).FirstOrDefault() as ComboBox;
+                if (btnPrev != null) btnPrev.Click += BtnPreviousPage_Click;
+                if (btnNext != null) btnNext.Click += BtnNextPage_Click;
+                if (cb != null) cb.SelectedIndexChanged += CboPageSize_SelectedIndexChanged;
+            }
+            catch { }
+
             dgvProjects.CellDoubleClick += (s, e) => { if (e.RowIndex >= 0) BtnEdit_Click(s, e); };
             dgvProjects.MouseDown += DgvProjects_MouseDown;
             dgvProjects.SelectionChanged += DgvProjects_SelectionChanged;
@@ -150,8 +177,35 @@ namespace ClubManageApp
             // custom paint for chart panel (use Progress)
             chartProjects.Paint += ChartProjects_Paint;
 
+            // wire pagination controls if present
+            try
+            {
+                var btnPrev = this.Controls.Find("btnPreviousPage", true).FirstOrDefault() as Button;
+                var btnNext = this.Controls.Find("btnNextPage", true).FirstOrDefault() as Button;
+                var cb = this.Controls.Find("cboPageSize", true).FirstOrDefault() as ComboBox;
+                if (btnPrev != null) btnPrev.Click += BtnPreviousPage_Click;
+                if (btnNext != null) btnNext.Click += BtnNextPage_Click;
+                if (cb != null) cb.SelectedIndexChanged += CboPageSize_SelectedIndexChanged;
+            }
+            catch { }
+
             // load from database
+            InitializePagination();
             RefreshView();
+        }
+
+        private void InitializePagination()
+        {
+            try
+            {
+                var cb = this.Controls.Find("cboPageSize", true).FirstOrDefault() as ComboBox;
+                if (cb != null)
+                {
+                    cb.SelectedItem = pageSize.ToString();
+                }
+                UpdatePaginationControls();
+            }
+            catch { }
         }
 
         private void DgvProjects_SelectionChanged(object sender, EventArgs e)
@@ -177,6 +231,9 @@ namespace ClubManageApp
 
         private void RefreshView(string filter = null)
         {
+            // if filter changed reset to first page
+            if (filter != currentFilter) currentPage =1;
+
             // load from DB with optional filter
             allProjects.Clear();
             string sql = @"SELECT MaDA, TenDuAn, MoTa, NgayBatDau, NgayKetThuc, MucDoUuTien, TienDo, TrangThai, NgayTao
@@ -264,13 +321,31 @@ namespace ClubManageApp
             }
             catch (Exception) { /* ignore assignment load errors */ }
 
-            // update viewProjects
+            // Apply filter/search to allProjects in-memory and then page
+            currentFilter = filter;
+            IEnumerable<ProjectItem> filtered = allProjects;
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                var q = filter.Trim();
+                filtered = filtered.Where(p => p.Name.IndexOf(q, StringComparison.OrdinalIgnoreCase) >=0 || (p.Description ?? string.Empty).IndexOf(q, StringComparison.OrdinalIgnoreCase) >=0);
+            }
+            
+            var filteredList = filtered.ToList();
+            totalRecords = filteredList.Count;
+            totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+            if (totalPages ==0) totalPages =1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage <1) currentPage =1;
+
+            var pageItems = filteredList.Skip((currentPage -1) * pageSize).Take(pageSize).ToList();
+
             viewProjects.RaiseListChangedEvents = false;
             viewProjects.Clear();
-            foreach (var it in allProjects)
-                viewProjects.Add(it);
+            foreach (var it in pageItems) viewProjects.Add(it);
             viewProjects.RaiseListChangedEvents = true;
             viewProjects.ResetBindings();
+
+            UpdatePaginationControls();
 
             try
             {
@@ -280,6 +355,54 @@ namespace ClubManageApp
             catch { }
 
             chartProjects.Invalidate();
+        }
+
+        private void UpdatePaginationControls()
+        {
+            try
+            {
+                var lbl = this.Controls.Find("lblPageInfo", true).FirstOrDefault() as Label;
+                if (lbl != null)
+                {
+                    lbl.Text = $"Trang {currentPage} / {totalPages} (Tổng: {totalRecords} dự án)";
+                }
+
+                var btnPrev = this.Controls.Find("btnPreviousPage", true).FirstOrDefault() as Button;
+                var btnNext = this.Controls.Find("btnNextPage", true).FirstOrDefault() as Button;
+                if (btnPrev != null) btnPrev.Enabled = currentPage >1;
+                if (btnNext != null) btnNext.Enabled = currentPage < totalPages;
+            }
+            catch { }
+        }
+
+        private void BtnPreviousPage_Click(object sender, EventArgs e)
+        {
+            if (currentPage >1)
+            {
+                currentPage--;
+                RefreshView(currentFilter);
+            }
+        }
+
+        private void BtnNextPage_Click(object sender, EventArgs e)
+        {
+            if (currentPage < totalPages)
+            {
+                currentPage++;
+                RefreshView(currentFilter);
+            }
+        }
+
+        private void CboPageSize_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var cb = sender as ComboBox;
+            if (cb == null) return;
+            if (int.TryParse(cb.SelectedItem?.ToString(), out int newSize))
+            {
+                pageSize = newSize;
+                currentPage =1;
+                RefreshView(currentFilter);
+            }
         }
 
         private void ChartProjects_Paint(object sender, PaintEventArgs e)

@@ -16,11 +16,19 @@ namespace ClubManageApp
         // ✅ SỬ DỤNG ConnectionHelper thay vì hard-code
         private string connectionString = ConnectionHelper.ConnectionString;
 
+        // Pagination fields
+        private int currentPage =1;
+        private int pageSize =20;
+        private int totalRecords =0;
+        private int totalPages =0;
+        private string currentFilter = null;
+
         public ucFinance()
         {
             InitializeComponent();
             InitializeTable();
             HookEvents();
+            InitializePagination();
             LoadDataFromDb();
         }
 
@@ -30,11 +38,26 @@ namespace ClubManageApp
             thuChiView = new DataView(thuChiTable);
             dgvThuChi.DataSource = thuChiView;
 
-            // configure grid   
+            // configure grid 
             dgvThuChi.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvThuChi.MultiSelect = false;
             dgvThuChi.ReadOnly = true;
             dgvThuChi.AutoGenerateColumns = true;
+
+            // make columns auto-size to fill control width
+            dgvThuChi.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvThuChi.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            dgvThuChi.RowHeadersWidth =24;
+
+            // ensure background area is white (remove default gray area when rows don't fill control)
+            dgvThuChi.BackgroundColor = System.Drawing.Color.White;
+            dgvThuChi.DefaultCellStyle.BackColor = System.Drawing.Color.White;
+            dgvThuChi.RowsDefaultCellStyle.BackColor = System.Drawing.Color.White;
+            // keep alternating rows subtle if desired (optional) - set to same white to avoid gray bands
+            dgvThuChi.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.White;
+
+            // grid lines color
+            dgvThuChi.GridColor = System.Drawing.Color.LightGray;
         }
 
         private void HookEvents()
@@ -44,7 +67,24 @@ namespace ClubManageApp
             btnCreate.Click += BtnCreate_Click;
             btnEdit.Click += BtnEdit_Click;
             btnDelete.Click += BtnDelete_Click;
+            btnSearch.Click += BtnSearch_Click;
+            btnRefresh.Click += BtnRefresh_Click;
             this.Load += UcFinance_Load;
+        }
+
+        private void InitializePagination()
+        {
+            try
+            {
+                // set default page size if control exists
+                if (cboPageSize != null)
+                {
+                    cboPageSize.SelectedItem = pageSize.ToString();
+                }
+
+                UpdatePaginationControls();
+            }
+            catch { }
         }
 
         private void UcFinance_Load(object sender, EventArgs e)
@@ -55,6 +95,8 @@ namespace ClubManageApp
             cmbFilter.Items.Add("Chi");
             cmbFilter.SelectedIndex =0;
 
+            // ensure grid fills panel when control sized in designer/runtime
+            dgvThuChi.Dock = DockStyle.Fill;
         }
 
         private void LoadDataFromDb()
@@ -69,6 +111,20 @@ namespace ClubManageApp
                     adapter.Fill(thuChiTable);
                 }
 
+                ApplyColumnSettings();
+
+                ApplyFilterAndSearch();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi tải dữ liệu Tài chính: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ApplyColumnSettings()
+        {
+            try
+            {
                 // set nicer column headers if columns present
                 if (dgvThuChi.Columns.Contains("MaGD")) dgvThuChi.Columns["MaGD"].HeaderText = "Mã GD";
                 if (dgvThuChi.Columns.Contains("LoaiGD")) dgvThuChi.Columns["LoaiGD"].HeaderText = "Loại";
@@ -90,12 +146,14 @@ namespace ClubManageApp
                 if (dgvThuChi.Columns.Contains("NguoiThucHien")) dgvThuChi.Columns["NguoiThucHien"].Visible = false;
                 if (dgvThuChi.Columns.Contains("TrangThai")) dgvThuChi.Columns["TrangThai"].Visible = false;
 
-                ApplyFilterAndSearch();
+                // adjust specific column widths if present to make layout nicer
+                if (dgvThuChi.Columns.Contains("MaGD")) dgvThuChi.Columns["MaGD"].FillWeight =40;
+                if (dgvThuChi.Columns.Contains("LoaiGD")) dgvThuChi.Columns["LoaiGD"].FillWeight =60;
+                if (dgvThuChi.Columns.Contains("SoTien")) dgvThuChi.Columns["SoTien"].FillWeight =120;
+                if (dgvThuChi.Columns.Contains("NoiDung")) dgvThuChi.Columns["NoiDung"].FillWeight =200;
+                if (dgvThuChi.Columns.Contains("NguoiThucHienName")) dgvThuChi.Columns["NguoiThucHienName"].FillWeight =140;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi khi tải dữ liệu Tài chính: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            catch { }
         }
 
         private void ApplyFilterAndSearch()
@@ -111,17 +169,41 @@ namespace ClubManageApp
                 }
 
                 var q = txtSearch.Text.Trim();
+                currentFilter = q;
                 if (!string.IsNullOrEmpty(q))
                 {
                     var s = q.Replace("'", "''");
                     filters.Add($"(NoiDung LIKE '%{s}%')");
                 }
 
-                // Set rowfilter on DataView
+                // Create filtered view of full table (not paged)
                 thuChiView = new DataView(thuChiTable);
                 thuChiView.RowFilter = string.Join(" AND ", filters);
-                dgvThuChi.DataSource = thuChiView;
 
+                // Update pagination counts based on filtered view
+                totalRecords = thuChiView.Count;
+                totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+                if (totalPages ==0) totalPages =1;
+
+                if (currentPage > totalPages) currentPage = totalPages;
+                if (currentPage <1) currentPage =1;
+
+                // Build a paged DataTable for the grid
+                var pageTable = thuChiView.ToTable().Clone();
+                int start = (currentPage -1) * pageSize;
+                int end = Math.Min(start + pageSize, thuChiView.Count);
+
+                for (int i = start; i < end; i++)
+                {
+                    pageTable.ImportRow(thuChiView[i].Row);
+                }
+
+                dgvThuChi.DataSource = pageTable;
+
+                // Apply column settings again because DataSource changed
+                ApplyColumnSettings();
+
+                UpdatePaginationControls();
                 UpdateChart();
             }
             catch (Exception ex)
@@ -156,6 +238,8 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
                             cmd.ExecuteNonQuery();
                         }
 
+                        // reset to first page after creating new
+                        currentPage =1;
                         LoadDataFromDb();
                     }
                     catch (Exception ex)
@@ -239,6 +323,22 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
             }
         }
 
+        private void BtnSearch_Click(object sender, EventArgs e)
+        {
+            // perform same filter/search as typing
+            currentPage =1; // reset to first page on search
+            ApplyFilterAndSearch();
+        }
+
+        private void BtnRefresh_Click(object sender, EventArgs e)
+        {
+            // reset search and filter and reload data
+            txtSearch.Clear();
+            if (cmbFilter.Items.Contains("Tất cả")) cmbFilter.SelectedItem = "Tất cả";
+            currentPage =1;
+            LoadDataFromDb();
+        }
+
         private void UpdateChart()
         {
             try
@@ -266,7 +366,7 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
                 series.LabelFormat = "N0";
 
                 // compute totals for Thu and Chi
-                var dt = thuChiView.ToTable();
+                var dt = thuChiView?.ToTable() ?? new DataTable();
                 decimal sumChi =0m;
                 decimal sumThu =0m;
 
@@ -308,6 +408,63 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("Chart update error: " + ex.Message);
+            }
+        }
+
+        // Pagination UI update
+        private void UpdatePaginationControls()
+        {
+            try
+            {
+                if (lblPageInfo != null)
+                {
+                    lblPageInfo.Text = $"Trang {currentPage} / {totalPages} (Tổng: {totalRecords} giao dịch)";
+                }
+
+                if (btnPreviousPage != null) btnPreviousPage.Enabled = currentPage >1;
+                if (btnNextPage != null) btnNextPage.Enabled = currentPage < totalPages;
+
+                if (btnPreviousPage != null)
+                {
+                    btnPreviousPage.BackColor = btnPreviousPage.Enabled
+                        ? System.Drawing.Color.FromArgb(52,152,219)
+                        : System.Drawing.Color.FromArgb(189,195,199);
+                }
+                if (btnNextPage != null)
+                {
+                    btnNextPage.BackColor = btnNextPage.Enabled
+                        ? System.Drawing.Color.FromArgb(52,152,219)
+                        : System.Drawing.Color.FromArgb(189,195,199);
+                }
+            }
+            catch { }
+        }
+
+        private void btnPreviousPage_Click(object sender, EventArgs e)
+        {
+            if (currentPage >1)
+            {
+                currentPage--;
+                ApplyFilterAndSearch();
+            }
+        }
+
+        private void btnNextPage_Click(object sender, EventArgs e)
+        {
+            if (currentPage < totalPages)
+            {
+                currentPage++;
+                ApplyFilterAndSearch();
+            }
+        }
+
+        private void cboPageSize_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (int.TryParse(cboPageSize.SelectedItem?.ToString(), out int newPageSize))
+            {
+                pageSize = newPageSize;
+                currentPage =1; // reset to first page
+                ApplyFilterAndSearch();
             }
         }
 
