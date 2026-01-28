@@ -20,6 +20,7 @@ namespace ClubManageApp
 
             // load lookup data
             LoadLoaiHoatDong();
+            ApplyFormStyling();
         }
 
         public ActivityEditForm(ActivityData data) : this()
@@ -111,22 +112,126 @@ namespace ClubManageApp
             }
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+        // Validation methods
+        private bool ValidateInput()
         {
+            // Validate Activity Name
             if (string.IsNullOrWhiteSpace(txtTenHD.Text))
             {
-                MessageBox.Show("Vui lòng nhập tên hoạt động", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                MessageBox.Show("Tên hoạt động không được để trống", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtTenHD.Focus();
+                return false;
             }
 
-            // validate times: ensure end > start
+            if (txtTenHD.Text.Length > 255)
+            {
+                MessageBox.Show("Tên hoạt động không được vượt quá 255 ký tự", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtTenHD.Focus();
+                return false;
+            }
+
+            // Validate date
+            if (dtpNgayToChuc.Value.Date < DateTime.Today)
+            {
+                MessageBox.Show("Ngày tổ chức không được là quá khứ", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                dtpNgayToChuc.Focus();
+                return false;
+            }
+
+            // Validate times
             var startTime = dtpGioBatDau.Value.TimeOfDay;
             var endTime = dtpGioKetThuc.Value.TimeOfDay;
+
             if (endTime <= startTime)
             {
-                MessageBox.Show("Giờ kết thúc phải lớn hơn giờ bắt đầu", "Lỗi thời gian", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                MessageBox.Show("Giờ kết thúc phải lớn hơn giờ bắt đầu", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                dtpGioKetThuc.Focus();
+                return false;
             }
+
+            // Validate location
+            if (string.IsNullOrWhiteSpace(txtDiaDiem.Text))
+            {
+                MessageBox.Show("Địa điểm không được để trống", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtDiaDiem.Focus();
+                return false;
+            }
+
+            if (txtDiaDiem.Text.Length > 255)
+            {
+                MessageBox.Show("Địa điểm không được vượt quá 255 ký tự", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtDiaDiem.Focus();
+                return false;
+            }
+
+            // Validate budget
+            if (nudKinhPhiDuKien.Value < 0)
+            {
+                MessageBox.Show("Kinh phí dự kiến không được âm", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                nudKinhPhiDuKien.Focus();
+                return false;
+            }
+
+            // Validate max participants
+            if (nudSoLuongToiDa.Value < 0)
+            {
+                MessageBox.Show("Số lượng tối đa không được âm", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                nudSoLuongToiDa.Focus();
+                return false;
+            }
+
+            // Validate status
+            if (string.IsNullOrWhiteSpace(cboTrangThai.Text))
+            {
+                MessageBox.Show("Vui lòng chọn trạng thái", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                cboTrangThai.Focus();
+                return false;
+            }
+
+            // Validate LoaiHoatDong selection
+            if (cboLoaiHD.DataSource == null || cboLoaiHD.SelectedValue == null || !int.TryParse(cboLoaiHD.SelectedValue.ToString(), out int tmpLoai) || tmpLoai <= 0)
+            {
+                MessageBox.Show("Vui lòng chọn loại hoạt động", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                cboLoaiHD.Focus();
+                return false;
+            }
+
+            // Check duplicate activity (same name and same date) - skip when editing same MaHD
+            try
+            {
+                using (var conn = new SqlConnection(connectionString))
+                using (var cmd = new SqlCommand("SELECT COUNT(1) FROM HoatDong WHERE TenHD=@TenHD AND NgayToChuc=@NgayToChuc" + (ActivityData.MaHD > 0 ? " AND MaHD<>@MaHD" : ""), conn))
+                {
+                    cmd.Parameters.AddWithValue("@TenHD", txtTenHD.Text.Trim());
+                    cmd.Parameters.AddWithValue("@NgayToChuc", dtpNgayToChuc.Value.Date);
+                    if (ActivityData.MaHD > 0) cmd.Parameters.AddWithValue("@MaHD", ActivityData.MaHD);
+                    conn.Open();
+                    var cnt = Convert.ToInt32(cmd.ExecuteScalar());
+                    if (cnt > 0)
+                    {
+                        MessageBox.Show("Đã tồn tại hoạt động cùng tên vào ngày đã chọn.", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        txtTenHD.Focus();
+                        return false;
+                    }
+                }
+            }
+            catch { }
+
+            // Validate description
+            if (txtMoTa.Text.Length > 1000)
+            {
+                MessageBox.Show("Mô tả không được vượt quá 1000 ký tự", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtMoTa.Focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            if (!ValidateInput())
+                return;
 
             ActivityData.TenHD = txtTenHD.Text.Trim();
             ActivityData.NgayToChuc = dtpNgayToChuc.Value.Date;
@@ -195,6 +300,47 @@ namespace ClubManageApp
         private void ActivityEditForm_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void ApplyFormStyling()
+        {
+            // Apply consistent fonts/colors to existing controls without adding a header panel.
+            try
+            {
+                Action<Control.ControlCollection> styleChildren = null;
+                styleChildren = (cols) =>
+                {
+                    foreach (Control c in cols)
+                    {
+                        if (c is Label l)
+                        {
+                            // make section labels slightly larger/bolder if they look like headers
+                            if (l.Font.Size < 12 && l.Text.Length < 40)
+                                l.Font = new Font("Segoe UI", 10, FontStyle.Regular);
+                            else
+                                l.Font = new Font("Segoe UI", l.Font.Size, l.Font.Style);
+                        }
+                        else if (c is TextBox tb)
+                        {
+                            tb.Font = new Font("Segoe UI", 9);
+                        }
+                        else if (c is ComboBox cb)
+                        {
+                            cb.Font = new Font("Segoe UI", 9);
+                        }
+                        else if (c is NumericUpDown nud)
+                        {
+                            nud.Font = new Font("Segoe UI", 9);
+                        }
+
+                        if (c.HasChildren)
+                            styleChildren(c.Controls);
+                    }
+                };
+
+                styleChildren(this.Controls);
+            }
+            catch { }
         }
     }
 }

@@ -255,9 +255,9 @@
             this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.btnSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(826, 344);
+            this.btnSave.Location = new System.Drawing.Point(618, 368);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(151, 91);
+            this.btnSave.Size = new System.Drawing.Size(107, 67);
             this.btnSave.TabIndex = 22;
             this.btnSave.Text = "Lưu";
             this.btnSave.UseVisualStyleBackColor = false;
@@ -268,9 +268,9 @@
             this.btnCancel.BackColor = System.Drawing.Color.Gray;
             this.btnCancel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCancel.ForeColor = System.Drawing.Color.White;
-            this.btnCancel.Location = new System.Drawing.Point(994, 344);
+            this.btnCancel.Location = new System.Drawing.Point(749, 368);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(151, 91);
+            this.btnCancel.Size = new System.Drawing.Size(106, 67);
             this.btnCancel.TabIndex = 23;
             this.btnCancel.Text = "Hủy";
             this.btnCancel.UseVisualStyleBackColor = false;
@@ -306,7 +306,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "ActivityEditForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Thêm/Chỉnh sửa hoạt động";
+            this.Text = "Thêm hoạt động";
             this.Load += new System.EventHandler(this.ActivityEditForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.nudKinhPhiDuKien)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudSoLuongToiDa)).EndInit();
