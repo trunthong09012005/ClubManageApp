@@ -515,6 +515,16 @@ namespace ClubManageApp
         {
 
         }
+
+        private void btnAdd_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnView_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public class NotificationData
