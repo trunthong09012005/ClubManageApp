@@ -1938,7 +1938,7 @@ namespace ClubManageApp
             };
             parent.Controls.Add(textBox);
 
-            yPos += 40z;
+            yPos += 40;
         }
 
         private void MemberDashboard_Load_2(object sender, EventArgs e)
