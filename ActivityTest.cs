@@ -101,8 +101,94 @@ namespace ClubManageApp
             }
             else
             {
+                string rawSearch = txtSearch.Text.Trim();
+                List<string> terms = new List<string>();
+                if (!string.IsNullOrEmpty(rawSearch))
+                {
+                    // split by spaces, ignore empty
+                    terms = rawSearch.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToList();
+                }
+
                 rows = activitiesTable.AsEnumerable()
-                    .Where(r => string.IsNullOrEmpty(txtSearch.Text) || (r.Field<string>("TenHD") ?? string.Empty).ToLower().Contains(txtSearch.Text.ToLower()))
+                    .Where(r =>
+                    {
+                        if (terms.Count == 0)
+                            return true; // no search
+
+                        // prepare row fields
+                        string ten = (r.Field<string>("TenHD") ?? string.Empty).ToLower();
+                        string dia = (r.Field<string>("DiaDiem") ?? string.Empty).ToLower();
+                        string trang = (r.Field<string>("TrangThai") ?? string.Empty).ToLower();
+                        string mota = (r.Field<string>("MoTa") ?? string.Empty).ToLower();
+                        string loai = (r.Table.Columns.Contains("TenLoaiHD") ? (r.Field<string>("TenLoaiHD") ?? string.Empty) : string.Empty).ToLower();
+
+                        string ngayStr = string.Empty;
+                        if (r.Table.Columns.Contains("NgayToChuc") && r["NgayToChuc"] != DBNull.Value)
+                        {
+                            DateTime d = Convert.ToDateTime(r["NgayToChuc"]);
+                            ngayStr = d.ToString("dd/MM/yyyy");
+                        }
+
+                        decimal kinh = 0m;
+                        if (r.Table.Columns.Contains("KinhPhiDuKien") && r["KinhPhiDuKien"] != DBNull.Value)
+                            kinh = Convert.ToDecimal(r["KinhPhiDuKien"]);
+
+                        int ma = r.Table.Columns.Contains("MaHD") && r["MaHD"] != DBNull.Value ? Convert.ToInt32(r["MaHD"]) : 0;
+                        int soLuong = r.Table.Columns.Contains("SoLuongToiDa") && r["SoLuongToiDa"] != DBNull.Value ? Convert.ToInt32(r["SoLuongToiDa"]) : 0;
+
+                        // every term must match at least one field (AND semantics)
+                        foreach (var termRaw in terms)
+                        {
+                            var term = termRaw.ToLower();
+
+                            bool matched = false;
+
+                            // exact/int match for MaHD or SoLuong
+                            if (int.TryParse(term, out int n))
+                            {
+                                if (n == ma || n == soLuong)
+                                {
+                                    matched = true;
+                                }
+                            }
+
+                            // try decimal match for kinh phi (allow formatted like 1.000.000 or 1000000)
+                            if (!matched)
+                            {
+                                var norm = term.Replace(",", string.Empty).Replace(".", string.Empty).Replace("vnđ", string.Empty).Replace("vnd", string.Empty).Trim();
+                                if (decimal.TryParse(norm, out decimal kd))
+                                {
+                                    if (kd == kinh)
+                                        matched = true;
+                                }
+                            }
+
+                            // try date match
+                            if (!matched)
+                            {
+                                if (DateTime.TryParse(termRaw, out DateTime dtTerm))
+                                {
+                                    if (r.Table.Columns.Contains("NgayToChuc") && r["NgayToChuc"] != DBNull.Value)
+                                    {
+                                        DateTime rowDate = Convert.ToDateTime(r["NgayToChuc"]).Date;
+                                        if (rowDate == dtTerm.Date) matched = true;
+                                    }
+                                }
+                            }
+
+                            // substring matches against textual fields
+                            if (!matched)
+                            {
+                                if (ten.Contains(term) || dia.Contains(term) || trang.Contains(term) || mota.Contains(term) || loai.Contains(term) || ngayStr.Contains(term))
+                                    matched = true;
+                            }
+
+                            if (!matched)
+                                return false; // this term didn't match any field -> exclude row
+                        }
+
+                        return true;
+                    })
                     .ToList();
 
                 totalPages = Math.Max(1, (int)Math.Ceiling((double)rows.Count / pageSize));
