@@ -397,7 +397,7 @@ namespace ClubManageApp
                 Font = new Font("Segoe UI", 10),
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
-            cboFilter.Items.AddRange(new object[] { "Tất cả", "Hoạt động", "Tạm ngưng", "Nghỉ" });
+            cboFilter.Items.AddRange(new object[] { "Tất cả", "Hoạt động", "Nghỉ" });
             cboFilter.SelectedIndex = 0;
             cboFilter.SelectedIndexChanged += CboFilter_SelectedIndexChanged;
 
@@ -580,7 +580,7 @@ namespace ClubManageApp
 
                     if (!string.IsNullOrWhiteSpace(searchText))
                     {
-                        countQuery += " AND (HoTen LIKE @search OR Email LIKE @search OR SDT LIKE @search OR Lop LIKE @search)";
+                        countQuery += " AND (HoTen LIKE @search OR Email LIKE @search OR SDT LIKE @search OR Lop LIKE @search OR Khoa LIKE @search OR VaiTro LIKE @search OR TrangThai LIKE @search OR GioiTinh LIKE @search OR DiaChi LIKE @search OR CONVERT(VARCHAR, NgaySinh, 103) LIKE @search OR CONVERT(VARCHAR, NgayThamGia, 103) LIKE @search)";
                     }
 
                     if (filterStatus != "Tất cả")
@@ -622,7 +622,7 @@ namespace ClubManageApp
 
                     if (!string.IsNullOrWhiteSpace(searchText))
                     {
-                        query += " AND (HoTen LIKE @search OR Email LIKE @search OR SDT LIKE @search OR Lop LIKE @search)";
+                        query += " AND (HoTen LIKE @search OR Email LIKE @search OR SDT LIKE @search OR Lop LIKE @search OR Khoa LIKE @search OR VaiTro LIKE @search OR TrangThai LIKE @search OR GioiTinh LIKE @search OR DiaChi LIKE @search OR CONVERT(VARCHAR, NgaySinh, 103) LIKE @search OR CONVERT(VARCHAR, NgayThamGia, 103) LIKE @search)";
                     }
 
                     if (filterStatus != "Tất cả")
@@ -655,6 +655,12 @@ namespace ClubManageApp
                         
                         // ✅ Hiển thị tổng số thực tế
                         lblTotalMembers.Text = $"Tổng số: {totalRecords} thành viên";
+
+                        // ✅ Thông báo nếu không tìm thấy kết quả
+                        if (totalRecords == 0 && !string.IsNullOrWhiteSpace(searchText))
+                        {
+                            MessageBox.Show($"Không tìm thấy kết quả nào cho: '{searchText}'", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
 
                         // ✅ Cập nhật UI phân trang (không gọi lại LoadMemberData)
                         UpdatePaginationUI();

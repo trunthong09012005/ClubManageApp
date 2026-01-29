@@ -194,7 +194,18 @@ namespace ClubManageApp
                     
                     if (!string.IsNullOrWhiteSpace(filter))
                     {
-                        countSql += " WHERE TK.TenDN LIKE @f OR TV.HoTen LIKE @f OR TK.QuyenHan LIKE @f OR TK.TrangThai LIKE @f";
+                        countSql += @" WHERE 
+                            TK.TenDN LIKE @f OR 
+                            TV.HoTen LIKE @f OR 
+                            TV.SDT LIKE @f OR 
+                            TK.QuyenHan LIKE @f OR 
+                            TK.TrangThai LIKE @f OR
+                            CAST(TK.MaTK AS NVARCHAR) LIKE @f OR
+                            CAST(TK.MaTV AS NVARCHAR) LIKE @f OR
+                            CONVERT(NVARCHAR, TK.NgayTao, 103) LIKE @f OR
+                            CONVERT(NVARCHAR, TK.NgayTao, 120) LIKE @f OR
+                            CONVERT(NVARCHAR, TK.LanDangNhapCuoi, 103) LIKE @f OR
+                            CONVERT(NVARCHAR, TK.LanDangNhapCuoi, 120) LIKE @f";
                     }
 
                     using (var countCmd = new SqlCommand(countSql, conn))
@@ -222,10 +233,21 @@ namespace ClubManageApp
 
                     if (!string.IsNullOrWhiteSpace(filter))
                     {
-                        sql += " WHERE TK.TenDN LIKE @f OR TV.HoTen LIKE @f OR TK.QuyenHan LIKE @f OR TK.TrangThai LIKE @f";
+                        sql += @" WHERE 
+                            TK.TenDN LIKE @f OR 
+                            TV.HoTen LIKE @f OR 
+                            TV.SDT LIKE @f OR 
+                            TK.QuyenHan LIKE @f OR 
+                            TK.TrangThai LIKE @f OR
+                            CAST(TK.MaTK AS NVARCHAR) LIKE @f OR
+                            CAST(TK.MaTV AS NVARCHAR) LIKE @f OR
+                            CONVERT(NVARCHAR, TK.NgayTao, 103) LIKE @f OR
+                            CONVERT(NVARCHAR, TK.NgayTao, 120) LIKE @f OR
+                            CONVERT(NVARCHAR, TK.LanDangNhapCuoi, 103) LIKE @f OR
+                            CONVERT(NVARCHAR, TK.LanDangNhapCuoi, 120) LIKE @f";
                     }
 
-                    sql += " ORDER BY TK.MaTK OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
+                    sql += " ORDER BY TK.MaTK DESC OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
 
                     using (var cmd = new SqlCommand(sql, conn))
                     {
@@ -282,7 +304,16 @@ namespace ClubManageApp
                 // ✅ PHÂN TRANG: Cập nhật UI phân trang
                 UpdatePaginationControls();
                 UpdateStatistics();
-                AddLog($"Tải danh sách tài khoản - Trang {currentPage}/{totalPages}");
+                
+                // ✅ Thông báo kết quả tìm kiếm
+                if (!string.IsNullOrWhiteSpace(filter))
+                {
+                    AddLog($"Tìm kiếm '{filter}' - Tìm thấy {totalRecords} kết quả (Trang {currentPage}/{totalPages})");
+                }
+                else
+                {
+                    AddLog($"Tải danh sách tài khoản - Trang {currentPage}/{totalPages}");
+                }
             }
             catch (Exception ex)
             {
@@ -566,6 +597,12 @@ namespace ClubManageApp
             dtpNgayTao.Value = DateTime.Now;
             dtpLanDangNhapCuoi.Value = DateTime.Now;
             txtSearch.Clear();
+            
+            // ✅ MỞ KHÓA tên đăng nhập và mật khẩu khi clear (chế độ thêm mới)
+            txtTenDN.Enabled = true;
+            txtTenDN.BackColor = System.Drawing.Color.White;
+            txtMatKhau.Enabled = true;
+            txtMatKhau.BackColor = System.Drawing.Color.White;
         }
 
         private void label10_Click(object sender, EventArgs e)
@@ -888,31 +925,8 @@ namespace ClubManageApp
                 string quyenHan = cboQuyenHan.SelectedItem?.ToString();
                 string trangThai = cboTrangThai.SelectedItem?.ToString();
 
-                // ✅ VALIDATE: Tên đăng nhập
-                if (string.IsNullOrEmpty(tenDN))
-                {
-                    MessageBox.Show("❌ Tên đăng nhập không được để trống!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtTenDN.Focus();
-                    return;
-                }
-
-                if (!ValidateTenDangNhap(tenDN, maTK))
-                {
-                    return;
-                }
-
-                // ✅ VALIDATE: Mật khẩu
-                if (string.IsNullOrEmpty(matKhau))
-                {
-                    MessageBox.Show("❌ Mật khẩu không được để trống!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtMatKhau.Focus();
-                    return;
-                }
-
-                if (!ValidateMatKhau(matKhau))
-                {
-                    return;
-                }
+                // ✅ LƯU Ý: Không validate tên đăng nhập và mật khẩu vì đã bị khóa
+                // Tên đăng nhập và mật khẩu không thể thay đổi khi sửa
 
                 // ✅ VALIDATE: Mã thành viên
                 if (string.IsNullOrEmpty(maTVText))
@@ -1310,7 +1324,13 @@ namespace ClubManageApp
                     dtpLanDangNhapCuoi.Value = DateTime.Now;
                 }
 
-                AddLog($"Chọn tài khoản: {txtTenDN.Text}");
+                // ✅ KHÓA tên đăng nhập và mật khẩu khi chọn tài khoản để sửa
+                txtTenDN.Enabled = false;
+                txtTenDN.BackColor = System.Drawing.Color.FromArgb(240, 240, 240); // Màu xám nhạt
+                txtMatKhau.Enabled = false;
+                txtMatKhau.BackColor = System.Drawing.Color.FromArgb(240, 240, 240); // Màu xám nhạt
+
+                AddLog($"Chọn tài khoản: {txtTenDN.Text} (Tên đăng nhập và mật khẩu đã bị khóa)");
             }
             catch (Exception ex)
             {

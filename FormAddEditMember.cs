@@ -54,11 +54,11 @@ namespace ClubManageApp
 
             AddFormField("Họ tên (*)", ref txtHoTen, ref yPos);
             AddFormField("Email (*)", ref txtEmail, ref yPos);
-            AddFormField("SĐT", ref txtSDT, ref yPos);
+            AddFormField("SĐT (*)", ref txtSDT, ref yPos);
             
             Label lblNgaySinh = new Label 
             { 
-                Text = "Ngày sinh:", 
+                Text = "Ngày sinh (*)", 
                 Location = new Point(20, yPos), 
                 AutoSize = true,
                 Font = new Font("Segoe UI", 10)
@@ -69,57 +69,22 @@ namespace ClubManageApp
                 Size = new Size(400, 25),
                 Font = new Font("Segoe UI", 10),
                 Format = DateTimePickerFormat.Short,
-                MaxDate = DateTime.Now.AddYears(-15), // Ít nhất 15 tuổi
-                MinDate = DateTime.Now.AddYears(-100)
+                MaxDate = DateTime.Now.AddYears(-18), // Ít nhất 18 tuổi
+                MinDate = DateTime.Now.AddYears(-30)  // Tối đa 30 tuổi
             };
             this.Controls.Add(lblNgaySinh);
             this.Controls.Add(dtpNgaySinh);
             yPos += 40;
 
-            AddComboField("Giới tính", ref cboGioiTinh, new[] { "Nam", "Nữ", "Khác" }, ref yPos);
-            AddFormField("Lớp", ref txtLop, ref yPos);
-            AddFormField("Khoa", ref txtKhoa, ref yPos);
-            AddFormField("Địa chỉ", ref txtDiaChi, ref yPos);
+            AddComboField("Giới tính (*)", ref cboGioiTinh, new[] { "Nam", "Nữ", "Khác" }, ref yPos);
+            AddFormField("Lớp (*)", ref txtLop, ref yPos);
+            AddFormField("Khoa (*)", ref txtKhoa, ref yPos);
+            AddFormField("Địa chỉ (*)", ref txtDiaChi, ref yPos);
             
-            LoadAndAddComboField("Vai trò", ref cboVaiTro, "SELECT DISTINCT VaiTro FROM ThanhVien WHERE VaiTro IS NOT NULL", ref yPos);
+            // ✅ Load vai trò - LOẠI TRỪ Admin
+            LoadAndAddComboField("Vai trò (*)", ref cboVaiTro, "SELECT DISTINCT VaiTro FROM ThanhVien WHERE VaiTro IS NOT NULL AND VaiTro != N'Admin'", ref yPos);
             
-            // ✅ CẢI THIỆN: Xử lý quyền cho vai trò Admin
-            if (cboVaiTro != null)
-            {
-                // ✅ Nếu không phải Admin, xóa "Admin" khỏi dropdown
-                if (!string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
-                {
-                    for (int i = cboVaiTro.Items.Count - 1; i >= 0; i--)
-                    {
-                        if (string.Equals(cboVaiTro.Items[i]?.ToString(), "Admin", StringComparison.OrdinalIgnoreCase))
-                        {
-                            cboVaiTro.Items.RemoveAt(i);
-                        }
-                    }
-                }
-                else
-                {
-                    // ✅ Nếu là Admin, đảm bảo có option "Admin" trong danh sách
-                    bool hasAdmin = false;
-                    foreach (var item in cboVaiTro.Items)
-                    {
-                        if (string.Equals(item?.ToString(), "Admin", StringComparison.OrdinalIgnoreCase))
-                        {
-                            hasAdmin = true;
-                            break;
-                        }
-                    }
-                    if (!hasAdmin)
-                    {
-                        cboVaiTro.Items.Add("Admin");
-                    }
-                }
-                
-                // ✅ THÊM: Xử lý sự kiện khi thay đổi vai trò
-                cboVaiTro.SelectedIndexChanged += CboVaiTro_SelectedIndexChanged;
-            }
-            
-            AddComboField("Trạng thái", ref cboTrangThai, new[] { "Hoạt động", "Tạm ngừng", "Nghỉ" }, ref yPos);
+            AddComboField("Trạng thái (*)", ref cboTrangThai, new[] { "Hoạt động", "Nghỉ" }, ref yPos);
             LoadAndAddComboField("Chức vụ", ref cboChucVu, "SELECT MaCV, TenCV FROM ChucVu", ref yPos, true);
             LoadAndAddComboField("Ban", ref cboBan, "SELECT MaBan, TenBan FROM BanChuyenMon", ref yPos, true);
 
@@ -168,6 +133,17 @@ namespace ClubManageApp
             txtEmail.Leave += TxtEmail_Leave;
             txtSDT.Leave += TxtSDT_Leave;
             txtSDT.KeyPress += TxtSDT_KeyPress;
+            
+            // Reset màu nền khi người dùng bắt đầu nhập
+            txtHoTen.TextChanged += (s, e) => { if (txtHoTen.BackColor != Color.White) txtHoTen.BackColor = Color.White; };
+            txtEmail.TextChanged += (s, e) => { if (txtEmail.BackColor != Color.White) txtEmail.BackColor = Color.White; };
+            txtSDT.TextChanged += (s, e) => { if (txtSDT.BackColor != Color.White) txtSDT.BackColor = Color.White; };
+            txtLop.TextChanged += (s, e) => { if (txtLop.BackColor != Color.White) txtLop.BackColor = Color.White; };
+            txtKhoa.TextChanged += (s, e) => { if (txtKhoa.BackColor != Color.White) txtKhoa.BackColor = Color.White; };
+            txtDiaChi.TextChanged += (s, e) => { if (txtDiaChi.BackColor != Color.White) txtDiaChi.BackColor = Color.White; };
+            cboGioiTinh.SelectedIndexChanged += (s, e) => { if (cboGioiTinh.BackColor != Color.White) cboGioiTinh.BackColor = Color.White; };
+            cboVaiTro.SelectedIndexChanged += (s, e) => { if (cboVaiTro.BackColor != Color.White) cboVaiTro.BackColor = Color.White; };
+            cboTrangThai.SelectedIndexChanged += (s, e) => { if (cboTrangThai.BackColor != Color.White) cboTrangThai.BackColor = Color.White; };
         }
 
         private void AddFormField(string label, ref TextBox textBox, ref int yPos)
@@ -315,28 +291,21 @@ namespace ClubManageApp
                                 {
                                     if (string.Equals(originalRole, "Admin", StringComparison.OrdinalIgnoreCase))
                                     {
-                                        if (!string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
+                                        // ✅ Nếu là Admin, thêm vào dropdown và disable
+                                        if (!cboVaiTro.Items.Contains(originalRole))
+                                            cboVaiTro.Items.Add(originalRole);
+                                        cboVaiTro.SelectedItem = originalRole;
+                                        cboVaiTro.Enabled = false;
+                                        
+                                        Label lblWarning = new Label
                                         {
-                                            // ✅ Người dùng không phải Admin không thể sửa Admin
-                                            if (!cboVaiTro.Items.Contains(originalRole))
-                                                cboVaiTro.Items.Add(originalRole);
-                                            cboVaiTro.SelectedItem = originalRole;
-                                            cboVaiTro.Enabled = false;
-                                            
-                                            Label lblWarning = new Label
-                                            {
-                                                Text = "⚠️ Chỉ Admin mới có quyền thay đổi vai trò Admin",
-                                                Location = new Point(150, cboVaiTro.Location.Y + 30),
-                                                AutoSize = true,
-                                                ForeColor = Color.Red,
-                                                Font = new Font("Segoe UI", 9, FontStyle.Italic)
-                                            };
-                                            this.Controls.Add(lblWarning);
-                                        }
-                                        else
-                                        {
-                                            cboVaiTro.SelectedItem = originalRole;
-                                        }
+                                            Text = "⚠️ Không thể thay đổi vai trò Admin",
+                                            Location = new Point(150, cboVaiTro.Location.Y + 30),
+                                            AutoSize = true,
+                                            ForeColor = Color.Red,
+                                            Font = new Font("Segoe UI", 9, FontStyle.Italic)
+                                        };
+                                        this.Controls.Add(lblWarning);
                                     }
                                     else
                                     {
@@ -481,63 +450,6 @@ namespace ClubManageApp
             txtSDT.BackColor = Color.White;
         }
 
-        // ✅ THÊM: Xử lý sự kiện khi thay đổi vai trò
-        private void CboVaiTro_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string selectedRole = cboVaiTro.SelectedItem?.ToString();
-            
-            // ✅ Nếu đang chọn Admin
-            if (string.Equals(selectedRole, "Admin", StringComparison.OrdinalIgnoreCase))
-            {
-                // Kiểm tra xem có phải đang edit Admin hiện tại không
-                bool isCurrentAdmin = maTV.HasValue && 
-                                     string.Equals(originalRole, "Admin", StringComparison.OrdinalIgnoreCase);
-                
-                if (!isCurrentAdmin)
-                {
-                    // Kiểm tra xem đã có Admin chưa
-                    if (HasExistingAdmin())
-                    {
-                        MessageBox.Show(
-                            "⚠️ HỆ THỐNG CHỈ CHO PHÉP MỘT ADMIN DUY NHẤT!\n\n" +
-                            "Hiện tại đã có một Admin trong hệ thống.\n" +
-                            "Vui lòng chọn vai trò khác.",
-                            "Không thể tạo Admin mới",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning);
-                        
-                        // Reset về vai trò cũ hoặc "Thành viên"
-                        if (!string.IsNullOrEmpty(originalRole))
-                        {
-                            cboVaiTro.SelectedItem = originalRole;
-                        }
-                        else
-                        {
-                            cboVaiTro.SelectedIndex = -1;
-                        }
-                    }
-                }
-            }
-            // ✅ Nếu đang đổi từ Admin sang vai trò khác
-            else if (maTV.HasValue && string.Equals(originalRole, "Admin", StringComparison.OrdinalIgnoreCase))
-            {
-                DialogResult result = MessageBox.Show(
-                    "⚠️ CẢNH BÁO QUAN TRỌNG!\n\n" +
-                    "Bạn đang cố gắng thay đổi vai trò của ADMIN DUY NHẤT trong hệ thống.\n\n" +
-                    "Nếu tiếp tục, hệ thống sẽ KHÔNG CÓN ADMIN nào!\n" +
-                    "Điều này có thể khiến bạn mất quyền quản trị.\n\n" +
-                    "Bạn có CHẮC CHẮN muốn tiếp tục không?",
-                    "Cảnh báo nghiêm trọng",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning);
-                
-                if (result == DialogResult.No)
-                {
-                    cboVaiTro.SelectedItem = originalRole;
-                }
-            }
-        }
-
         #endregion
 
         #region Event Handlers
@@ -555,105 +467,12 @@ namespace ClubManageApp
 
             string selectedRole = cboVaiTro.SelectedItem?.ToString();
 
-            // ✅ KIỂM TRA QUYỀN: Chỉ Admin mới được đặt vai trò Admin
-            if (!string.IsNullOrEmpty(selectedRole) && 
-                string.Equals(selectedRole, "Admin", StringComparison.OrdinalIgnoreCase) &&
-                !string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
-            {
-                MessageBox.Show("⛔ Chỉ có Admin mới được phép đặt vai trò Admin cho người khác!", 
-                    "Không có quyền", 
-                    MessageBoxButtons.OK, 
-                    MessageBoxIcon.Error);
-                return;
-            }
-
-            // ✅ KIỂM TRA QUY TẮC: Chỉ được có 1 Admin
-            bool isChangingToAdmin = !string.IsNullOrEmpty(selectedRole) && 
-                                    string.Equals(selectedRole, "Admin", StringComparison.OrdinalIgnoreCase);
-            
-            bool wasOriginallyAdmin = !string.IsNullOrEmpty(originalRole) && 
-                                     string.Equals(originalRole, "Admin", StringComparison.OrdinalIgnoreCase);
-            
-            // Nếu đang cố gắng tạo Admin mới (không phải edit Admin hiện tại)
-            if (isChangingToAdmin && !wasOriginallyAdmin)
-            {
-                if (HasExistingAdmin())
-                {
-                    MessageBox.Show(
-                        "❌ KHÔNG THỂ TẠO ADMIN MỚI!\n\n" +
-                        "Hệ thống chỉ cho phép TỐI ĐA MỘT ADMIN duy nhất.\n" +
-                        "Hiện tại đã có một Admin trong hệ thống.\n\n" +
-                        "Để tạo Admin mới, bạn cần:\n" +
-                        "1. Đổi vai trò của Admin hiện tại sang vai trò khác\n" +
-                        "2. Sau đó mới có thể tạo Admin mới",
-                        "Vi phạm quy tắc hệ thống",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                    return;
-                }
-            }
-            
-            // ✅ CẢNH BÁO: Nếu đang xóa Admin duy nhất
-            if (wasOriginallyAdmin && !isChangingToAdmin)
-            {
-                int adminCount = GetAdminCount();
-                if (adminCount <= 1)
-                {
-                    DialogResult confirmResult = MessageBox.Show(
-                        "🚨 CẢNH BÁO CỰC KỲ NGHIÊM TRỌNG! 🚨\n\n" +
-                        "Bạn đang xóa vai trò Admin CUỐI CÙNG trong hệ thống!\n\n" +
-                        "Hậu quả:\n" +
-                        "• Hệ thống sẽ KHÔNG CÒN ADMIN nào\n" +
-                        "• BẠN SẼ MẤT TẤT CẢ QUYỀN QUẢN TRỊ\n" +
-                        "• Không thể quản lý thành viên, hoạt động, v.v.\n" +
-                        "• Có thể phải can thiệp trực tiếp vào database để khôi phục\n\n" +
-                        "Đây có thể là một SAI LẦM NGHIÊM TRỌNG!\n\n" +
-                        "Bạn có THỰC SỰ CHẮC CHẮN muốn tiếp tục không?",
-                        "CẢNH BÁO CUỐI CÙNG",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Stop);
-                    
-                    if (confirmResult != DialogResult.Yes)
-                    {
-                        return;
-                    }
-                }
-            }
-
             // ✅ Thực hiện lưu
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    
-                    // ✅ Kiểm tra lại lần cuối trước khi lưu (double-check)
-                    if (isChangingToAdmin && !wasOriginallyAdmin)
-                    {
-                        string checkQuery = "SELECT COUNT(*) FROM ThanhVien WHERE VaiTro = N'Admin'";
-                        if (maTV.HasValue)
-                        {
-                            checkQuery += " AND MaTV != @MaTV";
-                        }
-                        
-                        using (SqlCommand checkCmd = new SqlCommand(checkQuery, conn))
-                        {
-                            if (maTV.HasValue)
-                                checkCmd.Parameters.AddWithValue("@MaTV", maTV.Value);
-                            
-                            int existingAdminCount = (int)checkCmd.ExecuteScalar();
-                            if (existingAdminCount > 0)
-                            {
-                                MessageBox.Show(
-                                    "❌ Phát hiện Admin khác trong hệ thống!\n\n" +
-                                    "Không thể tiếp tục do vi phạm quy tắc một Admin duy nhất.",
-                                    "Lỗi",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
-                                return;
-                            }
-                        }
-                    }
                     
                     string query;
                     
@@ -697,12 +516,6 @@ namespace ClubManageApp
 
                 string successMessage = maTV.HasValue ? "✅ Cập nhật thành công!" : "✅ Thêm thành viên thành công!";
                 
-                // ✅ Thêm thông báo đặc biệt nếu tạo/sửa Admin
-                if (isChangingToAdmin)
-                {
-                    successMessage += "\n\n👑 Vai trò Admin đã được gán cho thành viên này.";
-                }
-                
                 MessageBox.Show(successMessage, "Thành công", 
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 
@@ -739,63 +552,100 @@ namespace ClubManageApp
 
         private ValidationResult ValidateAllFields()
         {
+            // Reset màu nền tất cả các trường trước khi validate
+            ResetFieldColors();
+            
+            System.Text.StringBuilder errors = new System.Text.StringBuilder();
+            bool hasError = false;
+            
             // Validate Họ tên
             string hoTen = txtHoTen.Text.Trim();
             if (string.IsNullOrWhiteSpace(hoTen))
             {
-                txtHoTen.Focus();
-                return new ValidationResult(false, "❌ Vui lòng nhập họ tên!");
+                txtHoTen.BackColor = Color.FromArgb(255, 230, 230);
+                errors.AppendLine("• Họ tên không được để trống");
+                hasError = true;
             }
-
-            if (!Regex.IsMatch(hoTen, @"^[\p{L}\s]+$"))
+            else if (!Regex.IsMatch(hoTen, @"^[\p{L}\s]+$"))
             {
-                txtHoTen.Focus();
-                return new ValidationResult(false, "❌ Họ tên chỉ được chứa chữ cái và khoảng trắng!");
+                txtHoTen.BackColor = Color.FromArgb(255, 230, 230);
+                errors.AppendLine("• Họ tên chỉ được chứa chữ cái và khoảng trắng");
+                hasError = true;
             }
-
-            if (hoTen.Length < 2 || hoTen.Length > 150)
+            else if (hoTen.Length < 2 || hoTen.Length > 150)
             {
-                txtHoTen.Focus();
-                return new ValidationResult(false, "❌ Họ tên phải có độ dài từ 2 đến 150 ký tự!");
+                txtHoTen.BackColor = Color.FromArgb(255, 230, 230);
+                errors.AppendLine("• Họ tên phải có độ dài từ 2 đến 150 ký tự");
+                hasError = true;
             }
 
             // Validate Email
             string email = txtEmail.Text.Trim();
             if (string.IsNullOrWhiteSpace(email))
             {
-                txtEmail.Focus();
-                return new ValidationResult(false, "❌ Vui lòng nhập email!");
+                txtEmail.BackColor = Color.FromArgb(255, 230, 230);
+                errors.AppendLine("• Email không được để trống");
+                hasError = true;
+            }
+            else if (!IsValidEmail(email))
+            {
+                txtEmail.BackColor = Color.FromArgb(255, 230, 230);
+                errors.AppendLine("• Email không hợp lệ");
+                hasError = true;
+            }
+            else if (IsEmailExists(email))
+            {
+                txtEmail.BackColor = Color.FromArgb(255, 230, 230);
+                errors.AppendLine("• Email đã được sử dụng bởi thành viên khác");
+                hasError = true;
             }
 
-            if (!IsValidEmail(email))
+            // Validate SĐT (bắt buộc)
+            string sdt = txtSDT.Text.Trim();
+            if (string.IsNullOrWhiteSpace(sdt))
             {
-                txtEmail.Focus();
-                return new ValidationResult(false, "❌ Email không hợp lệ! Vui lòng nhập đúng định dạng.");
+                txtSDT.BackColor = Color.FromArgb(255, 230, 230);
+                errors.AppendLine("• Số điện thoại không được để trống");
+                hasError = true;
+            }
+            else if (!Regex.IsMatch(sdt, @"^(0|\+84)[0-9]{9,10}$"))
+            {
+                txtSDT.BackColor = Color.FromArgb(255, 230, 230);
+                errors.AppendLine("• Số điện thoại không hợp lệ (định dạng: 0xxxxxxxxx hoặc +84xxxxxxxxx)");
+                hasError = true;
+            }
+            else if (IsPhoneExists(sdt))
+            {
+                txtSDT.BackColor = Color.FromArgb(255, 230, 230);
+                errors.AppendLine("• Số điện thoại đã được sử dụng bởi thành viên khác");
+                hasError = true;
             }
             
-            // ✅ THÊM: Kiểm tra email đã tồn tại
-            if (IsEmailExists(email))
+            // Validate Lớp (bắt buộc)
+            string lop = txtLop.Text.Trim();
+            if (string.IsNullOrWhiteSpace(lop))
             {
-                txtEmail.Focus();
-                return new ValidationResult(false, "❌ Email này đã được sử dụng bởi thành viên khác!");
+                txtLop.BackColor = Color.FromArgb(255, 230, 230);
+                errors.AppendLine("• Lớp không được để trống");
+                hasError = true;
             }
-
-            // Validate SĐT (nếu có nhập)
-            string sdt = txtSDT.Text.Trim();
-            if (!string.IsNullOrWhiteSpace(sdt))
+            
+            // Validate Khoa (bắt buộc)
+            string khoa = txtKhoa.Text.Trim();
+            if (string.IsNullOrWhiteSpace(khoa))
             {
-                if (!Regex.IsMatch(sdt, @"^(0|\+84)[0-9]{9,10}$"))
-                {
-                    txtSDT.Focus();
-                    return new ValidationResult(false, "❌ Số điện thoại không hợp lệ!\nĐịnh dạng: 0xxxxxxxxx hoặc +84xxxxxxxxx");
-                }
-                
-                // ✅ THÊM: Kiểm tra SĐT đã tồn tại
-                if (IsPhoneExists(sdt))
-                {
-                    txtSDT.Focus();
-                    return new ValidationResult(false, "❌ Số điện thoại này đã được sử dụng bởi thành viên khác!");
-                }
+                txtKhoa.BackColor = Color.FromArgb(255, 230, 230);
+                errors.AppendLine("• Khoa không được để trống");
+                hasError = true;
+            }
+            
+            // Validate Địa chỉ (bắt buộc)
+            string diaChi = txtDiaChi.Text.Trim();
+            if (string.IsNullOrWhiteSpace(diaChi))
+            {
+                txtDiaChi.BackColor = Color.FromArgb(255, 230, 230);
+                errors.AppendLine("• Địa chỉ không được để trống");
+                hasError = true;
             }
 
             // Validate Ngày sinh
@@ -803,38 +653,61 @@ namespace ClubManageApp
             if (DateTime.Now.DayOfYear < dtpNgaySinh.Value.DayOfYear)
                 age--;
                 
-            if (age < 15)
+            if (age < 18)
             {
-                return new ValidationResult(false, "❌ Thành viên phải ít nhất 15 tuổi!");
+                errors.AppendLine("• Thành viên phải ít nhất 18 tuổi");
+                hasError = true;
             }
-
-            if (age > 100)
+            else if (age > 30)
             {
-                return new ValidationResult(false, "❌ Ngày sinh không hợp lệ!");
+                errors.AppendLine("• Thành viên không được quá 30 tuổi");
+                hasError = true;
             }
             
-            // ✅ THÊM: Validate giới tính
+            // Validate giới tính
             if (cboGioiTinh.SelectedIndex < 0)
             {
-                cboGioiTinh.Focus();
-                return new ValidationResult(false, "❌ Vui lòng chọn giới tính!");
+                cboGioiTinh.BackColor = Color.FromArgb(255, 230, 230);
+                errors.AppendLine("• Vui lòng chọn giới tính");
+                hasError = true;
             }
             
-            // ✅ THÊM: Validate vai trò
+            // Validate vai trò
             if (cboVaiTro.SelectedIndex < 0)
             {
-                cboVaiTro.Focus();
-                return new ValidationResult(false, "❌ Vui lòng chọn vai trò!");
+                cboVaiTro.BackColor = Color.FromArgb(255, 230, 230);
+                errors.AppendLine("• Vui lòng chọn vai trò");
+                hasError = true;
             }
             
-            // ✅ THÊM: Validate trạng thái
+            // Validate trạng thái
             if (cboTrangThai.SelectedIndex < 0)
             {
-                cboTrangThai.Focus();
-                return new ValidationResult(false, "❌ Vui lòng chọn trạng thái!");
+                cboTrangThai.BackColor = Color.FromArgb(255, 230, 230);
+                errors.AppendLine("• Vui lòng chọn trạng thái");
+                hasError = true;
+            }
+
+            if (hasError)
+            {
+                string errorMessage = "❌ Vui lòng điền đầy đủ và chính xác các thông tin:\n\n" + errors.ToString();
+                return new ValidationResult(false, errorMessage);
             }
 
             return new ValidationResult(true, "");
+        }
+        
+        private void ResetFieldColors()
+        {
+            txtHoTen.BackColor = Color.White;
+            txtEmail.BackColor = Color.White;
+            txtSDT.BackColor = Color.White;
+            txtLop.BackColor = Color.White;
+            txtKhoa.BackColor = Color.White;
+            txtDiaChi.BackColor = Color.White;
+            cboGioiTinh.BackColor = Color.White;
+            cboVaiTro.BackColor = Color.White;
+            cboTrangThai.BackColor = Color.White;
         }
 
         private bool IsValidEmail(string email)
@@ -904,60 +777,6 @@ namespace ClubManageApp
             catch
             {
                 return false;
-            }
-        }
-        
-        // ✅ THÊM: Kiểm tra có Admin trong hệ thống không
-        private bool HasExistingAdmin()
-        {
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    string query = "SELECT COUNT(*) FROM ThanhVien WHERE VaiTro = N'Admin'";
-                    
-                    // Nếu đang edit, loại trừ bản thân ra khỏi việc đếm
-                    if (maTV.HasValue)
-                    {
-                        query += " AND MaTV != @MaTV";
-                    }
-
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
-                    {
-                        if (maTV.HasValue)
-                            cmd.Parameters.AddWithValue("@MaTV", maTV.Value);
-
-                        int count = (int)cmd.ExecuteScalar();
-                        return count > 0;
-                    }
-                }
-            }
-            catch
-            {
-                return false;
-            }
-        }
-        
-        // ✅ THÊM: Đếm số Admin trong hệ thống
-        private int GetAdminCount()
-        {
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    string query = "SELECT COUNT(*) FROM ThanhVien WHERE VaiTro = N'Admin'";
-
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
-                    {
-                        return (int)cmd.ExecuteScalar();
-                    }
-                }
-            }
-            catch
-            {
-                return 0;
             }
         }
 
