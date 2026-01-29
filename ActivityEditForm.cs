@@ -130,12 +130,18 @@ namespace ClubManageApp
                 return false;
             }
 
-            // Validate date
-            if (dtpNgayToChuc.Value.Date < DateTime.Today)
+            // Validate date - must be today or future (unless status is completed/cancelled)
+            DateTime today = DateTime.Today;
+            if (dtpNgayToChuc.Value.Date < today)
             {
-                MessageBox.Show("Ngày tổ chức không được là quá khứ", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                dtpNgayToChuc.Focus();
-                return false;
+                // Allow past dates only for completed or cancelled activities
+                string selectedStatus = cboTrangThai.SelectedItem?.ToString() ?? "Đang chuẩn bị";
+                if (selectedStatus != "Hoàn thành" && selectedStatus != "Hủy bỏ")
+                {
+                    MessageBox.Show("Ngày tổ chức không được là quá khứ (trừ hoạt động hoàn thành/hủy)", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    dtpNgayToChuc.Focus();
+                    return false;
+                }
             }
 
             // Validate times
@@ -164,7 +170,7 @@ namespace ClubManageApp
                 return false;
             }
 
-            // Validate budget
+            // Validate budget (must be positive and formatted as VND)
             if (nudKinhPhiDuKien.Value < 0)
             {
                 MessageBox.Show("Kinh phí dự kiến không được âm", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -173,9 +179,9 @@ namespace ClubManageApp
             }
 
             // Validate max participants
-            if (nudSoLuongToiDa.Value < 0)
+            if (nudSoLuongToiDa.Value <= 0)
             {
-                MessageBox.Show("Số lượng tối đa không được âm", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Số lượng tối đa phải lớn hơn 0", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 nudSoLuongToiDa.Focus();
                 return false;
             }
@@ -186,6 +192,24 @@ namespace ClubManageApp
                 MessageBox.Show("Vui lòng chọn trạng thái", "Lỗi Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 cboTrangThai.Focus();
                 return false;
+            }
+
+            // ✅ Validate status consistency with date
+            string status = cboTrangThai.SelectedItem?.ToString() ?? "Đang chuẩn bị";
+            DateTime eventDate = dtpNgayToChuc.Value.Date;
+            DateTime nowDate = DateTime.Today;
+
+            if (eventDate < nowDate)
+            {
+                // Event is in the past
+                if (status == "Đang chuẩn bị" || status == "Đang diễn ra")
+                {
+                    MessageBox.Show($"⚠️ Lưu ý: Hoạt động này được tổ chức ngày {eventDate:dd/MM/yyyy} (quá khứ), " +
+                                    $"nhưng trạng thái là \"{status}\". " +
+                                    $"Hãy đảm bảo đây là hoạt động có kế hoạch tái diễn hoặc cập nhật trạng thái thành \"Hoàn thành\" hoặc \"Hủy bỏ\".",
+                                    "⚠️ Cảnh báo Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    // Don't block, just warn
+                }
             }
 
             // Validate LoaiHoatDong selection
@@ -242,6 +266,8 @@ namespace ClubManageApp
 
             ActivityData.DiaDiem = txtDiaDiem.Text.Trim();
             ActivityData.MoTa = txtMoTa.Text.Trim();
+            
+            // ✅ Store budget as decimal (VND)
             ActivityData.KinhPhiDuKien = nudKinhPhiDuKien.Value;
             ActivityData.SoLuongToiDa = (int)nudSoLuongToiDa.Value;
             ActivityData.TrangThai = cboTrangThai.SelectedItem?.ToString() ?? "Đang chuẩn bị";
@@ -331,6 +357,13 @@ namespace ClubManageApp
                         else if (c is NumericUpDown nud)
                         {
                             nud.Font = new Font("Segoe UI", 9);
+                            
+                            // ✅ Format kinh phí as VND (thousand separator)
+                            if (nud.Name.Contains("KinhPhi") || nud.Name.Contains("kinhphi") || nud.Name.Contains("Kinh"))
+                            {
+                                nud.DecimalPlaces = 0;
+                                nud.ThousandsSeparator = true; // enable thousand separator for VND
+                            }
                         }
 
                         if (c.HasChildren)
