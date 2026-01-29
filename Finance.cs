@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Globalization;
 
 namespace ClubManageApp
 {
@@ -58,6 +59,30 @@ namespace ClubManageApp
 
             // grid lines color
             dgvThuChi.GridColor = System.Drawing.Color.LightGray;
+
+            // format SoTien column as VND when grid is populated
+            dgvThuChi.CellFormatting += DgvThuChi_CellFormatting;
+        }
+
+        private void DgvThuChi_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            try
+            {
+                if (dgvThuChi.Columns[e.ColumnIndex].Name == "SoTien")
+                {
+                    if (e.Value != null && e.Value != DBNull.Value)
+                    {
+                        decimal val;
+                        if (decimal.TryParse(Convert.ToString(e.Value), out val))
+                        {
+                            // Format as thousands with no decimals and append VND symbol
+                            e.Value = string.Format(CultureInfo.InvariantCulture, "{0:N0} ₫", val);
+                            e.FormattingApplied = true;
+                        }
+                    }
+                }
+            }
+            catch { }
         }
 
         private void HookEvents()
@@ -128,7 +153,12 @@ namespace ClubManageApp
                 // set nicer column headers if columns present
                 if (dgvThuChi.Columns.Contains("MaGD")) dgvThuChi.Columns["MaGD"].HeaderText = "Mã GD";
                 if (dgvThuChi.Columns.Contains("LoaiGD")) dgvThuChi.Columns["LoaiGD"].HeaderText = "Loại";
-                if (dgvThuChi.Columns.Contains("SoTien")) dgvThuChi.Columns["SoTien"].HeaderText = "Số tiền";
+                if (dgvThuChi.Columns.Contains("SoTien"))
+                {
+                    dgvThuChi.Columns["SoTien"].HeaderText = "Số tiền";
+                    // ensure column sorts as numeric
+                    dgvThuChi.Columns["SoTien"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                }
                 if (dgvThuChi.Columns.Contains("NgayGD")) dgvThuChi.Columns["NgayGD"].HeaderText = "Ngày";
                 if (dgvThuChi.Columns.Contains("NoiDung")) dgvThuChi.Columns["NoiDung"].HeaderText = "Nội dung";
 
@@ -156,46 +186,125 @@ namespace ClubManageApp
             catch { }
         }
 
+        private DataTable GetFilteredTable()
+        {
+            // Return a DataTable containing all rows matching current filter/search (no paging)
+            if (thuChiTable == null) return new DataTable();
+            var f = (cmbFilter.SelectedItem as string) ?? "Tất cả";
+            var q = (currentFilter ?? string.Empty).Trim();
+
+            var rows = thuChiTable.AsEnumerable();
+
+            if (f == "Thu" || f == "Chi")
+            {
+                rows = rows.Where(r => string.Equals(Convert.ToString(r["LoaiGD"]), f, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrEmpty(q))
+            {
+                DateTime parsedDate;
+                bool isDate = DateTime.TryParseExact(q, new[] { "dd/MM/yyyy", "d/M/yyyy", "yyyy-MM-dd", "dd-MM-yyyy" }, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate);
+
+                rows = rows.Where(r =>
+                {
+                    try
+                    {
+                        var nd = r.Table.Columns.Contains("NoiDung") && r["NoiDung"] != DBNull.Value ? (r["NoiDung"]?.ToString() ?? string.Empty) : string.Empty;
+                        var name = r.Table.Columns.Contains("NguoiThucHienName") && r["NguoiThucHienName"] != DBNull.Value ? (r["NguoiThucHienName"]?.ToString() ?? string.Empty) : string.Empty;
+
+                        bool textMatch = (!string.IsNullOrEmpty(nd) && nd.IndexOf(q, StringComparison.OrdinalIgnoreCase) >=0)
+                                         || (!string.IsNullOrEmpty(name) && name.IndexOf(q, StringComparison.OrdinalIgnoreCase) >=0);
+
+                        if (isDate && r.Table.Columns.Contains("NgayGD") && r["NgayGD"] != DBNull.Value)
+                        {
+                            DateTime dt;
+                            if (DateTime.TryParse(Convert.ToString(r["NgayGD"]), out dt))
+                            {
+                                if (dt.Date == parsedDate.Date) return true;
+                            }
+                        }
+
+                        return textMatch;
+                    }
+                    catch { return false; }
+                });
+            }
+
+            var list = rows.ToList();
+            var table = thuChiTable.Clone();
+            foreach (var r in list)
+            {
+                table.ImportRow(r);
+            }
+            return table;
+        }
+
         private void ApplyFilterAndSearch()
         {
             try
             {
-                var filters = new System.Collections.Generic.List<string>();
-
                 var f = (cmbFilter.SelectedItem as string) ?? "Tất cả";
+                currentFilter = txtSearch.Text.Trim();
+
+                // Prepare in-memory LINQ filter from thuChiTable
+                var rows = thuChiTable.AsEnumerable();
+
+                // filter by Loai if needed
                 if (f == "Thu" || f == "Chi")
                 {
-                    filters.Add("LoaiGD = '" + f.Replace("'", "''") + "'");
+                    rows = rows.Where(r => string.Equals(Convert.ToString(r["LoaiGD"]), f, StringComparison.OrdinalIgnoreCase));
                 }
 
-                var q = txtSearch.Text.Trim();
-                currentFilter = q;
-                if (!string.IsNullOrEmpty(q))
+                // if search text provided, support matching NoiDung, NguoiThucHienName and exact date matches (dd/MM/yyyy, yyyy-MM-dd)
+                if (!string.IsNullOrEmpty(currentFilter))
                 {
-                    var s = q.Replace("'", "''");
-                    filters.Add($"(NoiDung LIKE '%{s}%')");
+                    var q = currentFilter;
+                    // try parse date in several common formats
+                    DateTime parsedDate;
+                    bool isDate = DateTime.TryParseExact(q, new[] { "dd/MM/yyyy", "d/M/yyyy", "yyyy-MM-dd", "dd-MM-yyyy" }, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate);
+
+                    rows = rows.Where(r =>
+                    {
+                        try
+                        {
+                            var nd = r.Table.Columns.Contains("NoiDung") && r["NoiDung"] != DBNull.Value ? (r["NoiDung"]?.ToString() ?? string.Empty) : string.Empty;
+                            var name = r.Table.Columns.Contains("NguoiThucHienName") && r["NguoiThucHienName"] != DBNull.Value ? (r["NguoiThucHienName"]?.ToString() ?? string.Empty) : string.Empty;
+
+                            bool textMatch = (!string.IsNullOrEmpty(nd) && nd.IndexOf(q, StringComparison.OrdinalIgnoreCase) >=0)
+                                             || (!string.IsNullOrEmpty(name) && name.IndexOf(q, StringComparison.OrdinalIgnoreCase) >=0);
+
+                            if (isDate && r.Table.Columns.Contains("NgayGD") && r["NgayGD"] != DBNull.Value)
+                            {
+                                DateTime dt;
+                                if (DateTime.TryParse(Convert.ToString(r["NgayGD"]), out dt))
+                                {
+                                    if (dt.Date == parsedDate.Date) return true;
+                                }
+                            }
+
+                            return textMatch;
+                        }
+                        catch { return false; }
+                    });
                 }
 
-                // Create filtered view of full table (not paged)
-                thuChiView = new DataView(thuChiTable);
-                thuChiView.RowFilter = string.Join(" AND ", filters);
+                // create a DataTable from filtered rows for paging and grid
+                var filteredList = rows.ToList();
 
-                // Update pagination counts based on filtered view
-                totalRecords = thuChiView.Count;
+                totalRecords = filteredList.Count;
                 totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
                 if (totalPages ==0) totalPages =1;
 
                 if (currentPage > totalPages) currentPage = totalPages;
                 if (currentPage <1) currentPage =1;
 
-                // Build a paged DataTable for the grid
-                var pageTable = thuChiView.ToTable().Clone();
+                var pageTable = thuChiTable.Clone();
                 int start = (currentPage -1) * pageSize;
-                int end = Math.Min(start + pageSize, thuChiView.Count);
+                int end = Math.Min(start + pageSize, filteredList.Count);
 
                 for (int i = start; i < end; i++)
                 {
-                    pageTable.ImportRow(thuChiView[i].Row);
+                    pageTable.ImportRow(filteredList[i]);
                 }
 
                 dgvThuChi.DataSource = pageTable;
@@ -346,7 +455,10 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
                 // clear existing controls in the chart panel
                 chartSummary.Controls.Clear();
 
-                // create first chart (pie) - summary Thu/Chi
+                // get filtered table according to current filter/search (no paging)
+                var dt = GetFilteredTable();
+
+                // create first chart (pie) - summary Thu/Chi (or only selected type)
                 var chart = new Chart();
                 chart.Dock = DockStyle.Fill;
                 chart.BackColor = System.Drawing.Color.WhiteSmoke;
@@ -365,8 +477,6 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
                 series.IsValueShownAsLabel = true;
                 series.LabelFormat = "N0";
 
-                // compute totals for Thu and Chi
-                var dt = thuChiView?.ToTable() ?? new DataTable();
                 decimal sumChi =0m;
                 decimal sumThu =0m;
 
@@ -389,16 +499,28 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
                     catch { sumThu =0m; }
                 }
 
-                // add data points
-                series.Points.Clear();
-                series.Points.AddXY("Chi", sumChi);
-                series.Points.AddXY("Thu", sumThu);
+                var filter = (cmbFilter.SelectedItem as string) ?? "Tất cả";
 
-                // format labels and tooltips
+                series.Points.Clear();
+                if (filter == "Thu")
+                {
+                    series.Points.AddXY("Thu", sumThu);
+                }
+                else if (filter == "Chi")
+                {
+                    series.Points.AddXY("Chi", sumChi);
+                }
+                else
+                {
+                    series.Points.AddXY("Thu", sumThu);
+                    series.Points.AddXY("Chi", sumChi);
+                }
+
+                // format labels and tooltips to show VND
                 foreach (DataPoint p in series.Points)
                 {
-                    p.Label = string.Format("{0}: {1:N0}", p.AxisLabel, p.YValues[0]);
-                    p.ToolTip = string.Format("{0}: {1:N0}", p.AxisLabel, p.YValues[0]);
+                    p.Label = string.Format("{0}: {1:N0} ₫", p.AxisLabel, p.YValues[0]);
+                    p.ToolTip = string.Format("{0}: {1:N0} ₫", p.AxisLabel, p.YValues[0]);
                 }
 
                 chart.Series.Add(series);
@@ -421,7 +543,15 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
                 var seriesThuMonthly = new Series("Thu") { ChartType = SeriesChartType.Column, ChartArea = "MonthArea", IsValueShownAsLabel = true, LabelFormat = "N0" };
                 var seriesChiMonthly = new Series("Chi") { ChartType = SeriesChartType.Column, ChartArea = "MonthArea", IsValueShownAsLabel = true, LabelFormat = "N0" };
 
-                // prepare last6 months (oldest -> newest)
+                // set explicit colors so legend is clear
+                try
+                {
+                    seriesThuMonthly.Color = System.Drawing.Color.SeaGreen;
+                    seriesChiMonthly.Color = System.Drawing.Color.IndianRed;
+                }
+                catch { }
+
+                // prepare last6 months (oldest ->Newest)
                 var months = Enumerable.Range(0,6)
                     .Select(i => new DateTime(DateTime.Today.AddMonths(-5 + i).Year, DateTime.Today.AddMonths(-5 + i).Month,1))
                     .ToList();
@@ -453,12 +583,37 @@ VALUES (@Loai, @SoTien, @Ngay, @NoiDung, @Nguoi, @Nguon, @MaHD, @Trang)", conn))
                     catch { mThu =0m; mChi =0m; }
 
                     var label = m.ToString("MM/yy");
-                    seriesThuMonthly.Points.AddXY(label, mThu);
-                    seriesChiMonthly.Points.AddXY(label, mChi);
+
+                    // Add points for selected series only, or both when 'Tất cả'
+                    if (filter == "Thu")
+                    {
+                        int idx = seriesThuMonthly.Points.AddXY(label, mThu);
+                        try { seriesThuMonthly.Points[idx].Label = string.Format("{0:N0} ₫", mThu); seriesThuMonthly.Points[idx].ToolTip = string.Format("Thu: {0:N0} ₫", mThu); } catch { }
+                    }
+                    else if (filter == "Chi")
+                    {
+                        int idx = seriesChiMonthly.Points.AddXY(label, mChi);
+                        try { seriesChiMonthly.Points[idx].Label = string.Format("{0:N0} ₫", mChi); seriesChiMonthly.Points[idx].ToolTip = string.Format("Chi: {0:N0} ₫", mChi); } catch { }
+                    }
+                    else
+                    {
+                        int idxThu = seriesThuMonthly.Points.AddXY(label, mThu);
+                        int idxChi = seriesChiMonthly.Points.AddXY(label, mChi);
+                        try
+                        {
+                            seriesThuMonthly.Points[idxThu].Label = string.Format("{0:N0} ₫", mThu);
+                            seriesThuMonthly.Points[idxThu].ToolTip = string.Format("Thu: {0:N0} ₫", mThu);
+                            seriesChiMonthly.Points[idxChi].Label = string.Format("{0:N0} ₫", mChi);
+                            seriesChiMonthly.Points[idxChi].ToolTip = string.Format("Chi: {0:N0} ₫", mChi);
+                        }
+                        catch { }
+                    }
                 }
 
-                chart2.Series.Add(seriesThuMonthly);
-                chart2.Series.Add(seriesChiMonthly);
+                // Add only the relevant series to the chart so colors and legend match
+                if (filter == "Thu") chart2.Series.Add(seriesThuMonthly);
+                else if (filter == "Chi") chart2.Series.Add(seriesChiMonthly);
+                else { chart2.Series.Add(seriesThuMonthly); chart2.Series.Add(seriesChiMonthly); }
 
                 // arrange two charts side-by-side using a TableLayoutPanel
                 var container = new TableLayoutPanel();
