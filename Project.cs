@@ -484,9 +484,18 @@ namespace ClubManageApp
                             if (dlg.StartDate.HasValue) cmd.Parameters.AddWithValue("@NgayBD", dlg.StartDate.Value.Date); else cmd.Parameters.AddWithValue("@NgayBD", DBNull.Value);
                             if (dlg.EndDate.HasValue) cmd.Parameters.AddWithValue("@NgayKT", dlg.EndDate.Value.Date); else cmd.Parameters.AddWithValue("@NgayKT", DBNull.Value);
                             cmd.Parameters.AddWithValue("@MucDo", (object)dlg.Priority ?? DBNull.Value);
-                            cmd.Parameters.AddWithValue("@TienDo", dlg.Progress);
-                            // New project should have status 'Mới tạo' by default
-                            cmd.Parameters.AddWithValue("@TrangThai", "Mới tạo");
+
+                            // determine progress based on chosen status for new project
+                            string statusToSave = dlg.Status ?? "Mới tạo";
+                            int progressToSave = dlg.Progress;
+                            if (!string.IsNullOrEmpty(statusToSave))
+                            {
+                                if (string.Equals(statusToSave, "Hoàn thành", StringComparison.OrdinalIgnoreCase)) progressToSave =100;
+                                else if (string.Equals(statusToSave, "Hủy bỏ", StringComparison.OrdinalIgnoreCase)) progressToSave =0;
+                            }
+
+                            cmd.Parameters.AddWithValue("@TienDo", progressToSave);
+                            cmd.Parameters.AddWithValue("@TrangThai", statusToSave);
 
                             conn.Open();
                             cmd.ExecuteNonQuery();
@@ -528,8 +537,8 @@ namespace ClubManageApp
                             int progressToSave = dlg.Progress;
                             if (!string.IsNullOrEmpty(statusToSave))
                             {
-                                if (string.Equals(statusToSave, "Hoàn thành", StringComparison.OrdinalIgnoreCase)) progressToSave = 100;
-                                else if (string.Equals(statusToSave, "Hủy bỏ", StringComparison.OrdinalIgnoreCase)) progressToSave = 0;
+                                if (string.Equals(statusToSave, "Hoàn thành", StringComparison.OrdinalIgnoreCase)) progressToSave =100;
+                                else if (string.Equals(statusToSave, "Hủy bỏ", StringComparison.OrdinalIgnoreCase)) progressToSave =0;
                             }
                             cmd.Parameters.AddWithValue("@TienDo", progressToSave);
                             cmd.Parameters.AddWithValue("@TrangThai", (object)statusToSave ?? DBNull.Value);
@@ -675,6 +684,8 @@ namespace ClubManageApp
 
                 var lblEnd = new Label { Text = "Kết thúc:", Location = new Point(10, 175), AutoSize = true };
                 dtpEnd = new DateTimePicker { Location = new Point(120, 171), Width = 200, Format = DateTimePickerFormat.Short, ShowCheckBox = true };
+                // Limit end date to not be earlier than3 years before today
+                try { dtpEnd.MinDate = DateTime.Today.AddYears(-3); } catch { }
 
                 var lblPriority = new Label { Text = "Mức độ ưu tiên:", Location = new Point(10, 210), AutoSize = true };
                 cmbPriority = new ComboBox { Location = new Point(120, 206), Width = 200, DropDownStyle = ComboBoxStyle.DropDownList };
